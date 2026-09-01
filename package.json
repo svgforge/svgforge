@@ -1,0 +1,77 @@
+{
+  "name": "svgforge",
+  "version": "1.0.0",
+  "author": "Joschi Kuphal <joschi@kuphal.net> (https://jkphl.is)",
+  "description": "SVG sprites & stacks galore — A low-level Node.js module that takes a bunch of SVG files, optimizes them and bakes them into SVG sprites of several types along with suitable stylesheet resources (e.g. CSS, Sass, etc.)",
+  "homepage": "https://github.com/joeda1/svgforge",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joeda1/svgforge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/joeda1/svgforge/issues"
+  },
+  "license": "MIT",
+  "keywords": [
+    "icon",
+    "icons",
+    "svg",
+    "png",
+    "sprite",
+    "spritesheet",
+    "stack",
+    "generator",
+    "css",
+    "stylesheet",
+    "inline",
+    "html",
+    "vector",
+    "rwd",
+    "retina",
+    "mustache"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "main": "lib/svg-sprite.js",
+  "files": [
+    "lib",
+    "tmpl"
+  ],
+  "scripts": {
+    "lint": "xo",
+    "fix": "xo --fix",
+    "example": "node example.js",
+    "test": "node --test test/*.test.js test/**/*.test.js",
+    "test:coverage": "node --test --experimental-test-coverage test/*.test.js test/**/*.test.js",
+    "test:watch": "node --test --watch test/*.test.js test/**/*.test.js"
+  },
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "@xmldom/xmldom": "^0.9.12",
+    "async": "^3.2.6",
+    "css-selector-parser": "^3.3.0",
+    "csso": "^5.0.5",
+    "cssom": "^0.5.0",
+    "import-lazy": "^4.0.0",
+    "js-yaml": "^5.4.1",
+    "lodash.escape": "^4.0.1",
+    "lodash.merge": "^4.6.2",
+    "mustache": "^4.2.0",
+    "prettysize": "^2.0.0",
+    "svgo": "^4.1.0",
+    "vinyl": "^3.0.1",
+    "winston": "^3.19.0",
+    "xpath": "^0.0.34"
+  },
+  "devDependencies": {
+    "eslint-plugin-jsdoc": "^64.3.2",
+    "glob": "^13.0.6",
+    "pixelmatch": "^7.2.0",
+    "playwright-chromium": "^1.50.1",
+    "pngjs": "^7.0.0",
+    "sass": "^1.91.0",
+    "xo": "^4.0.0"
+  }
+}
