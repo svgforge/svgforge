@@ -152,6 +152,41 @@ Noch offen (in Arbeit):
     `<title xmlns="http://www.w3.org/2000/svg">…</title>` (Namespace wird
     ergänzt). Test müsste die Namespace-Variante akzeptieren.
 
+## ES6-Class-Modernisierung (Prototype → class)
+
+Der Großteil der Prototype-basierten `lib`-Dateien ist auf ES6-Classes portiert:
+- `lib/svg-sprite/shape.js` → `class SVGShape`
+- `lib/svg-sprite.js` → `class SVGSpriter extends EventEmitter`
+- `lib/svg-sprite/mode/base.js` → `class SVGSpriteBase`
+- `lib/svg-sprite/mode/standalone.js` → `class SVGSpriteStandalone extends SVGSpriteBase`
+- `lib/svg-sprite/mode/defs.js` → `class SVGSpriteDefs extends SVGSpriteBase`
+- `lib/svg-sprite/mode/stack.js` → `class SVGSpriteStack extends SVGSpriteBase`
+- `lib/svg-sprite/mode/symbol.js` → `class SVGSpriteSymbol extends SVGSpriteBase`
+- `lib/svg-sprite/mode/css.js` → `class SVGSpriteCss extends SVGSpriteBase` (Test: mixed 4/4, css 16/16)
+- `lib/svg-sprite/mode/view.js` → `class SVGSpriteView extends SVGSpriteCss`
+- `lib/svg-sprite/sprite.js` → bereits ES6 (Class-Fields-Muster)
+
+**KRITISCHER Fallstrick (super()-Reihenfolge):** Der Base-Konstruktor ruft am
+Ende `this._init()` auf (base.js Zeile 153). Dieser Aufruf passiert, bevor die
+**Class-Fields der Subklasse** initialisiert sind (Class-Fields werden erst nach
+Rückkehr aus `super()` gesetzt). Deshalb dürfen Werte, die während `_init()` (oder
+einer anderen vom Base-Konstruktor ausgelösten Methode) gebraucht werden, NICHT als
+Subklassen-Class-Field definiert werden. Stattdessen als **Prototype-Getter**:
+- `mode`: `get mode() { return 'css'; }` (jede Mode-Subklasse)
+- `tmpl`: `get tmpl() { return 'css'; }` (Base hat `get tmpl() { return 'common'; }`)
+- `LAYOUT_*` (css): `get LAYOUT_VERTICAL() { return 'vertical'; }` etc.
+Konkretes Symptom: Mit `LAYOUT_VERTICAL = 'vertical'` als Class-Field war
+`this._displaceable` fälschlich `false` (da `this.LAYOUT_VERTICAL === undefined`
+während `_init()`), wodurch Displaceable-Shapes nicht einberechnet wurden und die
+Sprite-Höhe zu klein war (mixed: 344 statt 440 → visuelle Tests rot). Nach dem
+Umstieg auf Getter wieder 440 → mixed 4/4 grün.
+
+`view.js` erbt von `SVGSpriteCss`, verwendet aber CSS' `_buildSVG`-Überschreibung
+und `_refineRootAttributes`. Die frühere Cross-Vererbung
+`_initData: SVGSpriteStandalone.prototype._initData` war redundant
+(Standalone überschreibt `_initData` nicht; es kommt nur aus Base) und wurde
+beim Klassenumbau entfernt.
+
 ## Sonstiges / Warnungen
 
 - Kein Git-Repository auf Projekt-Ebene (`svg-frag` ist kein Git-Repo).
