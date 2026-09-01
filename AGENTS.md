@@ -23,6 +23,12 @@ zusammen, damit nicht bei jedem neuen Agenten bei null angefangen wird.
 
 ## Test-Framework
 
+- **Linter (Pflicht):** `xo` (package.json: `npm run lint`, auto-fix `npm run fix`).
+  Nach Änderungen an `lib/`- oder `test/`-Dateien IMMER `npm run lint` (oder
+  für einzelne Dateien `npx xo <datei>` / `npx xo <datei> --fix`) ausführen und
+  Fehler beheben — NICHT nur Syntax via `node --check` prüfen. Letzteres prüft
+  nur Syntax, nicht Style (indent, no-extra-semi, no-useless-constructor,
+  lines-between-class-members, unicorn/* …).
 - Testrunner: `node --test` (package.json: `node --test test/*.test.js test/**/*.test.js`)
 - **Wichtig – Shell-Glob-Falle:** `test/**/*.test.js` expandiert nur in Shells
   mit rekursivem Glob (`**`), z. B. zsh. Unter `sh`/`dash` (das `npm test`
