@@ -25,6 +25,10 @@ Newer release notes are published on the GitHub release page: <https://github.co
 * Replace the `glob` package with the native `fs.globSync`/`node:fs` API and
   drop `glob` from the (dev) dependencies; `engines.node` is `>= 22` (required
   for the glob API introduced in Node 22)
+* Normalize the `file` and `name` arguments of `SVGSpriter.prototype.add()` via
+  `path.normalize()` so both values use the same path separators (fixes
+  svg-sprite/svg-sprite#942, per PR svg-sprite/svg-sprite#944); the now
+  redundant `trimStart()` call on `name` was dropped
 
 ## 1.6.0-alpha Maintenance pre-release (2020-01-18)
 
