@@ -42,7 +42,7 @@ All of these properties are optional so in fact, even an empty object `{}` is a 
   * [Enabling & configuring](#enabling--configuring)
   * [Common mode properties](#common-mode-properties)
   * [Specific mode properties](#specific-mode-properties)
-    * [«css» & «view» mode](#css--view-mode)
+    * [«view» mode](#view-mode)
     * [«defs» & «symbol» mode](#defs--symbol-mode)
     * [«stack» mode](#stack-mode)
   * [Rendering configurations](#rendering-configurations)
@@ -298,9 +298,8 @@ Please refer to the [templating guide](templating.md) to learn about the [builti
 
 ### Output modes
 
-*svgforge* currently supports 5 different output modes:
+*svgforge* currently supports 4 different output modes:
 
-* `css`
 * `view`
 * `defs`
 * `symbol`
@@ -314,17 +313,17 @@ Please see the configuration sections below to learn a little about their nature
 Each of them produces its own specific files and has its individual configuration. You may enable and configure several modes in parallel so that *svgforge* renders them in one run, saving the redundant SVG optimization overhead. Enabling a specific mode is as easy as adding a like-named key to the `mode` property, using either the default configuration (by using `true` as the value) or a custom settings object:
 
 ```js
-// Activate the «css» mode with default configuration
+// Activate the «view» mode with default configuration
 {
   mode: {
-    css: true
+    view: true
   }
 }
 
 // Equivalent: Provide an empty configuration object
 {
   mode: {
-    css: {}
+    view: {}
   }
 }
 ```
@@ -336,10 +335,10 @@ It is also possible to configure the same output mode multiple times, each time 
 {
   mode: {
     sprite1: {
-      mode: 'css' // Sprite with «css» mode
+      mode: 'view' // Sprite with «view» mode
     },
     sprite2: {
-      mode: 'css' // Another sprite with «css» mode
+      mode: 'view' // Another sprite with «view» mode
     }
   }
 }
@@ -348,16 +347,16 @@ It is also possible to configure the same output mode multiple times, each time 
 
 #### Common mode properties
 
-Many `mode` properties are common between all sprite types (sometimes their default values differ from type to type, however). The placeholder `"<mode>"` is used as a substitute for one of `"css"`, `"view"`, `"defs"`, `"symbol"` or `"stack"`. Please replace it consequently.
+Many `mode` properties are common between all sprite types (sometimes their default values differ from type to type, however). The placeholder `"<mode>"` is used as a substitute for one of `"view"`, `"defs"`, `"symbol"` or `"stack"`. Please replace it consequently.
 
 Property     | Type      | Default     | Description                |
 ---------------- | --------------- | ------------- | ------------------------------------------ |
-`mode.<mode>.dest`       | String      | `"<mode>"`     | Base directory for sprite and CSS file output. If not absolute, the path will be resolved using the main output directory (see global `dest` option). |
-`mode.<mode>.prefix`     | String      | `".svg-%s"`  | Used for prefixing the [shape ID](#shape-ids) during CSS selector construction. If the value is empty, no prefix will be used. The prefix may contain the placeholder `"%s"` (e.g. `".svg %s-svg"`), which will then get replaced by the shape ID. Please be aware that `"%"` is a special character in this context and that you'll have to escape it by another percent sign (`"%%"`) in case you want to output it to your stylesheets (e.g. for a [Sass placeholder selector](https://sass-lang.com/documentation/style-rules/placeholder-selectors)). |
-`mode.<mode>.dimensions`   | String\|Boolean  | `"-dims"`   | A non-empty string value will trigger the creation of additional CSS rules specifying the dimensions of each shape in the sprite. The string will be used as suffix to `mode.<mode>.prefix` during CSS selector construction and may contain the placeholder `"%s"`, which will get replaced by the value of `mode.<mode>.prefix`. A boolean `true` will cause the dimensions to be included directly into each shape's CSS rule (only available for «css» and «view» sprites). |
+`mode.<mode>.dest`       | String      | `"<mode>"`     | Base directory for sprite output. If not absolute, the path will be resolved using the main output directory (see global `dest` option). |
+`mode.<mode>.prefix`     | String      | `".svg-%s"`  | Used for prefixing the [shape ID](#shape-ids) during CSS selector construction. If the value is empty, no prefix will be used. The prefix may contain the placeholder `"%s"` (e.g. `".svg %s-svg"`), which will then get replaced by the shape ID. Please be aware that `"%"` is a special character in this context and that you'll have to escape it by another percent sign (`"%%"`) in case you want to output it to your stylesheets. |
+`mode.<mode>.dimensions`   | String\|Boolean  | `"-dims"`   | A non-empty string value will trigger the creation of additional CSS rules specifying the dimensions of each shape in the sprite. The string will be used as suffix to `mode.<mode>.prefix` during CSS selector construction and may contain the placeholder `"%s"`, which will get replaced by the value of `mode.<mode>.prefix`. A boolean `true` will cause the dimensions to be included directly into each shape's CSS rule (only available for «view» sprites). |
 `mode.<mode>.sprite`     | String      | `"svg/sprite.<mode>.svg"` | SVG sprite path and file name, relative to the `mode.<mode>.dest` directory (see above). You may omit the file extension, in which case it will be set to `".svg"` automatically. |
-`mode.<mode>.bust`       | Boolean     | `true\|false`    | Add a content based hash to the name of the sprite file so that clients reliably reload the sprite when its content changes («cache busting»). Defaults to `false` except for «css» and «view» sprites. |
-`mode.<mode>.render`     | Object of [Rendering configs](#rendering-configurations)      | `{}`   | Collection of [stylesheet rendering configurations](#rendering-configurations). The keys are used as file extensions as well as file return keys. At present, there are default templates for the file extensions `css` ([CSS](https://www.w3.org/Style/CSS/)) and `scss` ([Sass](https://sass-lang.com/)), which all reside in the directory `tmpl/css`. Example: `{css: true, scss: {dest: '_sprite.scss'}}` |
+`mode.<mode>.bust`       | Boolean     | `true\|false`    | Add a content based hash to the name of the sprite file so that clients reliably reload the sprite when its content changes («cache busting»). Defaults to `false` except for «view» sprites. |
+`mode.<mode>.render`     | Object of [Rendering configs](#rendering-configurations)      | `{}`   | Collection of [stylesheet rendering configurations](#rendering-configurations). The keys are used as file extensions as well as file return keys. At present, there is a default template for the file extension `css` ([CSS](https://www.w3.org/Style/CSS/)), which resides in the directory `tmpl/common`. Example: `{css: true}` |
 `mode.<mode>.example`    | [Rendering config](#rendering-configurations) | `false`     | Enabling this will trigger the creation of an HTML document demoing the usage of the sprite. Please see below for details on [rendering configurations](#rendering-configurations). |
 `mode.<mode>.example.template` | String    | `"tmpl/<mode>/sprite.html"`   | HTML document Mustache template |
 `mode.<mode>.example.dest`   | String      | `"sprite.<mode>.html"`    | HTML document destination |
@@ -366,20 +365,9 @@ Property     | Type      | Default     | Description                |
 #### Specific mode properties
 
 
-##### «css» & «view» mode
+##### «view» mode
 
-The **«css»** mode creates a single SVG file by combining the original shapes as nested `<svg>` elements with individual horizontal and vertical offsets. CSS resources can be created that provide rules for using the shapes as **background images** of HTML elements (known as [CSS spriting](https://en.wikipedia.org/wiki/Sprite_(computer_graphics)#Sprites_by_CSS)).
-
-The **«view»** mode is an extension to the «css» mode and shares all its features. The generated SVG sprite differs only in additionally created `<view>` elements for each shape in the sprite. By using the views' IDs as fragment identifiers when linking to the sprite, modern browsers will show the referenced shapes only, thus making the sprite useful for **foreground images** as well. Please see [this article by Chris Coyier](https://css-tricks.com/svg-fragment-identifiers-work/) for further explanation of the technique.
-
-In addition to the [common mode properties](#common-mode-properties), «css» and «view» sprites have these specific options:
-
-Property     | Type      | Default     | Description                |
----------------- | --------------- | ------------- | ------------------------------------------ |
-`mode.<mode>.layout` | String    | `"packed"`  | The arrangement of the shapes within the sprite. Might be `"vertical"`, `"horizontal"`, `"diagonal"` or `"packed"` (with the latter being the most compact type). It depends on your project which layout is best for you. |
-`mode.<mode>.common` | String    |         | If given and not empty, this will be the selector name of a CSS rule commonly specifying the `background-image` and `background-repeat` properties for all the shapes in the sprite (thus saving some bytes by not unnecessarily repeating them for each shape) |
-`mode.<mode>.mixin`  | String    |         | If given and not empty, a mixin with this name will be added to supporting output formats (e.g. Sass), specifying the `background-image` and `background-repeat` properties for all the shapes in the sprite. You may use it for creating custom CSS within **@media rules**. The mixin acts much like the `common` rule. In fact, you can even combine the two — if both are enabled, the `common` rule will use the `mixin` internally. |
-
+The **«view»** mode creates a single SVG file by combining the original shapes as nested `<svg>` elements with individual horizontal and vertical offsets. In addition, a `<view>` element is created for each shape in the sprite. By using the views' IDs as fragment identifiers when linking to the sprite, modern browsers will show the referenced shapes only, thus making the sprite useful for **foreground images**. Please see [this article by Chris Coyier](https://css-tricks.com/svg-fragment-identifiers-work/) for further explanation of the technique.
 
 ##### «defs» & «symbol» mode
 
@@ -418,7 +406,7 @@ In both cases, you'll have to use a **rendering configuration** to tell *svgforg
 ```js
 {
   mode: {
-    css: {
+    defs: {
       example: true
     }
   }
@@ -430,7 +418,7 @@ This is equivalent to:
 ```js
 {
   mode: {
-    css: {
+    defs: {
       example: {}
     }
   }
@@ -442,7 +430,7 @@ Use the subkey `template` for configuring the **rendering template** and `dest` 
 ```js
 {
   mode: {
-    css: {
+    defs: {
       render: {
         css: {
           template: 'path/to/template.html', // relative to current working directory
@@ -459,7 +447,7 @@ To **disable the rendering** without removing the whole structure, simply set th
 ```js
 {
   mode: {
-    css: {
+    defs: {
       example: false
     }
   }

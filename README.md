@@ -4,13 +4,12 @@
 
 svgforge is a low-level [Node.js](https://nodejs.org/) module that **takes a bunch of [SVG](https://www.w3.org/TR/SVG/) files**, optimizes them and bakes them into **SVG sprites** of several types:
 
-* Traditional [CSS sprites](https://en.wikipedia.org/wiki/Sprite_(computer_graphics)#Sprites_by_CSS) for use as background images,
-* CSS sprites with **pre-defined `<view>` elements**, useful for foreground images as well,
+* tiled sprites with **pre-defined `<view>` elements**, useful for foreground images via [SVG fragment identifiers](https://css-tricks.com/svg-fragment-identifiers-work/),
 * inline sprites using the **`<defs>` element**,
 * inline sprites using the **`<symbol>` element**
 * and [SVG stacks](https://simurai.com/blog/2012/04/02/svg-stacks).
 
-It comes with a set of [Mustache](https://mustache.github.io/) templates for creating stylesheets in good ol' [CSS](https://www.w3.org/Style/CSS/) or one of the major **pre-processor formats** ([Sass](https://sass-lang.com/)). Tweaking the templates or even adding your own **custom output format** is really easy, just as switching on the generation of an **HTML example document** along with your sprite.
+It comes with a set of [Mustache](https://mustache.github.io/) templates for creating stylesheets in good ol' [CSS](https://www.w3.org/Style/CSS/). Tweaking the templates or even adding your own **custom output format** is really easy, just as switching on the generation of an **HTML example document** along with your sprite.
 
 For an up-to-date list of browsers supporting [SVG in general](https://caniuse.com/svg) respectively [SVG fragment identifiers](https://caniuse.com/svg-fragment) in particular (required for `<defs>` and `<symbol>` sprites as well as SVG stacks) please refer to [caniuse.com](https://caniuse.com/).
 
@@ -165,14 +164,13 @@ Please refer to the [configuration documentation](docs/configuration.md) for det
 
 ### Output modes
 
-At the moment, *svgforge* supports **five different output modes** (i.e. sprite types), each of them has its own characteristics and use cases. It's up to you to decide which sprite type is the best choice for your project. The `mode` option controls which sprite types are created. You may enable more than one output mode at a time — *svgforge* will happily create several sprites in parallel.
+At the moment, *svgforge* supports **four different output modes** (i.e. sprite types), each of them has its own characteristics and use cases. It's up to you to decide which sprite type is the best choice for your project. The `mode` option controls which sprite types are created. You may enable more than one output mode at a time — *svgforge* will happily create several sprites in parallel.
 
 To enable the creation of a specific sprite type with default values, simply set the appropriate `mode` property to `true`:
 
 ```js
 const config = {
   mode: {
-    css: true, // Create a «css» sprite
     view: true, // Create a «view» sprite
     defs: true, // Create a «defs» sprite
     symbol: true, // Create a «symbol» sprite
@@ -187,8 +185,8 @@ To further configure a sprite, pass in an object with configuration options:
 // «symbol» sprite with CSS stylesheet resource
 const config = {
   mode: {
-    css: {
-      // Configuration for the «css» sprite
+    symbol: {
+      // Configuration for the «symbol» sprite
       // ...
     }
   }
@@ -213,7 +211,6 @@ const config = {
       render: { // Stylesheet rendering definitions
         /* -------------------------------------------
         css: false, // CSS stylesheet options
-        scss: false, // Sass stylesheet options
         <custom>: ... // Custom stylesheet options
         -------------------------------------------  */
       },
@@ -243,17 +240,17 @@ const config = {
 ```
 
 
-##### B) CSS sprite with Sass resource
+##### B) Sprite with CSS resource
 
-Traditional **CSS sprite** with a **Sass stylesheet**:
+**«defs» sprite** with a **CSS stylesheet**:
 
 ```js
-// «css» sprite with Sass stylesheet resource
+// «defs» sprite with CSS stylesheet resource
 const config = {
   mode: {
-    css: { // Create a «css» sprite
+    defs: { // Create a «defs» sprite
       render: {
-        scss: true // Render a Sass stylesheet
+        css: true // Render a CSS stylesheet
       }
     }
   }
@@ -299,14 +296,16 @@ Relative destination paths refer to their ancestors as shown in the following sc
 
 ```text
     Destination option           Default         Comment
----------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
 cwd $   <dest>/                .           Main output directory
-      <mode.css.dest>/           css           «css» base directory
-        <mode.css.sprite>        svg/sprite.css.svg  Sprite location
-        <mode.css.render.css.dest>   sprite.css      CSS stylesheet location
-        <mode.css.render.scss.dest>  sprite.scss       Sass stylesheet location
+      <mode.view.dest>/          view          «view» base directory
+        <mode.view.sprite>       svg/sprite.view.svg  Sprite location
+        (rendering resources are created by the respective modes, e.g. defs/symbol/stack)
+      <mode.defs.dest>/          defs          «defs» base directory
         ...
-      <mode.view>/             view          «view» base directory
+      <mode.symbol.dest>/        symbol        «symbol» base directory
+        ...
+      <mode.stack.dest>/         stack         «stack» base directory
         ...
 ```
 
@@ -315,11 +314,11 @@ By default, stylesheet resources are generated directly into the respective **mo
 > "Oh wait! Didn't you say that *svgforge* doesn't access the file system? So why do you need output directories at all?" — Well, good point. *svgforge* uses [vinyl](https://github.com/gulpjs/vinyl) file objects to pass along virtual resources and to specify where they **are intended to be located**. This is especially important for relative file paths (e.g. the path of an SVG sprite as used by a CSS stylesheet).
 
 
-#### Pre-processor formats and the sprite location
+#### CSS resources and the sprite location
 
-Special care needs to be taken when you create a **CSS sprite** («css» or «view» mode) along with a pre-processor stylesheet (Sass etc.). In this case, calculating the correct relative SVG sprite path as used by the stylesheets can become tricky, as your (future) plain CSS compilation doesn't necessarily lie side by side with the pre-processor file. *svgforge* doesn't know anything about your pre-processor workflow, so it might have to estimate the location of the CSS file:
+Special care needs to be taken when you create a sprite with a CSS stylesheet resource (the «defs», «symbol» and «stack» modes). In this case, calculating the correct relative SVG sprite path as used by the stylesheet can become tricky, as your final CSS file doesn't necessarily lie side by side with the sprite:
 
-1. If you **truly configured CSS output** in addition to the pre-processor format, *svgforge* uses your custom `mode.<mode>.render.css.dest` as the CSS stylesheet location.
+1. If you **truly configured CSS output**, *svgforge* uses your custom `mode.<mode>.render.css.dest` as the CSS stylesheet location.
 2. If you just **enabled CSS output** by setting `mode.<mode>.render.css` to `true`, the default value applies, which is `mode.<mode>.dest / "sprite.css"`.
 3. The same holds true when you **don't enable CSS output** at all. *svgforge* then simply assumes that the CSS file will be created where the defaults would put it, which is again `mode.<mode>.dest / "sprite.css"`.
 
@@ -346,7 +345,7 @@ In order to improve accessibility, *svgforge* can read meta data from a YAML fil
 
 ### Aligning and duplicating shapes
 
-For CSS sprites using a `"horizontal"` or `"vertical"` layout it is sometimes desirable to align the shapes within the sprite. With the help of an external YAML file, *svgforge* can not only [control the alignment](docs/shape-alignment.md#aligning-and-duplicating-shapes) for each individual shape but also [create displaced copies](docs/shape-alignment.md#creating-displaced-shape-copies) of them without significantly increasing the sprite's file size.
+For tiled sprites using a `"horizontal"` or `"vertical"` layout (the «view» mode) it is sometimes desirable to align the shapes within the sprite. With the help of an external YAML file, *svgforge* can not only [control the alignment](docs/shape-alignment.md#aligning-and-duplicating-shapes) for each individual shape but also [create displaced copies](docs/shape-alignment.md#creating-displaced-shape-copies) of them without significantly increasing the sprite's file size.
 
 
 ### Tweaking and adding output formats
@@ -365,7 +364,7 @@ npm install svgforge-cli -g
 A typical example could look like this:
 
 ```bash
-svgforge --css --css-render-css --css-example --dest=out assets/*.svg
+svgforge --defs --defs-render-css --defs-example --dest=out assets/*.svg
 ```
 
 Please refer to the [CLI guide](svgforge-cli/docs/command-line.md) for further details.

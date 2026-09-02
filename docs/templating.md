@@ -14,19 +14,9 @@ For each sprite generation process, a data object is constructed that is passed 
   // Data object for the `mymode` output key
   mymode: {
     // Name of the current output mode
-    mode: 'css',
+    mode: 'view',
     // Key used for result files & data
     key: 'mymode',
-    // Indicator whether a `common` CSS class name has been specified
-    hasCommon: false,
-    // Given CSS class name for `common` sprite shape properties (NULL if disabled)
-    common: null,
-    // Effective `common` CSS class / mixin name (identical to `common`, defaulting to 'svg-common' if disabled)
-    commonName: 'svg-common',
-    // Indicator whether a `mixin` name has been specified
-    hasMixin: false,
-    // Mixin name for common sprite shape properties (NULL if disabled)
-    mixinName: null,
     // Whether to create shape dimensioning CSS rules
     includeDimensions: true,
     // Padding added to each shape (pixel)
@@ -36,9 +26,9 @@ For each sprite generation process, a data object is constructed that is passed 
     // Overall sprite height (pixel)
     spriteHeight: 1020,
     // Relative path from the stylesheet resource to the SVG sprite
-    sprite: 'svg/sprite.css.svg',
+    sprite: 'svg/sprite.view.svg',
     // Relative path from the example resource to the SVG sprite (if configured)
-    example: 'svg/sprite.css.svg',
+    example: 'svg/sprite.view.svg',
     // List of all shapes in the sprite
     shapes: [
       // Single shape properties
@@ -71,19 +61,8 @@ For each sprite generation process, a data object is constructed that is passed 
           absolute: {
             // Horizontal position
             x: 0,
-            // Horizontal position
-            y: -120,
-            // Compound position
-            xy: '0 -120px'
-          },
-          // Relative position (%)
-          relative: {
-            // Horizontal position
-            x: 0,
             // Vertical position
-            y: 33.333333,
-            // Compound position
-            xy: '0 33.333333%'
+            y: -120
           }
         },
         // CSS selectors
@@ -151,10 +130,8 @@ Takes no arguments and returns the current date and time as GMT string (e.g. *Mo
 
 Returns the negative value of a floating point number.
 
-```css
-.offset-background {
-  background-position: {{#invert}}{{positionX}}{{/invert}}px {{#invert}}{{positionY}}{{/invert}}px;
-}
+```mustache
+<div style="margin-left: {{#invert}}{{positionX}}{{/invert}}px;"></div>
 ```
 
 #### classname
@@ -175,18 +152,14 @@ would become
 
 Finds all backslashes in a string and escapes each of them with another backslash.
 
-```css
-{{#escape}}{{selector-with-backslash}}{{/escape}} {
-  color: red;
-}
+```mustache
+{{#escape}}{{selectorWithBackslash}}{{/escape}}
 ```
 
 #### encodeHashSign
 
 Finds all hash signs in a string and encodes each of them to `%23`.
 
-```css
-.{{name}}-background {
-  background: url('data:image/svg+xml;utf-8,{{#encodeHashSign}}{{{svg}}}{{/encodeHashSign}}') no-repeat;
-}
+```mustache
+{{#encodeHashSign}}{{{url}}}{{/encodeHashSign}}
 ```

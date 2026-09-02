@@ -80,7 +80,6 @@ describe('testings SVGSpriteBase', () => {
       expect(base.config.sprite).toBe(path.resolve(TEST_CONFIG.dest, 'sprite.svg'));
       expect(base._cssDest).toBe(TEST_CONFIG.dest);
       expect(base.tmpl).toBe('common');
-      expect(base.MODE_CSS).toBe('css');
       expect(base.MODE_DEFS).toBe('defs');
       expect(base.MODE_SYMBOL).toBe('symbol');
       expect(base.MODE_STACK).toBe('stack');
@@ -145,7 +144,7 @@ describe('testings SVGSpriteBase', () => {
           },
 
         }));
-        expect(base._cssDest).toBe(path.resolve('css-dest'));
+        expect(base._cssDest).toBe(TEST_CONFIG.dest);
       });
     });
   });
@@ -242,34 +241,6 @@ describe('testings SVGSpriteBase', () => {
 
         expect(base.data.example).toBe('sprite.svg');
       });
-    });
-  });
-
-  describe('testing layout', () => {
-    it('should call cb with null', () => {
-      expect.hasAssertions();
-
-      const TEST_SPRITER = {
-        config: {
-          dest: '.',
-          shape: {
-            spacing: [],
-          },
-        },
-        debug: jest.fn(),
-      };
-      const TEST_CONFIG = {
-        dest: '.',
-        prefix: '1',
-        sprite: '',
-      };
-      const {cls} = getClassAndInitFn();
-      const base = new cls(TEST_SPRITER, TEST_CONFIG, {}, '');
-      const testFn = jest.fn();
-
-      base.layout([], testFn);
-
-      expect(testFn).toHaveBeenCalledWith(null);
     });
   });
 

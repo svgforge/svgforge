@@ -26,7 +26,7 @@ describe('testing Shape.constructor', () => {
 
       const TEST_SPRITER = {
         config: {
-          shape: {meta: {}, align: {}},
+          shape: {meta: {}},
           id: {},
         },
         verbose: jest.fn(),
@@ -37,8 +37,6 @@ describe('testing Shape.constructor', () => {
       expect(shape.source).toBe(TEST_FILE);
       expect(shape.name).toBe(path.basename(TEST_FILE.relative));
       expect(shape.id).toBe(path.basename(TEST_FILE.relative));
-      expect(shape.master).toBeNull();
-      expect(shape.copies).toBe(0);
       expect(shape._precision).toBe(10 ** 2);
       expect(shape._scale).toBe(1);
       expect(shape._namespaced).toBe(false);
@@ -51,7 +49,7 @@ describe('testing Shape.constructor', () => {
         const TEST_SPRITER = {
           config: {
             shape: {
-              meta: {}, align: {}, TEST: 1, TEST_2: 2,
+              meta: {}, TEST: 1, TEST_2: 2,
             },
             id: {},
           },
@@ -73,7 +71,6 @@ describe('testing Shape.constructor', () => {
                   generator: true,
                 },
                 meta: {},
-                align: {},
               },
             },
             verbose: jest.fn(),
@@ -102,7 +99,6 @@ describe('testing Shape.constructor', () => {
                   generator: true,
                 },
                 meta: {},
-                align: {},
               },
             },
             verbose: jest.fn(),
@@ -122,7 +118,6 @@ describe('testing Shape.constructor', () => {
                   generator: 'generator',
                 },
                 meta: {},
-                align: {},
               },
             },
             verbose: jest.fn(),
@@ -143,7 +138,6 @@ describe('testing Shape.constructor', () => {
                   generator: '%s-test',
                 },
                 meta: {},
-                align: {},
               },
             },
             verbose: jest.fn(),
@@ -165,7 +159,6 @@ describe('testing Shape.constructor', () => {
                   separator: '!',
                 },
                 meta: {},
-                align: {},
               },
             },
             verbose: jest.fn(),
@@ -187,7 +180,6 @@ describe('testing Shape.constructor', () => {
                   separator: false,
                 },
                 meta: {},
-                align: {},
               },
             },
             verbose: jest.fn(),
@@ -207,7 +199,7 @@ describe('testing Shape.constructor', () => {
         const TEST_SPRITER = {
           config: {
             shape: {
-              meta: {TEST_ID: 'TEST_META'}, align: {},
+              meta: {TEST_ID: 'TEST_META'},
               id: {
                 generator() {
                   return 'TEST_ID';
@@ -228,7 +220,7 @@ describe('testing Shape.constructor', () => {
         const TEST_SPRITER = {
           config: {
             shape: {
-              meta: {[path.basename(TEST_FILE.relative, '.svg')]: 'TEST_META'}, align: {},
+              meta: {[path.basename(TEST_FILE.relative, '.svg')]: 'TEST_META'},
               id: {
                 generator() {
                   return 'TEST_ID';
@@ -241,56 +233,6 @@ describe('testing Shape.constructor', () => {
         const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
 
         expect(shape.meta).toBe('TEST_META');
-      });
-    });
-
-    describe('testing align', () => {
-      it('should set empty array if align is not provided', () => {
-        expect.hasAssertions();
-
-        const TEST_SPRITER = {
-          config: {
-            shape: {meta: {}, align: {}},
-            id: {},
-          },
-          verbose: jest.fn(),
-        };
-        const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
-
-        expect(shape.align).toStrictEqual([]);
-      });
-
-      it('should set empty array if align is has id', () => {
-        expect.hasAssertions();
-
-        const TEST_SPRITER = {
-          config: {
-            shape: {meta: {}, align: {'*': {TEST_1: 1}}},
-            id: {},
-          },
-          verbose: jest.fn(),
-        };
-        const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
-
-        expect(shape.align).toStrictEqual([['TEST_1', 1]]);
-      });
-
-      it('should set expected array if align has relative path', () => {
-        expect.hasAssertions();
-
-        const TEST_SPRITER = {
-          config: {
-            shape: {
-              meta: {},
-              align: {[path.basename(TEST_FILE.relative, '.svg')]: {TEST_3: 3}},
-
-            },
-          },
-          verbose: jest.fn(),
-        };
-        const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
-
-        expect(shape.align).toStrictEqual([['TEST_3', 3]]);
       });
     });
   });

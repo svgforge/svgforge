@@ -18,7 +18,6 @@ const svgoConfig = {
           removeUnknownsAndDefaults: {
             keepRoleAttr: true,
           },
-          removeViewBox: false,
         },
       },
     },
@@ -68,17 +67,14 @@ function addFixtureFiles(targetSpriter, targetFiles) {
 }
 
 addFixtureFiles(spriter, files).compile({
-  css: {
-    sprite: 'svg/sprite.vertical.svg',
-    layout: 'vertical',
+  defs: {
     dimensions: true,
     render: {
       css: true,
-      scss: true,
     },
   },
 }, (error, result) => {
-  for (const type of Object.values(result.css)) {
+  for (const type of Object.values(result.defs)) {
     fs.mkdirSync(path.dirname(type.path), {recursive: true});
     fs.writeFileSync(type.path, type.contents);
   }

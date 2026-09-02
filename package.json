@@ -46,9 +46,9 @@
     "lint": "xo",
     "fix": "xo --fix",
     "example": "node example.js",
-    "test": "node --test test/*.test.js test/**/*.test.js",
-    "test:coverage": "node --test --experimental-test-coverage test/*.test.js test/**/*.test.js",
-    "test:watch": "node --test --watch test/*.test.js test/**/*.test.js"
+    "test": "node --test",
+    "test:coverage": "node --test --experimental-test-coverage",
+    "test:watch": "node --test --watch"
   },
   "dependencies": {
     "@resvg/resvg-js": "^2.6.2",
@@ -73,7 +73,6 @@
     "pixelmatch": "^7.2.0",
     "playwright-chromium": "^1.50.1",
     "pngjs": "^7.0.0",
-    "sass": "^1.91.0",
     "xo": "^4.0.0"
   }
 }

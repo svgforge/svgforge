@@ -14,7 +14,6 @@ const TEST_SPRITER = {
   config: {
     shape: {
       meta: {},
-      align: {},
     },
     svg: {
       doctypeDeclaration: '',
@@ -30,37 +29,15 @@ const TEST_FILE = new File({
 });
 
 describe('testing getSVG()', () => {
-  it('should clone node if shape is not master', () => {
+  it('should clone the node', () => {
     expect.hasAssertions();
 
     const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
-    shape.master = false;
     jest.spyOn(shape.dom.documentElement, 'cloneNode');
 
     shape.getSVG();
 
     expect(shape.dom.documentElement.cloneNode).toHaveBeenCalledWith(true);
-  });
-
-  it('should wrap node if shape is master', () => {
-    expect.hasAssertions();
-
-    const TEST_ID = 'TEST_ID';
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
-    shape.master = {
-      id: TEST_ID,
-    };
-    const TEST_SVG = {
-      setAttribute: jest.fn(),
-    };
-    const TEST_NODE = shape.dom.createElementNS(shape.DEFAULT_SVG_NAMESPACE, 'svg');
-    jest.spyOn(shape, '_stripInlineNamespaceDeclarations').mockReturnValueOnce(TEST_NODE);
-    jest.spyOn(shape.dom, 'createElementNS').mockReturnValueOnce(TEST_SVG);
-
-    shape.getSVG();
-
-    expect(shape.dom.createElementNS).toHaveBeenCalledWith('http://www.w3.org/2000/svg', 'use');
-    expect(TEST_SVG.setAttribute).toHaveBeenCalledWith('xlink:href', `#${TEST_ID}`);
   });
 
   it('should return serialized string with declarations if inline is true', () => {
@@ -94,19 +71,6 @@ describe('testing getSVG()', () => {
     expect(shape.getSVG(true)).toBe(new XMLSerializer().serializeToString(TEST_NODE));
   });
 
-  it('should return serialized xml if shape is master', () => {
-    expect.hasAssertions();
-
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
-    shape.master = {
-      id: 2,
-    };
-    const TEST_NODE = shape.dom.createElementNS(shape.DEFAULT_SVG_NAMESPACE, 'svg');
-    jest.spyOn(shape, '_stripInlineNamespaceDeclarations').mockReturnValueOnce(TEST_NODE);
-
-    expect(shape.getSVG(false)).toBe(new XMLSerializer().serializeToString(TEST_NODE));
-  });
-
   it('should add declarations if provided', () => {
     expect.hasAssertions();
 
@@ -116,7 +80,6 @@ describe('testing getSVG()', () => {
       config: {
         shape: {
           meta: {},
-          align: {},
         },
         svg: {
           doctypeDeclaration: true,
@@ -144,7 +107,6 @@ describe('testing getSVG()', () => {
       config: {
         shape: {
           meta: {},
-          align: {},
         },
         svg: {
           doctypeDeclaration: '',
@@ -176,7 +138,6 @@ describe('testing getSVG()', () => {
       config: {
         shape: {
           meta: {},
-          align: {},
         },
         svg: {
           doctypeDeclaration: '',

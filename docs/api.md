@@ -29,7 +29,7 @@ const SVGSpriter = require('svgforge'),
 const spriter = new SVGSpriter({
   dest: 'out', // Main output directory
   mode: {
-    css: { // Create a CSS sprite
+    defs: { // Create a defs sprite
       render: {
         css: true // Render a CSS stylesheet
       }
@@ -56,8 +56,8 @@ spriter.add(
 // 3. Trigger the (asynchronous) compilation process
 // ====================================================================
 spriter.compile((error, result, data) => {
-  // Run through all files that have been created for the `css` mode
-  for (const type of Object.values(result.css)) {
+  // Run through all files that have been created for the `defs` mode
+  for (const type of Object.values(result.defs)) {
     // Recursively create directories as needed
     fs.mkdirSync(path.dirname(type.path), { recursive: true });
     // Write the generated resource to disk
@@ -99,7 +99,7 @@ const File = require('vinyl');
 const spriter = new SVGSpriter({
   dest: 'out',
   mode: {
-    css: {
+    defs: {
       render: {
         css: true
       }
@@ -121,7 +121,7 @@ for (const file of files) {
 }
 
 spriter.compile((error, result, data) => {
-    for (const type of Object.values(result.css)) {
+    for (const type of Object.values(result.defs)) {
       fs.mkdirSync(path.dirname(type.path), { recursive: true });
       fs.writeFileSync(type.path, type.contents);
     }
@@ -147,9 +147,9 @@ Depending on the particular mode and render configuration, quite a lot of resour
 ```js
 spriter.compile(
   {
-    css: {
+    defs: {
       render: {
-        scss: true
+        css: true
       },
       example: true
     }
@@ -160,19 +160,19 @@ spriter.compile(
 );
 ```
 
-The spriter is instructed to create a CSS sprite along with the accompanying stylesheet resource in Sass format and an example HTML document demonstrating the use of the sprite. The output will look something like this (shortened for brevity):
+The spriter is instructed to create a defs sprite along with the accompanying stylesheet resource in CSS format and an example HTML document demonstrating the use of the sprite. The output will look something like this (shortened for brevity):
 
 ```js
 {
-  css: {
-    sprite: <File "css/svg/sprite.css.svg" <Buffer 3c 3f 78 ...>>,
-    scss: <File "css/sprite.scss" <Buffer 2e 73 76 ...>>,
-    example: <File "css/sprite.css.html" <Buffer 3c 21 44 ...>>
+  defs: {
+    sprite: <File "defs/svg/sprite.css.svg" <Buffer 3c 3f 78 ...>>,
+    css: <File "defs/sprite.css" <Buffer 2e 73 76 ...>>,
+    example: <File "defs/sprite.defs.html" <Buffer 3c 21 44 ...>>
   }
 }
 ```
 
-For each configured output mode (`css` in the example), the `result` object holds an item containing the resources generated for this particular mode. There is always a `sprite` resource (obviously) and possibly an `example` resource for the demo HTML document (if configured). For the [css and view](configuration.md#css--view-mode) output modes, there are additional items named after the configured [rendering configurations](configuration.md#rendering-configurations) (`scss` in the example).
+For each configured output mode (`defs` in the example), the `result` object holds an item containing the resources generated for this particular mode. There is always a `sprite` resource (obviously) and possibly an `example` resource for the demo HTML document (if configured). For the output modes with stylesheet rendering (the [defs, symbol and stack modes](configuration.md#defs--symbol-mode)), there are additional items named after the configured [rendering configurations](configuration.md#rendering-configurations) (`css` in the example).
 
 Please note that the resources are always returned as [vinyl](https://github.com/gulpjs/vinyl) files. Have a look above for an [example of how to write these files to disk](#example-using-glob-and-vinyl).
 
@@ -201,9 +201,9 @@ Promise
 ```js
 try {
   const { result, data } = await spriter.compileAsync({
-    css: {
+    defs: {
       render: {
-        scss: true
+        css: true
       },
       example: true
     }

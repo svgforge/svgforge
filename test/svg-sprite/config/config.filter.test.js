@@ -9,7 +9,7 @@ import {
 
 describe('testing filter', () => {
   let config;
-  const modes = ['stack', 'defs', 'view', 'css', 'symbol'];
+  const modes = ['stack', 'defs', 'view', 'symbol'];
 
   beforeEach(() => {
     config = new SVGSpriterConfig({});
@@ -33,16 +33,16 @@ describe('testing filter', () => {
   it.each(modes)('should filter plainObjects and set mode %p if mode is specified', mode => {
     expect.hasAssertions();
     expect(config.filter({
-      css: {
+      view: {
         mode,
       },
-    })).toStrictEqual({css: {mode}});
+    })).toStrictEqual({view: {mode}});
   });
 
   it('should ignore plainObjects with bad config', () => {
     expect.hasAssertions();
     expect(config.filter({
-      css: {
+      view: {
         mode: 'nonsense',
       },
     })).toStrictEqual({});

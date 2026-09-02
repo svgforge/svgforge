@@ -76,8 +76,7 @@ describe('testing Queue', () => {
     let spriter;
     let queue;
 
-    const TEST_DISTRIBUTE = [{TEST: 'distribute'}];
-    const TEST_SHAPE = {distribute: () => ([...TEST_DISTRIBUTE])};
+    const TEST_SHAPE = {TEST: 'shape'};
 
     beforeEach(() => {
       spriter = {debug: createMock(), _shapes: []};
@@ -89,7 +88,7 @@ describe('testing Queue', () => {
 
       queue.remove(null, TEST_SHAPE);
 
-      expect(spriter._shapes).toStrictEqual(TEST_DISTRIBUTE);
+      expect(spriter._shapes).toStrictEqual([TEST_SHAPE]);
     });
 
     it('should emit "remove" if active count is more than 1', () => {
