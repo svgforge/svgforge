@@ -95,7 +95,6 @@ const fs = require('fs');
 const path = require('path');
 const SVGSpriter = require('svgforge');
 const File = require('vinyl');
-const glob = require('glob');
 
 const spriter = new SVGSpriter({
   dest: 'out',
@@ -109,24 +108,24 @@ const spriter = new SVGSpriter({
 });
 const cwd = path.resolve('assets');
 
-// Find SVG files recursively via `glob`
-glob.sync('**/*.svg', { cwd }, (err, files) => {
-  for (const file of files) {
-    // Create and add a vinyl file instance for each SVG
-    spriter.add(new File({
-      path: path.join(cwd, file), // Absolute path to the SVG file
-      base: cwd, // Base path (see `name` argument)
-      contents: fs.readFileSync(path.join(cwd, file)) // SVG file contents
-    }));
-  })
+// Find SVG files recursively via `fs.globSync`
+const files = fs.globSync('**/*.svg', { cwd }).sort().reverse();
 
-  spriter.compile((error, result, data) => {
+for (const file of files) {
+  // Create and add a vinyl file instance for each SVG
+  spriter.add(new File({
+    path: path.join(cwd, file), // Absolute path to the SVG file
+    base: cwd, // Base path (see `name` argument)
+    contents: fs.readFileSync(path.join(cwd, file)) // SVG file contents
+  }));
+}
+
+spriter.compile((error, result, data) => {
     for (const type of Object.values(result.css)) {
       fs.mkdirSync(path.dirname(type.path), { recursive: true });
       fs.writeFileSync(type.path, type.contents);
     }
   });
-});
 ```
 
 #### SVGSpriter.compile([ config ,] callback )

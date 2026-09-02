@@ -22,6 +22,9 @@ Newer release notes are published on the GitHub release page: <https://github.co
   the upgraded Chromium/Playwright rendering pipeline
 * Change primary author to Felix Müller; Joschi Kuphal remains as contributor
   and copyright holder of the original svg-sprite codebase
+* Replace the `glob` package with the native `fs.globSync`/`node:fs` API and
+  drop `glob` from the (dev) dependencies; `engines.node` is `>= 22` (required
+  for the glob API introduced in Node 22)
 
 ## 1.6.0-alpha Maintenance pre-release (2020-01-18)
 

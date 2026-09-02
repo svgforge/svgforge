@@ -70,7 +70,6 @@
   },
   "devDependencies": {
     "eslint-plugin-jsdoc": "^64.3.2",
-    "glob": "^13.0.6",
     "pixelmatch": "^7.2.0",
     "playwright-chromium": "^1.50.1",
     "pngjs": "^7.0.0",

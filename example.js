@@ -1,13 +1,12 @@
 import path from 'node:path';
 import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
-import {globSync} from 'glob';
 import SVGSpriter from './lib/svg-sprite.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const cwd = path.join(__dirname, 'test/fixture/svg/single');
 const dest = path.join(__dirname, 'tmp');
-const files = globSync('**/weather*.svg', {cwd});
+const files = fs.globSync('**/weather*.svg', {cwd}).toSorted((a, b) => b.localeCompare(a));
 
 const svgoConfig = {
   multipass: true,

@@ -4,7 +4,6 @@ import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import mustache from 'mustache';
 import sass from 'sass';
-import {globSync} from 'glob';
 import SVGSpriter from '../../../lib/svg-sprite.js';
 import {addFixtureFiles} from '../../helpers/add-files.js';
 import writeFiles from '../../helpers/write-files.js';
@@ -21,7 +20,7 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const cwdAlign = path.join(paths.fixtures, 'svg/css');
-const align = globSync('**/*.svg', {cwd: cwdAlign});
+const align = fs.globSync('**/*.svg', {cwd: cwdAlign}).toSorted((a, b) => b.localeCompare(a));
 const previewTemplate = fs.readFileSync(path.join(__dirname, '../../tmpl/css.html'), 'utf8');
 
 const temporaryPath = path.join(paths.tmp, 'mixed');

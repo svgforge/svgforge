@@ -4,7 +4,6 @@ import path from 'node:path';
 import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import File from 'vinyl';
-import {globSync} from 'glob';
 import getShape from '../lib/svg-sprite/shape.js';
 import SVGSpriter from '../lib/svg-sprite.js';
 import {setDependency} from '../lib/deps.js';
@@ -86,7 +85,7 @@ describe('testing SVGShape initialization', () => {
     expect.hasAssertions();
 
     const cwd = path.join(__dirname, 'fixture/svg/single');
-    const weatherFiles = globSync('**/weather*.svg', {cwd});
+    const weatherFiles = fs.globSync('**/weather*.svg', {cwd}).toSorted((a, b) => b.localeCompare(a));
 
     expect.assertions(weatherFiles.length * 2);
 

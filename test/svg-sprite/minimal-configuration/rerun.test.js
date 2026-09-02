@@ -1,6 +1,6 @@
 
 import path from 'node:path';
-import {globSync} from 'glob';
+import {globSync} from 'node:fs';
 import SVGSpriter from '../../../lib/svg-sprite.js';
 import {addFixtureFiles} from '../../helpers/add-files.js';
 import {paths} from '../../helpers/constants.js';
@@ -13,7 +13,7 @@ import {
 } from '../../helpers/jest-compat.js';
 
 const cwd = path.join(paths.fixtures, 'svg/single');
-const weather = globSync('**/weather*.svg', {cwd});
+const weather = globSync('**/weather*.svg', {cwd}).toSorted((a, b) => b.localeCompare(a));
 
 const temporaryPath = path.join(paths.tmp, 'rerun');
 
