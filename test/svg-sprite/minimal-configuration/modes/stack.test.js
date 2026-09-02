@@ -26,17 +26,17 @@ describe.each`
 `('svg-sprite: $name: «stack» mode', ({testConfigKey}) => {
   const testConfig = constants[testConfigKey];
 
-  const tmpPath = path.join(paths.tmp, `stack${testConfig.namespace}`);
+  const temporaryPath = path.join(paths.tmp, `stack${testConfig.namespace}`);
 
   let svg;
   let spriter;
   let data;
 
   beforeAll(async () => {
-    await removeTmpPath(tmpPath);
+    await removeTmpPath(temporaryPath);
     data = {};
 
-    spriter = new SVGSpriter({dest: tmpPath});
+    spriter = new SVGSpriter({dest: temporaryPath});
     addFixtureFiles(spriter, testConfig.files, testConfig.cwd);
     const {result, data: cssData} = await spriter.compileAsync({
       stack: {
@@ -53,14 +53,14 @@ describe.each`
   it('creates a visually correct stylesheet resource in CSS format', async () => {
     expect.hasAssertions();
 
-    data.svg = await readFile(path.join(tmpPath, 'stack/svg', svg), 'utf8');
+    data.svg = await readFile(path.join(temporaryPath, 'stack/svg', svg), 'utf8');
     data.css = '../sprite.css';
 
     expect(data.svg).toMatchSnapshot();
 
     const previewTemplate = await readFile(path.join(__dirname, '../../../tmpl/stack.html'), 'utf8');
     const out = mustache.render(previewTemplate, data);
-    const preview = await writeFile(path.join(tmpPath, `stack/html/stack${testConfig.namespace}.html`), out);
+    const preview = await writeFile(path.join(temporaryPath, `stack/html/stack${testConfig.namespace}.html`), out);
     const expected = path.join(paths.expectations, `png/stack${testConfig.namespace}.html.png`);
 
     await expect(preview).toBeVisuallyCorrectAsHTMLTo(expected);
@@ -69,16 +69,16 @@ describe.each`
 
 describe('without viewbox', () => {
   const testConfig = constants.WITHOUT_DIMS;
-  const tmpPath = path.join(paths.tmp, 'stack-without-viewbox');
+  const temporaryPath = path.join(paths.tmp, 'stack-without-viewbox');
   let svg;
   let spriter;
   let data;
 
   beforeAll(async () => {
-    await removeTmpPath(tmpPath);
+    await removeTmpPath(temporaryPath);
     data = {};
 
-    spriter = new SVGSpriter({dest: tmpPath});
+    spriter = new SVGSpriter({dest: temporaryPath});
     addFixtureFiles(spriter, testConfig.files, testConfig.cwd);
     const {result, data: cssData} = await spriter.compileAsync({
       stack: {
@@ -96,14 +96,14 @@ describe('without viewbox', () => {
   it('creates a visually correct stylesheet resource in CSS format', async () => {
     expect.hasAssertions();
 
-    data.svg = await readFile(path.join(tmpPath, 'stack/svg', svg), 'utf8');
+    data.svg = await readFile(path.join(temporaryPath, 'stack/svg', svg), 'utf8');
     data.css = '../sprite.css';
 
     expect(data.svg).toMatchSnapshot();
 
     const previewTemplate = await readFile(path.join(__dirname, '../../../tmpl/stack.html'), 'utf8');
     const out = mustache.render(previewTemplate, data);
-    const preview = await writeFile(path.join(tmpPath, 'stack/html/stack-without-viewbox.html'), out);
+    const preview = await writeFile(path.join(temporaryPath, 'stack/html/stack-without-viewbox.html'), out);
     const expected = path.join(paths.expectations, 'png/stack-without-viewbox.html.png');
 
     await expect(preview).toBeVisuallyCorrectAsHTMLTo(expected);

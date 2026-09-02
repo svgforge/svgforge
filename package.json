@@ -1,7 +1,10 @@
 {
   "name": "svgforge",
   "version": "1.0.0",
-  "author": "Joschi Kuphal <joschi@kuphal.net> (https://jkphl.is)",
+  "author": "Felix Müller",
+  "contributors": [
+    "Joschi Kuphal <joschi@kuphal.net> (https://jkphl.is)"
+  ],
   "description": "SVG sprites & stacks galore — A low-level Node.js module that takes a bunch of SVG files, optimizes them and bakes them into SVG sprites of several types along with suitable stylesheet resources (e.g. CSS, Sass, etc.)",
   "homepage": "https://github.com/joeda1/svgforge",
   "repository": {

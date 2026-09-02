@@ -1,5 +1,5 @@
 
-/* eslint-disable new-cap */
+/* eslint-disable new-cap -- tests instantiate mode classes */
 
 import path from 'node:path';
 import {Buffer} from 'node:buffer';
@@ -29,6 +29,8 @@ describe('testings SVGSpriteBase', () => {
     const initFn = jest.fn();
     return {
       cls: class TestMode extends SVGSpriteBase {
+        // Polymorphic hook (overridden or dispatched cross-class); `#private` would break dispatch.
+        // eslint-disable-next-line unicorn/prefer-private-class-fields
         _init() {
           initFn();
         }
@@ -434,7 +436,7 @@ describe('testings SVGSpriteBase', () => {
       const {cls} = getClassAndInitFn();
       const base = new cls(TEST_SPRITER, TEST_CONFIG, {}, '');
       const TEST_SVG = 'svg';
-      const TEST_SPRITE_MATCH = /sprite-[\da-z]{8}\.svg/;
+      const TEST_SPRITE_MATCH = /sprite-[\da-z]{8}\.svg/u;
 
       expect(base._addCacheBusting(TEST_SVG)).toStrictEqual(expect.stringMatching(TEST_SPRITE_MATCH));
       expect(base.data.sprite).toStrictEqual(expect.stringMatching(TEST_SPRITE_MATCH));

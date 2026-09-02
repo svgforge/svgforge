@@ -1,11 +1,11 @@
-# svg-sprite
+# svgforge
 
-This file is part of the documentation of *svg-sprite* — a free low-level Node.js module that **takes a bunch of SVG files**, optimizes them and creates **SVG sprites** of several types. The package is [hosted on GitHub](https://github.com/svg-sprite/svg-sprite).
+This file is part of the documentation of *svgforge* — a free low-level Node.js module that **takes a bunch of SVG files**, optimizes them and creates **SVG sprites** of several types. The package is [hosted on GitHub](https://github.com/svgforge/svgforge).
 
 
 ## Standard API
 
-*svg-sprite* comes with four public methods:
+*svgforge* comes with four public methods:
 
 * [SVGSpriter([ config ])](#svgspriter-config-) — The spriter's constructor (always the entry point)
 * [SVGSpriter.add(file [, name, svg ])](#svgspriteraddfile--name-svg-) — Registering source SVG files
@@ -22,7 +22,7 @@ To understand these methods' roles and interactions, please have a look at the f
 
 const fs = require('fs');
 const path = require('path');
-const SVGSpriter = require('svg-sprite'),
+const SVGSpriter = require('svgforge'),
 
 // 1. Create and configure a spriter instance
 // ====================================================================
@@ -68,7 +68,7 @@ spriter.compile((error, result, data) => {
 
 #### SVGSpriter([ config ])
 
-**Constructor** — This is the only method publicly exposed by *svg-sprite*, so it's always your entry point. Use it to create an instance of the spriter and access the remaining three methods.
+**Constructor** — This is the only method publicly exposed by *svgforge*, so it's always your entry point. Use it to create an instance of the spriter and access the remaining three methods.
 
 ##### Arguments
 
@@ -76,14 +76,14 @@ spriter.compile((error, result, data) => {
 
 #### SVGSpriter.add(file [, name, svg ])
 
-**Registration of an SVG file** — Before compilation, you'll need to register one or more SVG files for processing. As *svg-sprite* doesn't read the files from the disk itself, you'll have to pass both the path and the file contents explicitly. Alternatively, you may pass a [vinyl](https://github.com/gulpjs/vinyl) file object as the first argument to `.add()`, which comes in handy when piping resources from one process to another (as you would do with the [Gulp wrapper](https://github.com/svg-sprite/gulp-svg-sprite) anyway). Please [see below](#example-using-glob-and-vinyl) for an example.
+**Registration of an SVG file** — Before compilation, you'll need to register one or more SVG files for processing. As *svgforge* doesn't read the files from the disk itself, you'll have to pass both the path and the file contents explicitly. Alternatively, you may pass a [vinyl](https://github.com/gulpjs/vinyl) file object as the first argument to `.add()`, which comes in handy when piping resources from one process to another. Please [see below](#example-using-glob-and-vinyl) for an example.
 
 It is important to know that the spriter **optimizes the SVG files as soon as you register them**, not just when you [compile your sprite](#svgspritercompile-config--callback-). This way it is possible to call the `.compile()` method several times, possibly passing in different render configurations without the need of repeating the optimization steps.
 
 ##### Arguments
 
 1. **file** `{String|File}` — Absolute path to the SVG file or a [vinyl](https://github.com/gulpjs/vinyl) file object carrying all the necessary values (the following arguments are ignored then).
-2. **name** `{String}` *(ignored with vinyl file)* — The "local" part of the file path, possibly including subdirectories which will get traversed to CSS selectors using the `shape.id.separator` [configuration option](configuration.md#shape-ids). You will want to pay attention to this when recursively adding whole directories of SVG files (e.g. via [glob](#example-using-glob-and-vinyl)). When `name` is empty, *svg-sprite* will use the basename of the `file` argument. As an example, setting `name` to `"deeply/nested/asset.svg"` while giving `"/path/to/my/deeply/nested/asset.svg"` for `file` will translate to the CSS selector `"deeply--nested--asset"`.
+2. **name** `{String}` *(ignored with vinyl file)* — The "local" part of the file path, possibly including subdirectories which will get traversed to CSS selectors using the `shape.id.separator` [configuration option](configuration.md#shape-ids). You will want to pay attention to this when recursively adding whole directories of SVG files (e.g. via [glob](#example-using-glob-and-vinyl)). When `name` is empty, *svgforge* will use the basename of the `file` argument. As an example, setting `name` to `"deeply/nested/asset.svg"` while giving `"/path/to/my/deeply/nested/asset.svg"` for `file` will translate to the CSS selector `"deeply--nested--asset"`.
 3. **svg** `{String}` *(ignored with vinyl file)*: SVG file content.
 
 ##### Example using [glob](https://github.com/isaacs/node-glob) and [vinyl](https://github.com/gulpjs/vinyl)
@@ -93,7 +93,7 @@ It is important to know that the spriter **optimizes the SVG files as soon as yo
 
 const fs = require('fs');
 const path = require('path');
-const SVGSpriter = require('svg-sprite');
+const SVGSpriter = require('svgforge');
 const File = require('vinyl');
 const glob = require('glob');
 
@@ -143,7 +143,7 @@ glob.sync('**/*.svg', { cwd }, (err, files) => {
 
 ##### Compilation example
 
-Depending on the particular mode and render configuration, quite a lot of resources might be generated during a single compilation run. To understand the way *svg-sprite* returns these resources, please have a look at the following example:
+Depending on the particular mode and render configuration, quite a lot of resources might be generated during a single compilation run. To understand the way *svgforge* returns these resources, please have a look at the following example:
 
 ```js
 spriter.compile(
@@ -218,7 +218,7 @@ try {
 
 #### SVGSpriter.getShapes( dest , callback )
 
-**Accessing the intermediate SVG resources** — Sometimes you may want to access the single transformed/optimized SVG files that *svg-sprite* produces in an intermediate step. Depending on the [configured shape transformations](configuration.md#shape-transformations) (e.g. SVG optimization with [SVGO](https://github.com/svg/svgo)), *svg-sprite* will need some time for transforming the files, which is why accessing them must be an asynchronous task.
+**Accessing the intermediate SVG resources** — Sometimes you may want to access the single transformed/optimized SVG files that *svgforge* produces in an intermediate step. Depending on the [configured shape transformations](configuration.md#shape-transformations) (e.g. SVG optimization with [SVGO](https://github.com/svg/svgo)), *svgforge* will need some time for transforming the files, which is why accessing them must be an asynchronous task.
 
 ##### Arguments
 

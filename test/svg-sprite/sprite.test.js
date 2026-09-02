@@ -91,14 +91,14 @@ describe('testing SVGSprite', () => {
       expect(sprite._serialized).toBeNull();
     });
 
-    it.each([false, true, {}, jest.fn(), Symbol(''), 1, null, undefined, 'string'])('should not push to content if %p passed', param => {
+    it.each([false, true, {}, jest.fn(), Symbol(''), 1, null, undefined, 'string'])('should not push to content if %p passed', parameter => {
       expect.hasAssertions();
 
       const sprite = new SVGSprite(false, false, {}, false, []);
 
-      sprite.add(param);
+      sprite.add(parameter);
 
-      expect(sprite.content).toStrictEqual([param]);
+      expect(sprite.content).toStrictEqual([parameter]);
       expect(sprite._serialized).toBeNull();
     });
   });

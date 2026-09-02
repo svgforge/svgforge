@@ -297,7 +297,7 @@ describe('testing _stripInlineNamespaceDeclarations()', () => {
         length: 3,
         item(i) {
           if (!isMethodMocked) {
-            isMethodMocked = true; // mocking the other calls
+            isMethodMocked = true; // Mocking the other calls
             jest.spyOn(shape, '_stripInlineNamespaceDeclarations').mockImplementation();
           }
 

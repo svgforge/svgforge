@@ -1,6 +1,6 @@
-# svg-sprite
+# svgforge
 
-This file is part of the documentation of *svg-sprite* — a free low-level Node.js module that **takes a bunch of SVG files**, optimizes them and creates **SVG sprites** of several types. The package is [hosted on GitHub](https://github.com/svg-sprite/svg-sprite).
+This file is part of the documentation of *svgforge* — a free low-level Node.js module that **takes a bunch of SVG files**, optimizes them and creates **SVG sprites** of several types. The package is [hosted on GitHub](https://github.com/svgforge/svgforge).
 
 
 ## Meta data injection
@@ -28,7 +28,7 @@ The keys need to match either
 
 ### SVG results
 
-For each of your shapes, *svg-sprite* will look for `title` and `description` keys and inject their values like this:
+For each of your shapes, *svgforge* will look for `title` and `description` keys and inject their values like this:
 
 ```xml
 <svg aria-labelledby="title desc">
@@ -38,4 +38,4 @@ For each of your shapes, *svg-sprite* will look for `title` and `description` ke
 </svg>
 ```
 
-Please be aware that existing `<title>` and `<description>` elements in the SVG files will be overridden. Also, even without the `meta` file being specified, *svg-sprite* will try to find these two elements in your files and set the `aria-labelledby` attribute accordingly.
+Please be aware that existing `<title>` and `<description>` elements in the SVG files will be overridden. Also, even without the `meta` file being specified, *svgforge* will try to find these two elements in your files and set the `aria-labelledby` attribute accordingly.

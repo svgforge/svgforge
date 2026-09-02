@@ -7,8 +7,9 @@ import pixelmatch from 'pixelmatch';
 const MAX_MISMATCH = 130;
 
 /**
- * @param {PNG} diff diff PNG
- * @param {string} filePath where to store the diff
+ Writes the diff PNG to disk alongside the source.
+ @param {PNG} diff pixel-diff image produced by pixelmatch
+ @param {string} filePath destination path for the diff image
  */
 const storeDiff = async (diff, filePath) => {
   await mkdir(path.dirname(filePath), {recursive: true});
@@ -16,11 +17,12 @@ const storeDiff = async (diff, filePath) => {
 };
 
 /**
- * @param {string} input input png
- * @param {string} expected expected png
- * @returns {Promise<{isEqual: boolean, matched: (number|*), diff: exports.PNG}>} matching results
+ Compare two PNG files pixel-by-pixel and optionally write a diff image.
+ @param {string} input path to the actual PNG
+ @param {string} expected path to the reference PNG
+ @returns {Promise<{isEqual: boolean, matched: number, diff: exports.PNG}>} comparison result
  */
-export default async (input, expected) => {
+export default async function comparePng2Png(input, expected) {
   const inputPng = PNG.sync.read(await readFile(input));
   const expectedPng = PNG.sync.read(await readFile(expected));
 
@@ -36,7 +38,7 @@ export default async (input, expected) => {
     height,
     {
       threshold: 0.1,
-      // v7 blends semi-transparent pixels against a checkerboard pattern by
+      // V7 blends semi-transparent pixels against a checkerboard pattern by
       // default; `false` restores the pre-v7 (v5) behavior of blending against
       // plain white that the expected snapshots were generated with.
       checkerboard: false,
@@ -62,4 +64,4 @@ export default async (input, expected) => {
   );
 
   return {isEqual: false, matched, diff};
-};
+}

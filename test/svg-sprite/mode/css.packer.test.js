@@ -249,7 +249,7 @@ describe('testing SVGSpriteCssPacker', () => {
             ${100}    | ${100}     | ${10} | ${100} | ${'_growRight'} | ${'_growBottom'}
             ${10}     | ${1}       | ${10} | ${1}   | ${'_growBottom'}| ${'_growRight'}
             ${10}     | ${1}       | ${10} | ${100} | ${'_growBottom'}| ${'_growRight'}
-        `('should call $fnToCall() and not call $fnNotToCall for params: width=$width, height=$height, root={width: $rootWidth, height: $rootHeight}', ({rootWidth, rootHeight, width, height, fnToCall, fnNotToCall}) => {
+        `('should call $fnToCall() and not $fnNotToCall for root={width: $rootWidth, height: $rootHeight}', ({rootWidth, rootHeight, width, height, fnToCall, fnNotToCall}) => {
       expect.hasAssertions();
 
       const packer = new SVGSpriteCssPacker([]);

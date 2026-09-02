@@ -3,12 +3,12 @@ import {launchBrowser} from './capture-browser.js';
 import comparePng2Png from './compare-png-2-png.js';
 import {browser as browserConfig} from './constants.js';
 /**
- * Capture a screenshot of a URL using browser
- *
- * @param {string} HTMLPath Input HTML file path
- * @param {string} expectedImagePath Expected screenshot file
+ Capture a screenshot of a URL using browser
+
+ @param {string} HTMLPath Input HTML file path
+ @param {string} expectedImagePath Expected screenshot file
  */
-export default async (HTMLPath, expectedImagePath) => {
+export default async function compareHtml2Png(HTMLPath, expectedImagePath) {
   let page;
 
   try {
@@ -36,4 +36,4 @@ export default async (HTMLPath, expectedImagePath) => {
       await page.close();
     }
   }
-};
+}

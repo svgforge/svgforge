@@ -1,6 +1,6 @@
-# svg-sprite
+# svgforge
 
-This file is part of the documentation of *svg-sprite* — a free low-level Node.js module that **takes a bunch of SVG files**, optimizes them and creates **SVG sprites** of several types. The package is [hosted on GitHub](https://github.com/svg-sprite/svg-sprite).
+This file is part of the documentation of *svgforge* — a free low-level Node.js module that **takes a bunch of SVG files**, optimizes them and creates **SVG sprites** of several types. The package is [hosted on GitHub](https://github.com/svgforge/svgforge).
 
 
 ## Tweaking and adding output formats
@@ -137,14 +137,14 @@ For each sprite generation process, a data object is constructed that is passed 
 
 ### Builtin templating functions
 
-There are a couple of functions directly built into *svg-sprite*. You may use them in any template.
+There are a couple of functions directly built into *svgforge*. You may use them in any template.
 
 #### date
 
 Takes no arguments and returns the current date and time as GMT string (e.g. *Mon, 22 Dec 2014 16:18:53 GMT*).
 
 ```mustache
-<p>Generated at {{date}} by svg-sprite</p>
+<p>Generated at {{date}} by svgforge</p>
 ```
 
 #### invert

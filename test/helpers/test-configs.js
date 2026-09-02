@@ -24,4 +24,6 @@ export const constants = {
 
 };
 
-export default [constants.DEFAULT, constants.WITHOUT_DIMS];
+const TEST_CONFIGS = [constants.DEFAULT, constants.WITHOUT_DIMS];
+
+export default TEST_CONFIGS;

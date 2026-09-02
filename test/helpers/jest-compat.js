@@ -1,6 +1,8 @@
+/* eslint-disable node-test/no-export, node-test/prefer-context-mock, unicorn/no-top-level-side-effects -- Test-helper compatibility shim: it must export a jest-compatible API and registers matchers/hooks at load time; the node:test mock is not exposed to a context here. */
 import {inspect} from 'node:util';
 import fs from 'node:fs';
 import path from 'node:path';
+import process from 'node:process';
 import {fileURLToPath} from 'node:url';
 import {
   describe as _describe,
@@ -8,7 +10,7 @@ import {
   test as _test,
   before,
   after,
-  
+
   mock,
 } from 'node:test';
 import {isObject} from '../../lib/svg-sprite/utils/index.js';
@@ -50,7 +52,7 @@ function makeMock(implementation) {
   };
 
   for (const key of Object.getOwnPropertyNames(impl)) {
-    if (!(key in callable)) {
+    if (!Object.hasOwn(callable, key)) {
       callable[key] = impl[key];
     }
   }
@@ -78,7 +80,7 @@ function makeMock(implementation) {
     },
     get lastCall() {
       const all = impl.mock.calls;
-      return all.length ? [...all.at(-1).arguments] : undefined;
+      return all.length > 0 ? [...all.at(-1).arguments] : undefined;
     },
     get invocationCallOrder() {
       return impl.mock.calls.map((_, i) => i + 1);
@@ -147,30 +149,30 @@ function makeMock(implementation) {
 
 const activeSpies = [];
 
-function spyOn(obj, methodName, accessType) {
-  const originalDescriptor = Object.getOwnPropertyDescriptor(obj, methodName);
-  const original = obj[methodName];
+function spyOn(object, methodName, accessType) {
+  const originalDescriptor = Object.getOwnPropertyDescriptor(object, methodName);
+  const original = object[methodName];
   const spy = makeMock(typeof original === 'function' ? original : undefined);
 
   const cleanup = () => {
     if (originalDescriptor) {
-      Object.defineProperty(obj, methodName, originalDescriptor);
+      Object.defineProperty(object, methodName, originalDescriptor);
     } else {
-      delete obj[methodName];
+      delete object[methodName];
     }
   };
 
   activeSpies.push(cleanup);
 
   if (accessType === 'get') {
-    Object.defineProperty(obj, methodName, {
+    Object.defineProperty(object, methodName, {
       configurable: true,
       enumerable: true,
       get: () => spy,
       set: undefined,
     });
   } else {
-    obj[methodName] = spy;
+    object[methodName] = spy;
   }
 
   spy.mockRestore = cleanup;
@@ -209,7 +211,7 @@ const jest = {
 // Asymmetric matchers
 // ---------------------------------------------------------------------------
 function isAsymmetric(value) {
-  return value != null && typeof value.asymmetricMatch === 'function';
+  return value !== null && value !== undefined && typeof value.asymmetricMatch === 'function';
 }
 
 class Any {
@@ -217,15 +219,15 @@ class Any {
     this.expectedType = expectedType;
     this.asymmetricMatch = other => {
       if (expectedType === String) {
-        return typeof other === 'string' || other instanceof String;
+        return typeof other === 'string' || Object.prototype.toString.call(other) === '[object String]';
       }
 
       if (expectedType === Number) {
-        return typeof other === 'number' || other instanceof Number;
+        return typeof other === 'number' || Object.prototype.toString.call(other) === '[object Number]';
       }
 
       if (expectedType === Boolean) {
-        return typeof other === 'boolean' || other instanceof Boolean;
+        return typeof other === 'boolean' || Object.prototype.toString.call(other) === '[object Boolean]';
       }
 
       if (expectedType === Symbol) {
@@ -250,6 +252,7 @@ class Any {
 
       return other instanceof expectedType;
     };
+
     this.toAsymmetricMatcher = () => `Any<${expectedType.name}>`;
   }
 }
@@ -291,7 +294,7 @@ class ArrayContaining {
 
 class StringMatching {
   constructor(sample) {
-    this.sample = sample instanceof RegExp ? sample : new RegExp(sample);
+    this.sample = sample instanceof RegExp ? sample : new RegExp(sample, 'u');
     this.asymmetricMatch = other => this.sample.test(String(other));
     this.toAsymmetricMatcher = () => 'StringMatching';
   }
@@ -327,7 +330,7 @@ function matches(expected, actual) {
       return false;
     }
 
-    return expected.every((e, i) => matches(e, actual[i]));
+    return expected.every((element, i) => matches(element, actual[i]));
   }
 
   if (expected instanceof Set) {
@@ -378,15 +381,15 @@ function isEqual(received, expected) {
       return false;
     }
 
-    return expected.every((e, i) => isEqual(received[i], e));
+    return expected.every((element, i) => isEqual(received[i], element));
   }
 
   if (expected instanceof Set) {
     return matches(expected, received);
   }
 
-  const aKeys = Object.keys(expected).sort();
-  const bKeys = Object.keys(received).sort();
+  const aKeys = Object.keys(expected).toSorted((a, b) => a.localeCompare(b));
+  const bKeys = Object.keys(received).toSorted((a, b) => a.localeCompare(b));
   if (aKeys.join('\u{0}') !== bKeys.join('\u{0}')) {
     return false;
   }
@@ -609,19 +612,19 @@ function expect(received) {
 
       toHaveProperty(keyPath, value) {
         const keys = Array.isArray(keyPath) ? keyPath : String(keyPath).split('.');
-        let obj = received;
+        let object = received;
         let isPass = true;
         for (const key of keys) {
-          if (obj == null || !Object.hasOwn(obj, key)) {
+          if (object === null || object === undefined || !Object.hasOwn(object, key)) {
             isPass = false;
             break;
           }
 
-          obj = obj[key];
+          object = object[key];
         }
 
         if (isPass && value !== undefined) {
-          isPass = isEqual(obj, value);
+          isPass = isEqual(object, value);
         }
 
         if (isPass === negated) {
@@ -697,19 +700,19 @@ function expect(received) {
         };
         const result = matcherFn.call(context, received, ...args);
         if (result && typeof result.then === 'function') {
-          return result.then(res => {
-            if (res.pass !== negated) {
+          return result.then(result_ => {
+            if (result_.pass !== negated) {
               return;
             }
 
-            const msg = typeof res.message === 'function' ? res.message() : res.message;
-            fail(String(msg) || `${name} failed`);
+            const message = typeof result_.message === 'function' ? result_.message() : result_.message;
+            fail(String(message) || `${name} failed`);
           });
         }
 
         if (result.pass === negated) {
-          const msg = typeof result.message === 'function' ? result.message() : result.message;
-          fail(String(msg) || `${name} failed`);
+          const message = typeof result.message === 'function' ? result.message() : result.message;
+          fail(String(message) || `${name} failed`);
         }
       };
     }
@@ -744,12 +747,12 @@ expect.extend({
     };
 
     const resultPNGPath = path.join(path.dirname(receivedSVGPath), path.basename(receivedSVGPath).replace('.svg', '.svg.png'));
-    const {isEqual, matched} = await compareSvg2Png(receivedSVGPath, resultPNGPath, expectedPNGPath);
+    const {isEqual: isPngEqual, matched} = await compareSvg2Png(receivedSVGPath, resultPNGPath, expectedPNGPath);
 
     const expected = path.basename(receivedSVGPath);
     const received = path.basename(expectedPNGPath);
 
-    const message = isEqual
+    const message = isPngEqual
       ? () => `${this.utils.matcherHint('toBeVisuallyEqualTo', undefined, undefined, options)
       }\n\n`
       + `Expected: not ${this.utils.printExpected(expected)}\n`
@@ -760,7 +763,7 @@ expect.extend({
       + `Expected: ${this.utils.printExpected('no difference')}\n`
       + `Received: ${this.utils.printReceived(matched)} mismatches`;
 
-    return {pass: isEqual, message};
+    return {pass: isPngEqual, message};
   },
 
   async toBeVisuallyCorrectAsHTMLTo(receivedHTMLPath, expectedPNGPath) {
@@ -770,12 +773,12 @@ expect.extend({
       promise: this.promise,
     };
 
-    const {isEqual, matched} = await compareHTML2Png(receivedHTMLPath, expectedPNGPath);
+    const {isEqual: isPngEqual, matched} = await compareHTML2Png(receivedHTMLPath, expectedPNGPath);
 
     const expected = path.basename(receivedHTMLPath);
     const received = path.basename(expectedPNGPath);
 
-    const message = isEqual
+    const message = isPngEqual
       ? () => `${this.utils.matcherHint('toBeVisuallyCorrectAsHTMLTo', undefined, undefined, options)}\n\n`
         + `Expected: not ${this.utils.printExpected(expected)}\n`
         + `Received: ${this.utils.printReceived(received)}`
@@ -784,7 +787,7 @@ expect.extend({
         + `Expected: ${this.utils.printExpected('no difference')}\n`
         + `Received: ${this.utils.printReceived(matched)} mismatches`;
 
-    return {pass: isEqual, message};
+    return {pass: isPngEqual, message};
   },
 
   toBeDefaultWinstonLogger(received) {
@@ -815,16 +818,17 @@ afterAll(closeBrowser);
 // describe/it/test wrappers capturing names + files for snapshots
 // ---------------------------------------------------------------------------
 function currentFile() {
-  const st = new Error().stack || '';
-  const m = st.match(/\((\S+\.test\.js):\d+:\d+\)/) || st.match(/at (\S+\.test\.js)/);
+  const st = new Error('Unable to determine caller file').stack || '';
+  // eslint-disable-next-line regexp/no-super-linear-move -- Stack trace matching is bounded by the fixed `.test.js:` suffix; not attacker-controlled.
+  const m = st.match(/\((?<file>\S+\.test\.js):\d+:\d+\)/u) || st.match(/at (?<file>\S+\.test\.js)/u);
   if (!m) {
     return '';
   }
 
   try {
-    return m[1].startsWith('file:') ? fileURLToPath(m[1]) : m[1];
+    return m.groups.file.startsWith('file:') ? fileURLToPath(m.groups.file) : m.groups.file;
   } catch {
-    return m[1];
+    return m.groups.file;
   }
 }
 
@@ -861,7 +865,7 @@ function test(name, fn, options) {
   return it(name, fn, options);
 }
 
-// it.each / describe.each
+// It.each / describe.each
 it.each = describeEach('it');
 describe.each = describeEach('describe');
 test.each = describeEach('it');
@@ -882,7 +886,7 @@ function describeEach(kind) {
       };
     }
 
-    // tagged template form: table is the strings object, values the interpolations
+    // Tagged template form: table is the strings object, values the interpolations
     const placeholders = values.map((_, i) => `\u{0}VAL${i}\u{0}`);
     let full = table.raw[0];
     for (let i = 0; i < values.length; i++) {
@@ -894,9 +898,9 @@ function describeEach(kind) {
     const colNames = headerLine.split('|').map(s => s.trim()).filter(Boolean);
 
     const resolveCell = cell => {
-      const m = cell.trim().match(/^\0VAL(\d+)\0$/);
+      const m = cell.trim().match(/^\0VAL(?<val>\d+)\0$/u);
       if (m) {
-        return values[Number(m[1])];
+        return values[Number(m.groups.val)];
       }
 
       return cell.trim();
@@ -908,29 +912,30 @@ function describeEach(kind) {
         cells = cells.slice(1);
       }
 
-      if (cells.length && cells.at(-1).trim() === '') {
+      if (cells.length > 0 && cells.at(-1).trim() === '') {
         cells = cells.slice(0, -1);
       }
 
-      return cells.map(resolveCell);
+      return cells.map(cell => resolveCell(cell));
     };
 
     return (title, fn) => {
       for (const dataLine of lines.slice(1)) {
         const row = rowOf(dataLine);
-        if (row.every(cell => cell === '' || cell == null)) {
+        if (row.every(cell => ['', null, undefined].includes(cell))) {
           continue;
         }
 
-        const objArgs = {};
-        colNames.forEach((c, i) => {
-          objArgs[c.trim()] = row[i];
-        });
-        const name = interpolateTitle(title, objArgs);
+        const objectArgs = {};
+        for (const [index, colName] of colNames.entries()) {
+          objectArgs[colName.trim()] = row[index];
+        }
+
+        const name = interpolateTitle(title, objectArgs);
         if (kind === 'describe') {
-          describe(name, () => fn(objArgs));
+          describe(name, () => fn(objectArgs));
         } else {
-          it(name, () => fn(objArgs));
+          it(name, () => fn(objectArgs));
         }
       }
     };
@@ -940,13 +945,14 @@ function describeEach(kind) {
 function interpolateTitle(title, values) {
   let out = title;
   let i = 0;
-  out = out.replaceAll(/%[dijnops]/g, () => {
+  out = out.replaceAll(/%[dijnops]/gu, () => {
     const v = Array.isArray(values) ? values[i++] : undefined;
     return String(v);
   });
   if (!Array.isArray(values)) {
-    out = out.replaceAll(/\$(\w+)/g, (m, name) => {
-      const v = values[name];
+    // eslint-disable-next-line max-params -- Full String#replaceAll callback signature is required to access the named-match `groups` argument.
+    out = out.replaceAll(/\$(?<name>\w+)/gu, (m, _name, _offset, _string, groups) => {
+      const v = values[groups.name];
       return v === undefined ? m : String(v);
     });
   }
@@ -961,7 +967,7 @@ export {
   describe,
   it,
   test,
-  
+
   beforeAll,
   afterAll,
 };

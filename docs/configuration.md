@@ -1,11 +1,11 @@
-# svg-sprite
+# svgforge
 
-This file is part of the documentation of *svg-sprite* — a free low-level Node.js module that **takes a bunch of SVG files**, optimizes them and creates **SVG sprites** of several types. The package is [hosted on GitHub](https://github.com/svg-sprite/svg-sprite).
+This file is part of the documentation of *svgforge* — a free low-level Node.js module that **takes a bunch of SVG files**, optimizes them and creates **SVG sprites** of several types. The package is [hosted on GitHub](https://github.com/svgforge/svgforge).
 
 
 ## Configuration
 
-The *svg-sprite* **main configuration** is provided to the [constructor](api.md#svgspriter-config-) as an `Object` with the following structure:
+The *svgforge* **main configuration** is provided to the [constructor](api.md#svgspriter-config-) as an `Object` with the following structure:
 
 ```js
 {
@@ -18,7 +18,7 @@ The *svg-sprite* **main configuration** is provided to the [constructor](api.md#
 }
 ```
 
-All of these properties are optional so in fact, even an empty object `{}` is a valid configuration for *svg-sprite*. What follows is a complete reference of all available configuration settings. For getting off the ground quickly, you may also use the [online configurator & kickstarter](https://svg-sprite.github.io/svg-sprite/), which lets you create a custom configuration in seconds.
+All of these properties are optional so in fact, even an empty object `{}` is a valid configuration for *svgforge*. What follows is a complete reference of all available configuration settings. For getting off the ground quickly, you may also use the [online configurator & kickstarter](https://svgforge.github.io/svgforge/), which lets you create a custom configuration in seconds.
 
 
 ## Table of contents
@@ -36,7 +36,7 @@ All of these properties are optional so in fact, even an empty object `{}` is a 
       * [Custom callback transformation](#custom-callback-transformation-function-values)
   * [Miscellaneous shape options](#miscellaneous-shape-options)
 * [Sprite SVG options](#sprite-svg-options)
-  * [SVG sprite customization](#svg-sprite-customization)
+  * [SVG sprite customization](#svgforge-customization)
 * [Custom templating variables](#custom-templating-variables)
 * [Output modes](#output-modes)
   * [Enabling & configuring](#enabling--configuring)
@@ -52,14 +52,14 @@ All of these properties are optional so in fact, even an empty object `{}` is a 
 
 Property         | Type      | Default     | Description                |
 ------------------------ | --------------- | ------------- | ------------------------------------------ |
-`dest`           | String      | `.`       | Main output directory which is used for resolving relative paths. Although *svg-sprite* doesn't write any files itself, it does need this setting in order to correctly layout the resulting file and directory structures. |
+`dest`           | String      | `.`       | Main output directory which is used for resolving relative paths. Although *svgforge* doesn't write any files itself, it does need this setting in order to correctly layout the resulting file and directory structures. |
 
 
 ### Logging
 
 Property         | Type      | Default     | Description                |
 ------------------------ | --------------- | ------------- | ------------------------------------------ |
-`log`          | String\|Logger  |         | *svg-sprite* uses [winston](https://github.com/winstonjs/winston) for logging, but output is turned off by default. To activate and use the pre-configured console logger, you need to pass the desired log level (`'info'`, `'verbose'` or `'debug'`). Alternatively, you can pass your own custom `winston.Logger` instance (which needs to handle at least these three log levels). Falsy values like `""`, `false` or `null` will disable logging. |
+`log`          | String\|Logger  |         | *svgforge* uses [winston](https://github.com/winstonjs/winston) for logging, but output is turned off by default. To activate and use the pre-configured console logger, you need to pass the desired log level (`'info'`, `'verbose'` or `'debug'`). Alternatively, you can pass your own custom `winston.Logger` instance (which needs to handle at least these three log levels). Falsy values like `""`, `false` or `null` will disable logging. |
 
 
 ### SVG shape configuration
@@ -219,7 +219,7 @@ To use a custom callback for transforming a shape's SVG, pass a function with th
 }
 ```
 
-The transformation name (`"custom"` in this case) is of no significance. Please see `lib/svg-sprite/shape.js` to learn about what you can do with the shape object.
+The transformation name (`"custom"` in this case) is of no significance. Please see `lib/svgforge/shape.js` to learn about what you can do with the shape object.
 
 
 #### Miscellaneous shape options
@@ -238,15 +238,15 @@ The `svg` object holds common options that apply to each SVG sprite created. The
 
 Property         | Type      | Default     | Description                |
 ------------------------ | --------------- | ------------- | ------------------------------------------ |
-`svg.xmlDeclaration`     | Boolean\|String | `true`  | Output an XML declaration at the very beginning of each compiled sprite. If you provide a non-empty string here, it will be used one-to-one as declaration (e.g. `<?xml version="1.0" encoding="utf-8"?>`). If you set this to `true`, *svg-sprite* will look at the registered shapes for an XML declaration and use the first one it can find. |
-`svg.doctypeDeclaration`   | Boolean\|String | `true`  | Include a `<DOCTYPE>` declaration in each compiled sprite. If you provide a non-empty string here, it will be used one-to-one as declaration (e.g. `<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1 Basic//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-basic.dtd">`). If you set this to `true`, *svg-sprite* will look at the registered shapes for a DOCTYPE declaration and use the first one it can find. |
+`svg.xmlDeclaration`     | Boolean\|String | `true`  | Output an XML declaration at the very beginning of each compiled sprite. If you provide a non-empty string here, it will be used one-to-one as declaration (e.g. `<?xml version="1.0" encoding="utf-8"?>`). If you set this to `true`, *svgforge* will look at the registered shapes for an XML declaration and use the first one it can find. |
+`svg.doctypeDeclaration`   | Boolean\|String | `true`  | Include a `<DOCTYPE>` declaration in each compiled sprite. If you provide a non-empty string here, it will be used one-to-one as declaration (e.g. `<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1 Basic//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-basic.dtd">`). If you set this to `true`, *svgforge* will look at the registered shapes for a DOCTYPE declaration and use the first one it can find. |
 `svg.namespaceIDs`       | Boolean     | `true`  | In order to avoid ID clashes, the default behavior is to namespace all IDs in the source SVGs before compiling them into a sprite. Each ID is prepended with a unique string. In some situations, it might be desirable to disable ID namespacing, e.g. when you want to script the resulting sprite. Just set `svg.namespaceIDs` to `false` then and be aware that you might also want to disable SVGO's ID minification (`shape.transform.svgo.plugins.params.overrides: {cleanupIDs: false}`). |
 `svg.namespaceIDPrefix`    | String      |       | Under some circumstances, the automatically generated ID namespaces might interfere with external scripts (e.g. see [this issue](namespaceIDPrefix) for a problem detected with Google Analytics). In these situations it might be helpful to prefix all IDs with a custom prefix set with this option. |
 `svg.namespaceClassnames`  | Boolean     | `true`  | In order to avoid CSS class name ambiguities, the default behavior is to namespace CSS class names in the source SVGs before compiling them into a sprite. Each class name is prepended with a unique string. Disable this option to keep the class names untouched. |
 `svg.dimensionAttributes`  | Boolean     | `true`  | If truthy, `width` and `height` attributes will be set on the sprite's `<svg>` element (where applicable). |
 `svg.rootAttributes`     | Object      |       | Shorthand for applying custom attributes to the outermost `<svg>` element. Please be aware that certain attributes (e.g. `viewBox`) will be calculated dynamically and override custom `rootAttributes` in any case. |
 `svg.precision`        | Integer     |       | Floating point precision for CSS positioning values (defaults to `-1` meaning highest possible precision). |
-`svg.transform`        | Function\|Array |       | Callback (or list of callbacks) that will be applied to the resulting SVG sprites as global [post-processing transformation](#svg-sprite-customization). |
+`svg.transform`        | Function\|Array |       | Callback (or list of callbacks) that will be applied to the resulting SVG sprites as global [post-processing transformation](#svgforge-customization). |
 
 
 #### SVG sprite customization
@@ -275,7 +275,7 @@ The `svg.transform` option can be used to post-process and customize the SVG spr
 }
 ```
 
-The callbacks are processed synchronously and in the given order. Each one is passed to the sprite's SVG source as its first (and only) argument and is expected to return the modified SVG source after transformation. It's completely up to what you do with the SVG source, just don't forget to return it in the end. You may e.g. run some regex or even full-blown DOM operations on the SVG contents (*svg-sprite* depends on [xmldom](https://github.com/xmldom/xmldom), so you may require a parser instance `const DOMParser = require('@xmldom/xmldom').DOMParser; /* ... */` within your callback ...).
+The callbacks are processed synchronously and in the given order. Each one is passed to the sprite's SVG source as its first (and only) argument and is expected to return the modified SVG source after transformation. It's completely up to what you do with the SVG source, just don't forget to return it in the end. You may e.g. run some regex or even full-blown DOM operations on the SVG contents (*svgforge* depends on [xmldom](https://github.com/xmldom/xmldom), so you may require a parser instance `const DOMParser = require('@xmldom/xmldom').DOMParser; /* ... */` within your callback ...).
 
 
 ### Custom templating variables
@@ -293,12 +293,12 @@ The top-level `variables` object lets you define global variables that are passe
 }
 ```
 
-Please refer to the [templating guide](templating.md) to learn about the [builtin functions](templating.md#builtin-templating-functions) provided by *svg-sprite* as well as the [sprite and shape variables](templating.md#sprite--shape-variables) available during rendering.
+Please refer to the [templating guide](templating.md) to learn about the [builtin functions](templating.md#builtin-templating-functions) provided by *svgforge* as well as the [sprite and shape variables](templating.md#sprite--shape-variables) available during rendering.
 
 
 ### Output modes
 
-*svg-sprite* currently supports 5 different output modes:
+*svgforge* currently supports 5 different output modes:
 
 * `css`
 * `view`
@@ -311,7 +311,7 @@ Please see the configuration sections below to learn a little about their nature
 
 #### Enabling & configuring
 
-Each of them produces its own specific files and has its individual configuration. You may enable and configure several modes in parallel so that *svg-sprite* renders them in one run, saving the redundant SVG optimization overhead. Enabling a specific mode is as easy as adding a like-named key to the `mode` property, using either the default configuration (by using `true` as the value) or a custom settings object:
+Each of them produces its own specific files and has its individual configuration. You may enable and configure several modes in parallel so that *svgforge* renders them in one run, saving the redundant SVG optimization overhead. Enabling a specific mode is as easy as adding a like-named key to the `mode` property, using either the default configuration (by using `true` as the value) or a custom settings object:
 
 ```js
 // Activate the «css» mode with default configuration
@@ -329,7 +329,7 @@ Each of them produces its own specific files and has its individual configuratio
 }
 ```
 
-It is also possible to configure the same output mode multiple times, each time with a different configuration. In that case, use a custom key for the configuration object and give it the special `mode` property telling *svg-sprite* which output mode to use with this configuration:
+It is also possible to configure the same output mode multiple times, each time with a different configuration. In that case, use a custom key for the configuration object and give it the special `mode` property telling *svgforge* which output mode to use with this configuration:
 
 ```js
 // Multiple sprites of the same output mode
@@ -408,12 +408,12 @@ Property     | Type      | Default     | Description                |
 
 #### Rendering configurations
 
-*svg-sprite* uses [Mustache](https://mustache.github.io/) templates for creating certain output formats. Typically, the generation of these files is optional and you have to switch on the rendering process:
+*svgforge* uses [Mustache](https://mustache.github.io/) templates for creating certain output formats. Typically, the generation of these files is optional and you have to switch on the rendering process:
 
 * For creating a **CSS resource** alongside your sprite, you will have to enable/configure at least one output format via the `mode.<mode>.render` option.
 * For creating an **example HTML document** demoing the use of your sprite, you will have to enable/configure it using `mode.<mode>.example`.
 
-In both cases, you'll have to use a **rendering configuration** to tell *svg-sprite* which template it should use and where the result file should be targeted to. Let's take a look at the `mode.<mode>.example` option. To enable the demo HTML document **with the default template and destination**, simply set the value to `true`:
+In both cases, you'll have to use a **rendering configuration** to tell *svgforge* which template it should use and where the result file should be targeted to. Let's take a look at the `mode.<mode>.example` option. To enable the demo HTML document **with the default template and destination**, simply set the value to `true`:
 
 ```js
 {

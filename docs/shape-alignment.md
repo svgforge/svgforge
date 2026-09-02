@@ -1,11 +1,11 @@
-# svg-sprite
+# svgforge
 
-This file is part of the documentation of *svg-sprite* — a free low-level Node.js module that **takes a bunch of SVG files**, optimizes them and creates **SVG sprites** of several types. The package is [hosted on GitHub](https://github.com/svg-sprite/svg-sprite).
+This file is part of the documentation of *svgforge* — a free low-level Node.js module that **takes a bunch of SVG files**, optimizes them and creates **SVG sprites** of several types. The package is [hosted on GitHub](https://github.com/svgforge/svgforge).
 
 
 ## Aligning and duplicating shapes
 
-CSS sprites with `"vertical"` or `"horizontal"` layout use only one axis for positioning the shapes inside the sprite. For the opposite axis, *svg-sprite* uses `0` as the default positioning value. That's why the weather icons are left-aligned in the following example:
+CSS sprites with `"vertical"` or `"horizontal"` layout use only one axis for positioning the shapes inside the sprite. For the opposite axis, *svgforge* uses `0` as the default positioning value. That's why the weather icons are left-aligned in the following example:
 
 ![Sprite with vertical layout and default x-axis positioning](../test/expected/png/css.vertical.default.png)
 
@@ -20,7 +20,7 @@ To use these icons as centered background images, you would need them to be cent
 * `<template-string-with-placeholder>` is a powerful feature that lets you **derive displaced copies** of your shapes. [See below](#creating-displaced-shape-copies) for an example. The string should contain the placeholder `"%s"` which gets replaced by the ID of the matched shape. If the placeholder cannot be found in the string, it will be used as the suffix for the shape ID.
 * `<positioning>` is a floating point value between `0` and `1`, expressing the relative placement of the shape on the secondary axis (0 - 100%).
 
-*svg-sprite*'s default behavior can be expressed as follows:
+*svgforge*'s default behavior can be expressed as follows:
 
 ```yaml
 "*":

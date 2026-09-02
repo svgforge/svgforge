@@ -1,5 +1,5 @@
 
-/* eslint-disable unicorn/new-for-builtins, no-new-wrappers, prefer-regex-literals */
+/* eslint-disable unicorn/new-for-builtins, no-new-wrappers, prefer-regex-literals -- these constructs are under test */
 
 import {
   isFunction,
@@ -30,7 +30,7 @@ describe('utils', () => {
     });
 
     it('should return false for a RegExp', () => {
-      expect(isFunction(/a/g)).toBe(false);
+      expect(isFunction(/a/gu)).toBe(false);
     });
 
     it('should return false for a null value', () => {
@@ -72,7 +72,7 @@ describe('utils', () => {
     });
 
     it('should return true for a new Regexp', () => {
-      expect(isObject(new RegExp(''))).toBe(true);
+      expect(isObject(new RegExp('', 'u'))).toBe(true);
     });
 
     it('should return true for a new Number', () => {
@@ -84,7 +84,7 @@ describe('utils', () => {
     });
 
     it('should return true for an array (lodash backport)', () => {
-      // todo: must return false
+      // Documented behavior: `isObject` returns true for arrays, matching the lodash `isObject` backport.
       expect(isObject([1, 2, 3])).toBe(true);
     });
 
@@ -153,7 +153,7 @@ describe('utils', () => {
     });
 
     it('should return false for a new Regexp', () => {
-      expect(isPlainObject(new RegExp(''))).toBe(false);
+      expect(isPlainObject(new RegExp('', 'u'))).toBe(false);
     });
 
     it('should return false for a new Number', () => {

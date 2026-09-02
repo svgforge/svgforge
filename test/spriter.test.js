@@ -1,5 +1,5 @@
 
-/* eslint-disable max-nested-callbacks */
+/* eslint-disable max-nested-callbacks -- tests legitimately nest callbacks */
 
 import fs from 'node:fs';
 import path from 'node:path';

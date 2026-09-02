@@ -15,15 +15,15 @@ import {
 const cwd = path.join(paths.fixtures, 'svg/single');
 const weather = globSync('**/weather*.svg', {cwd});
 
-const tmpPath = path.join(paths.tmp, 'rerun');
+const temporaryPath = path.join(paths.tmp, 'rerun');
 
 describe('testing rerun', () => {
-  beforeAll(removeTmpPath.bind(null, tmpPath));
+  beforeAll(removeTmpPath.bind(null, temporaryPath));
 
   it('creates 5 files and then additional 1 on each layout after rerun when all render types disabled', async () => {
     expect.assertions(11);
 
-    const spriter = new SVGSpriter({dest: tmpPath});
+    const spriter = new SVGSpriter({dest: temporaryPath});
 
     addFixtureFiles(spriter, weather, cwd);
 
@@ -44,22 +44,20 @@ describe('testing rerun', () => {
 
     const otherLayouts = ['horizontal', 'diagonal', 'packed'];
 
-    const promises = otherLayouts.map(mode => {
-      return new Promise(resolve => {
-        spriter.compile({
-          css: {
-            sprite: `svg/css.${mode}.svg`,
-            layout: 'horizontal',
-          },
-        }, (error, result) => {
-          expect(error).toBeNull();
-          expect(result.css).toBeInstanceOf(Object);
-          expect(Object.values(result.css)).toHaveLength(1);
+    const promises = otherLayouts.map(mode => new Promise(resolve => {
+      spriter.compile({
+        css: {
+          sprite: `svg/css.${mode}.svg`,
+          layout: 'horizontal',
+        },
+      }, (error, result) => {
+        expect(error).toBeNull();
+        expect(result.css).toBeInstanceOf(Object);
+        expect(Object.values(result.css)).toHaveLength(1);
 
-          resolve();
-        });
+        resolve();
       });
-    });
+    }));
 
     await Promise.all(promises);
   });

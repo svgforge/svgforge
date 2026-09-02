@@ -1,5 +1,5 @@
 
-/* eslint-disable max-nested-callbacks */
+/* eslint-disable max-nested-callbacks -- tests legitimately nest callbacks */
 
 import path from 'node:path';
 import {Buffer} from 'node:buffer';

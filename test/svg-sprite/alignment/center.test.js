@@ -24,10 +24,10 @@ const cwdAlign = path.join(paths.fixtures, 'svg/css');
 const align = globSync('**/*.svg', {cwd: cwdAlign});
 const previewTemplate = fs.readFileSync(path.join(__dirname, '../../tmpl/css.html'), 'utf8');
 
-const tmpPath = path.join(paths.tmp, 'center');
+const temporaryPath = path.join(paths.tmp, 'center');
 
 describe(`svg-sprite: with centered alignment and ${align.length} SVG files`, () => {
-  beforeAll(removeTmpPath.bind(null, tmpPath));
+  beforeAll(removeTmpPath.bind(null, temporaryPath));
 
   describe('with «css» mode, vertical layout and CSS render type', () => {
     let spriter = null;
@@ -36,7 +36,7 @@ describe(`svg-sprite: with centered alignment and ${align.length} SVG files`, ()
 
     beforeAll(async () => {
       spriter = new SVGSpriter({
-        dest: tmpPath,
+        dest: temporaryPath,
         shape: {
           align: path.join(paths.fixtures, 'yaml/align.centered.yaml'),
           dimension: {
@@ -66,7 +66,7 @@ describe(`svg-sprite: with centered alignment and ${align.length} SVG files`, ()
     it('creates visually correct sprite', async () => {
       expect.hasAssertions();
 
-      const input = path.join(tmpPath, 'css/svg', svgPath);
+      const input = path.join(temporaryPath, 'css/svg', svgPath);
       const actual = fs.readFileSync(input, 'utf8');
       const expected = path.join(paths.expectations, 'png/css.vertical.centered.png');
 
@@ -80,7 +80,7 @@ describe(`svg-sprite: with centered alignment and ${align.length} SVG files`, ()
       data.css = '../sprite.centered.css';
 
       const out = mustache.render(previewTemplate, data);
-      const preview = await writeFile(path.join(tmpPath, 'css/html/css.vertical.centered.html'), out);
+      const preview = await writeFile(path.join(temporaryPath, 'css/html/css.vertical.centered.html'), out);
 
       const expected = path.join(paths.expectations, 'png/css.vertical.centered.html.png');
 
@@ -95,7 +95,7 @@ describe(`svg-sprite: with centered alignment and ${align.length} SVG files`, ()
 
     beforeAll(async () => {
       spriter = new SVGSpriter({
-        dest: tmpPath,
+        dest: temporaryPath,
         shape: {
           align: path.join(paths.fixtures, 'yaml/align.centered.yaml'),
           dimension: {
@@ -125,7 +125,7 @@ describe(`svg-sprite: with centered alignment and ${align.length} SVG files`, ()
     it('creates visually correct sprite', async () => {
       expect.hasAssertions();
 
-      const input = path.join(tmpPath, 'css/svg', svgPath);
+      const input = path.join(temporaryPath, 'css/svg', svgPath);
       const actual = fs.readFileSync(input, 'utf8');
       const expected = path.join(paths.expectations, 'png/css.horizontal.centered.png');
 
@@ -136,14 +136,14 @@ describe(`svg-sprite: with centered alignment and ${align.length} SVG files`, ()
     it('creates a visually correct stylesheet resource', async () => {
       expect.hasAssertions();
 
-      const scssText = sass.renderSync({file: path.join(tmpPath, 'css/sprite.centered.scss')});
+      const scssText = sass.renderSync({file: path.join(temporaryPath, 'css/sprite.centered.scss')});
 
-      await writeFile(path.join(tmpPath, 'css/sprite.centered.scss.css'), scssText.css);
+      await writeFile(path.join(temporaryPath, 'css/sprite.centered.scss.css'), scssText.css);
 
       data.css = '../sprite.centered.scss.css';
 
       const out = mustache.render(previewTemplate, data);
-      const preview = await writeFile(path.join(tmpPath, 'css/html/scss.horizontal.centered.html'), out);
+      const preview = await writeFile(path.join(temporaryPath, 'css/html/scss.horizontal.centered.html'), out);
       const expected = path.join(paths.expectations, 'png/css.horizontal.centered.html.png');
 
       await expect(preview).toBeVisuallyCorrectAsHTMLTo(expected);

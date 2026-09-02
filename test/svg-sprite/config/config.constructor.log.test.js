@@ -11,16 +11,14 @@ import {
 } from '../../helpers/jest-compat.js';
 
 describe('testing log', () => {
-  const getLogger = () => {
-    return winston.createLogger({
-      transports: [
-        new winston.transports.Console({
-          level: 'info',
-        }),
-      ],
-      level: 'info',
-    });
-  };
+  const getLogger = () => winston.createLogger({
+    transports: [
+      new winston.transports.Console({
+        level: 'info',
+      }),
+    ],
+    level: 'info',
+  });
 
   it('should set winston logger if it passed as config.log', () => {
     expect.hasAssertions();
@@ -61,13 +59,14 @@ describe('testing log', () => {
     const originalConsole = console;
 
     beforeAll(() => {
-      // suppressing console
+      // Suppressing console
       console._stdout = {
         write: jest.fn(),
       };
     });
 
     afterAll(() => {
+      // eslint-disable-next-line unicorn/no-global-object-property-assignment -- Test asserts global side effect.
       globalThis.console = originalConsole;
     });
 

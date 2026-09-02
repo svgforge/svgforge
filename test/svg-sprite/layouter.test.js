@@ -29,9 +29,9 @@ describe('testing layout()', () => {
 
   beforeEach(() => {
     mockLayout.mockClear();
-    for (const mode of Object.keys(mockModes)) {
-      mockModes[mode].mockReset();
-      mockModes[mode].mockImplementation(() => ({layout: mockLayout}));
+    for (const mockFn of Object.values(mockModes)) {
+      mockFn.mockReset();
+      mockFn.mockImplementation(() => ({layout: mockLayout}));
     }
   });
 
@@ -60,11 +60,9 @@ describe('testing layout()', () => {
     expect.hasAssertions();
 
     const TEST_FN = createMock();
-    const layout = layouters[mode].mockImplementation(() => {
-      return {
-        layout: TEST_FN,
-      };
-    });
+    const layout = layouters[mode].mockImplementation(() => ({
+      layout: TEST_FN,
+    }));
     const TEST_KEY = `TEST_${mode}`;
     const TEST_FILES = {};
 
@@ -99,7 +97,8 @@ describe('testing layout()', () => {
       },
       {
         classname: expect.any(Function),
-        date: expect.stringMatching(/\w+, \d{2} \w+ \d{4} \d{2}:\d{2}:\d{2} GMT/),
+        // eslint-disable-next-line regexp/no-super-linear-move -- Controlled test fixture pattern; not attacker-controlled.
+        date: expect.stringMatching(/\w+, \d{2} \w+ \d{4} \d{2}:\d{2}:\d{2} GMT/u),
         encodeHashSign: expect.any(Function),
         escape: expect.any(Function),
         invert: expect.any(Function),
@@ -222,7 +221,8 @@ describe('testing constructor', () => {
     expect(layouter._commonData).toStrictEqual({
       shapes: [],
       classname: expect.any(Function),
-      date: expect.stringMatching(/\w+, \d{2} \w+ \d{4} \d{2}:\d{2}:\d{2} GMT/),
+      // eslint-disable-next-line regexp/no-super-linear-move -- Controlled test fixture pattern; not attacker-controlled.
+      date: expect.stringMatching(/\w+, \d{2} \w+ \d{4} \d{2}:\d{2}:\d{2} GMT/u),
       encodeHashSign: expect.any(Function),
       escape: expect.any(Function),
       invert: expect.any(Function),

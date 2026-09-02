@@ -59,7 +59,7 @@ describe('testing distribute()', () => {
     const copies = shape.distribute();
 
     expect(copies).toBeInstanceOf(Array);
-    expect(copies).toHaveLength(3); // self + two alignment copies;
+    expect(copies).toHaveLength(3); // Self + two alignment copies;
 
     const [firstCopy, secondCopy, thirdCopy] = copies;
 

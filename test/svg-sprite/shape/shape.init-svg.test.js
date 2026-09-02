@@ -1,5 +1,5 @@
 
-/* eslint-disable no-new */
+/* eslint-disable no-new -- tests assert on constructor side effects without retaining a reference */
 
 import {Buffer} from 'node:buffer';
 import File from 'vinyl';
@@ -40,7 +40,7 @@ describe('testing _initSVG()', () => {
       base: '/test_base/',
       cwd: '/',
     });
-    const TEST_SPRITER = {
+    const spriter = {
       config: {
         shape: {
           meta: {},
@@ -52,7 +52,7 @@ describe('testing _initSVG()', () => {
 
     mockFixXMLString.mockReturnValueOnce('<svg></svg>');
 
-    new SVGShape(TEST_FILE, TEST_SPRITER);
+    new SVGShape(TEST_FILE, spriter);
 
     expect(mockFixXMLString).toHaveBeenCalledWith('s');
   });
@@ -66,7 +66,7 @@ describe('testing _initSVG()', () => {
       base: '/test_base/',
       cwd: '/',
     });
-    const TEST_SPRITER = {
+    const spriter = {
       config: {
         shape: {
           meta: {},
@@ -79,7 +79,7 @@ describe('testing _initSVG()', () => {
     mockFixXMLString.mockReturnValueOnce('<');
 
     expect(() => {
-      new SVGShape(TEST_FILE, TEST_SPRITER);
+      new SVGShape(TEST_FILE, spriter);
     }).toThrow(new Error('Invalid SVG file'));
 
     expect(mockFixXMLString).toHaveBeenCalledWith('s');
@@ -94,7 +94,7 @@ describe('testing _initSVG()', () => {
       base: '/test_base/',
       cwd: '/',
     });
-    const TEST_SPRITER = {
+    const spriter = {
       config: {
         shape: {
           meta: {},
@@ -109,7 +109,7 @@ describe('testing _initSVG()', () => {
     });
 
     expect(() => {
-      new SVGShape(TEST_FILE, TEST_SPRITER);
+      new SVGShape(TEST_FILE, spriter);
     }).toThrow(new Error('Invalid SVG file'));
     expect(mockFixXMLString).toHaveBeenCalledWith('s');
   });
@@ -123,7 +123,7 @@ describe('testing _initSVG()', () => {
       base: '/test_base/',
       cwd: '/',
     });
-    const TEST_SPRITER = {
+    const spriter = {
       config: {
         shape: {
           meta: {},
@@ -133,7 +133,7 @@ describe('testing _initSVG()', () => {
       verbose: createMock(),
     };
 
-    new SVGShape(TEST_FILE, TEST_SPRITER);
+    new SVGShape(TEST_FILE, spriter);
 
     expect(mockFixXMLString).not.toHaveBeenCalled();
   });
@@ -151,7 +151,7 @@ describe('testing _initSVG()', () => {
       base: '/test_base/',
       cwd: '/',
     });
-    const TEST_SPRITER = {
+    const spriter = {
       config: {
         shape: {
           meta: {},
@@ -161,7 +161,7 @@ describe('testing _initSVG()', () => {
       verbose: createMock(),
     };
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = new SVGShape(TEST_FILE, spriter);
 
     expect(shape.svg.current.replace('\n', '')).toBe('<svg><!DOCTYPE <!ENTITY name1 "value1"><!ENTITY name2 "value2">>value1</svg>');
   });
@@ -175,7 +175,7 @@ describe('testing _initSVG()', () => {
       base: '/test_base/',
       cwd: '/',
     });
-    const TEST_SPRITER = {
+    const spriter = {
       config: {
         shape: {
           meta: {},
@@ -186,7 +186,7 @@ describe('testing _initSVG()', () => {
     };
 
     expect(() => {
-      new SVGShape(TEST_FILE, TEST_SPRITER);
+      new SVGShape(TEST_FILE, spriter);
     }).toThrow('Invalid SVG file');
   });
 
@@ -202,7 +202,7 @@ describe('testing _initSVG()', () => {
       base: '/test_base/',
       cwd: '/',
     });
-    const TEST_SPRITER = {
+    const spriter = {
       config: {
         shape: {
           meta: {},
@@ -212,7 +212,7 @@ describe('testing _initSVG()', () => {
       verbose: createMock(),
     };
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = new SVGShape(TEST_FILE, spriter);
 
     expect(shape.width).toBe(TEST_WIDTH);
     expect(shape.height).toBe(TEST_HEIGHT);
@@ -227,7 +227,7 @@ describe('testing _initSVG()', () => {
       base: '/test_base/',
       cwd: '/',
     });
-    const TEST_SPRITER = {
+    const spriter = {
       config: {
         shape: {
           meta: {},
@@ -237,7 +237,7 @@ describe('testing _initSVG()', () => {
       verbose: createMock(),
     };
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = new SVGShape(TEST_FILE, spriter);
 
     expect(shape.width).toBe(false);
     expect(shape.height).toBe(false);
@@ -253,7 +253,7 @@ describe('testing _initSVG()', () => {
       base: '/test_base/',
       cwd: '/',
     });
-    const TEST_SPRITER = {
+    const spriter = {
       config: {
         shape: {
           meta: {},
@@ -263,7 +263,7 @@ describe('testing _initSVG()', () => {
       verbose: createMock(),
     };
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = new SVGShape(TEST_FILE, spriter);
 
     expect(shape.viewBox).toStrictEqual([0, 1, 2, 3, 4, 5, 20, NaN]);
   });
@@ -277,7 +277,7 @@ describe('testing _initSVG()', () => {
       base: '/test_base/',
       cwd: '/',
     });
-    const TEST_SPRITER = {
+    const spriter = {
       config: {
         shape: {
           meta: {},
@@ -287,7 +287,7 @@ describe('testing _initSVG()', () => {
       verbose: createMock(),
     };
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = new SVGShape(TEST_FILE, spriter);
 
     expect(shape.viewBox).toStrictEqual([0, 1, 0, 0]);
   });

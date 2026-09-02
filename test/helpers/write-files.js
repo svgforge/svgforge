@@ -4,10 +4,10 @@ import path from 'node:path';
 import File from 'vinyl';
 import {isObject} from '../../lib/svg-sprite/utils/index.js';
 /**
- * Recursively write files to disc
- *
- * @param {object | Array} files Files
- * @returns {number} Number of written files
+ Recursively write files to disc
+
+ @param {object | Array} files nested structure of vinyl files to write
+ @returns {number} count of files written
  */
 export default function writeFiles(files) {
   let written = 0;

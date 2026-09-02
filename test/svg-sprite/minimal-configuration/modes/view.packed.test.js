@@ -26,18 +26,18 @@ describe.each`
 `('svg-sprite: $name: «symbol» mode', ({testConfigKey}) => {
   const testConfig = constants[testConfigKey];
 
-  const tmpPath = path.join(paths.tmp, `view${testConfig.namespace}.packed`);
+  const temporaryPath = path.join(paths.tmp, `view${testConfig.namespace}.packed`);
   let spriter;
   let svg;
   let data;
 
-  beforeAll(removeTmpPath.bind(null, tmpPath));
+  beforeAll(removeTmpPath.bind(null, temporaryPath));
 
   // Test the view mode
   describe(`svg-sprite: ${testConfig.name} in «view» mode`, () => {
     beforeAll(async () => {
       data = {};
-      spriter = new SVGSpriter({dest: tmpPath});
+      spriter = new SVGSpriter({dest: temporaryPath});
       addFixtureFiles(spriter, testConfig.files, testConfig.cwd);
       const {result, data: cssData} = await spriter.compileAsync({
         view: {
@@ -58,7 +58,7 @@ describe.each`
     it('creates visually correct sprite with packed layout', async () => {
       expect.hasAssertions();
 
-      const input = path.join(tmpPath, 'view/svg', svg);
+      const input = path.join(temporaryPath, 'view/svg', svg);
       const actual = await readFile(input, 'utf8');
       const expected = path.join(paths.expectations, `png/css.packed${testConfig.namespace}.png`);
 
@@ -73,7 +73,7 @@ describe.each`
 
       const previewTemplate = await readFile(path.join(__dirname, '../../../tmpl/view.html'), 'utf8');
       const out = mustache.render(previewTemplate, data);
-      const preview = await writeFile(path.join(tmpPath, 'view/html/view.html'), out);
+      const preview = await writeFile(path.join(temporaryPath, 'view/html/view.html'), out);
       const expected = path.join(paths.expectations, `png/view.html${testConfig.namespace}.png`);
 
       await expect(preview).toBeVisuallyCorrectAsHTMLTo(expected);

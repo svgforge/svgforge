@@ -53,19 +53,19 @@ const spriter = new SVGSpriter({
 });
 
 /**
- * Add a bunch of SVG files
- *
- * @param {SVGSpriter} spriter Spriter instance
- * @param {Array} files SVG files
- * @returns {SVGSpriter} Spriter instance
+ Add a bunch of SVG files
+
+ @param {SVGSpriter} targetSpriter Spriter instance
+ @param {string[]} targetFiles SVG files
+ @returns {SVGSpriter} Spriter instance
  */
-function addFixtureFiles(spriter, files) {
-  for (const file of files) {
+function addFixtureFiles(targetSpriter, targetFiles) {
+  for (const file of targetFiles) {
     const filePath = path.join(cwd, file);
-    spriter.add(path.resolve(filePath), file, fs.readFileSync(filePath, 'utf8'));
+    targetSpriter.add(path.resolve(filePath), file, fs.readFileSync(filePath, 'utf8'));
   }
 
-  return spriter;
+  return targetSpriter;
 }
 
 addFixtureFiles(spriter, files).compile({

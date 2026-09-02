@@ -13,6 +13,8 @@ import {
   spyOn,
 } from '../helpers/jest-compat.js';
 
+/* eslint-disable max-nested-callbacks -- Mock implementations of the queued shape/process callbacks are intentionally nested to model the async event flow under test. */
+
 const mockShape = createMock();
 setDependency('queue:Shape', mockShape);
 
@@ -41,7 +43,6 @@ describe('testing Queue', () => {
     it('should add events', () => {
       expect.hasAssertions();
 
-      // eslint-disable-next-line no-new
       const queue = new SVGSpriterQueue({debug: createMock()});
 
       expect(queue.listenerCount('add')).toBe(1);
@@ -121,9 +122,7 @@ describe('testing Queue', () => {
         debug: createMock(),
         _limit: 10,
         error: createMock(),
-        _transformShape: createMock().mockImplementation((shape, cb) => {
-          return cb(null);
-        }),
+        _transformShape: createMock().mockImplementation((shape, cb) => cb(null)),
       };
       queue = new SVGSpriterQueue(spriter);
     });
@@ -163,16 +162,14 @@ describe('testing Queue', () => {
         queue._files = [1];
         queue.active = 2;
         spyOn(queue._files, 'shift').mockReturnValueOnce(TEST_FILE);
-        mockShape.mockImplementation(() => {
-          return TEST_SHAPE;
-        });
+        mockShape.mockImplementation(() => TEST_SHAPE);
 
         spyOn(queue, 'remove').mockImplementation(() => {
           testFn();
         });
 
         queue.process();
-        await new Promise(setImmediate); // await all async code to finish (async.waterfall)
+        await new Promise(setImmediate); // Await all async code to finish (async.waterfall)
 
         expect(queue.active).toBe(3);
         expect(spriter._transformShape).toHaveBeenCalledWith(TEST_SHAPE, expect.any(Function));
@@ -194,7 +191,7 @@ describe('testing Queue', () => {
         });
 
         queue.process();
-        await new Promise(setImmediate); // await all async code to finish (async.waterfall)
+        await new Promise(setImmediate); // Await all async code to finish (async.waterfall)
 
         expect(queue.active).toBe(2);
         expect(spriter.error).toHaveBeenCalledWith('Skipping "%s" (%s)', 'file', TEST_ERROR_MESSAGE);
@@ -214,7 +211,7 @@ describe('testing Queue', () => {
         });
 
         queue.process();
-        await new Promise(setImmediate); // await all async code to finish (async.waterfall)
+        await new Promise(setImmediate); // Await all async code to finish (async.waterfall)
 
         expect(queue.active).toBe(0);
         expect(queue.emit).toHaveBeenCalledWith('empty');
@@ -222,3 +219,5 @@ describe('testing Queue', () => {
     });
   });
 });
+
+/* eslint-enable max-nested-callbacks */

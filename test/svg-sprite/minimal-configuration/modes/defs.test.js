@@ -26,17 +26,17 @@ describe.each`
 `('svg-sprite: $name: «defs» mode', ({testConfigKey}) => {
   const testConfig = constants[testConfigKey];
 
-  const tmpPath = path.join(paths.tmp, `defs${testConfig.namespace}`);
+  const temporaryPath = path.join(paths.tmp, `defs${testConfig.namespace}`);
 
   let svg;
   let spriter;
   let data;
 
   beforeAll(async () => {
-    await removeTmpPath(tmpPath);
+    await removeTmpPath(temporaryPath);
     data = {};
 
-    spriter = new SVGSpriter({dest: tmpPath});
+    spriter = new SVGSpriter({dest: temporaryPath});
     addFixtureFiles(spriter, testConfig.files, testConfig.cwd);
     const {result, data: cssData} = await spriter.compileAsync({
       defs: {
@@ -53,14 +53,14 @@ describe.each`
   it('creates a visually correct stylesheet resource in CSS format', async () => {
     expect.hasAssertions();
 
-    data.svg = await readFile(path.join(tmpPath, 'defs/svg', svg), 'utf8');
+    data.svg = await readFile(path.join(temporaryPath, 'defs/svg', svg), 'utf8');
     data.css = '../sprite.css';
 
     expect(data.svg).toMatchSnapshot();
 
     const previewTemplate = await readFile(path.join(__dirname, '../../../tmpl/defs.html'), 'utf8');
     const out = mustache.render(previewTemplate, data);
-    const preview = await writeFile(path.join(tmpPath, `defs/html/defs${testConfig.namespace}.html`), out);
+    const preview = await writeFile(path.join(temporaryPath, `defs/html/defs${testConfig.namespace}.html`), out);
     const expected = path.join(paths.expectations, `png/defs${testConfig.namespace}.html.png`);
 
     await expect(preview).toBeVisuallyCorrectAsHTMLTo(expected);

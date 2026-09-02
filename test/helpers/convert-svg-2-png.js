@@ -1,8 +1,9 @@
 
 import {launchBrowser} from './capture-browser.js';
 /**
- * @param {string} svgPath svg path
- * @param {string} pngPath png path
+ Renders an SVG file to a PNG via a headless browser screenshot.
+ @param {string} svgPath absolute file path of the source SVG
+ @param {string} pngPath destination path for the rendered PNG
  */
 export default async function convertSvg2Png(svgPath, pngPath) {
   let page;

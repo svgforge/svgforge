@@ -82,11 +82,13 @@ describe('testing transforms.svgo', () => {
     mockOptimize.mockReturnValueOnce(TEST_RESULT);
     svgoTransform(shape, {}, spriter, noop);
 
-    expect(mockOptimize).toHaveBeenCalledWith(TEST_SVG, {plugins: ['preset-default', {
-      name: 'removeViewBox',
-    }, {
-      name: 'removeTitle',
-    }]});
+    expect(mockOptimize).toHaveBeenCalledWith(TEST_SVG, {
+      plugins: ['preset-default', {
+        name: 'removeViewBox',
+      }, {
+        name: 'removeTitle',
+      }],
+    });
   });
 
   it('should add provided config', () => {

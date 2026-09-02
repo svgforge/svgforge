@@ -61,7 +61,7 @@ describe('testing sort', () => {
       {id: 2},
     ];
 
-    expect(TEST_SHAPES.sort(config.shape.sort)).toStrictEqual([
+    expect(TEST_SHAPES.toSorted(config.shape.sort)).toStrictEqual([
       {id: 0},
       {id: 0},
       {id: 1},

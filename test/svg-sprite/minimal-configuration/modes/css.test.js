@@ -1,5 +1,5 @@
 
-/* eslint-disable max-nested-callbacks */
+/* eslint-disable max-nested-callbacks -- tests legitimately nest callbacks */
 
 import path from 'node:path';
 import fs from 'node:fs';
@@ -36,12 +36,12 @@ describe('testing minimal config', () => {
     `('$name: with minimum configuration', ({testConfigKey}) => {
     const testConfig = testConfigs[testConfigKey];
 
-    const tmpPath = path.join(paths.tmp, `css${testConfig.namespace}`);
+    const temporaryPath = path.join(paths.tmp, `css${testConfig.namespace}`);
 
     beforeAll(async () => {
-      await removeTmpPath(tmpPath);
+      await removeTmpPath(temporaryPath);
       data = {};
-      spriter = new SVGSpriter({dest: tmpPath});
+      spriter = new SVGSpriter({dest: temporaryPath});
       addFixtureFiles(spriter, testConfig.files, testConfig.cwd);
       const {result, data: cssData} = await spriter.compileAsync({
         css: {
@@ -63,24 +63,22 @@ describe('testing minimal config', () => {
       data = cssData.css;
       svg.vertical = path.basename(result.css.sprite.path);
 
-      const promises = ['horizontal', 'diagonal', 'packed'].map(layout => {
-        return new Promise((resolve, reject) => {
-          spriter.compile({
-            css: {
-              sprite: `svg/css.${layout}${testConfig.namespace}.svg`,
-              layout,
-            },
-          }, (error, result) => {
-            if (error) {
-              return reject(error);
-            }
+      const promises = ['horizontal', 'diagonal', 'packed'].map(layout => new Promise((resolve, reject) => {
+        spriter.compile({
+          css: {
+            sprite: `svg/css.${layout}${testConfig.namespace}.svg`,
+            layout,
+          },
+        }, (error, layoutResult) => {
+          if (error) {
+            return reject(error);
+          }
 
-            writeFiles(result);
-            svg[layout] = path.basename(result.css.sprite.path);
-            resolve();
-          });
+          writeFiles(layoutResult);
+          svg[layout] = path.basename(layoutResult.css.sprite.path);
+          resolve();
         });
-      });
+      }));
 
       await Promise.all(promises);
     });
@@ -91,7 +89,7 @@ describe('testing minimal config', () => {
       it('vertical layout', async () => {
         expect.hasAssertions();
 
-        const input = path.join(tmpPath, 'css/svg', svg.vertical);
+        const input = path.join(temporaryPath, 'css/svg', svg.vertical);
         const actual = fs.readFileSync(input, 'utf8');
         const expected = path.join(paths.expectations, `png/css.vertical${testConfig.namespace}.png`);
 
@@ -103,7 +101,7 @@ describe('testing minimal config', () => {
       it('horizontal layout', async () => {
         expect.hasAssertions();
 
-        const input = path.join(tmpPath, 'css/svg', svg.horizontal);
+        const input = path.join(temporaryPath, 'css/svg', svg.horizontal);
         const actual = fs.readFileSync(input, 'utf8');
         const expected = path.join(paths.expectations, `png/css.horizontal${testConfig.namespace}.png`);
 
@@ -115,7 +113,7 @@ describe('testing minimal config', () => {
       it('diagonal layout', async () => {
         expect.hasAssertions();
 
-        const input = path.join(tmpPath, 'css/svg', svg.diagonal);
+        const input = path.join(temporaryPath, 'css/svg', svg.diagonal);
         const actual = fs.readFileSync(input, 'utf8');
         const expected = path.join(paths.expectations, `png/css.diagonal${testConfig.namespace}.png`);
 
@@ -127,7 +125,7 @@ describe('testing minimal config', () => {
       it('packed layout', async () => {
         expect.hasAssertions();
 
-        const input = path.join(tmpPath, 'css/svg', svg.packed);
+        const input = path.join(temporaryPath, 'css/svg', svg.packed);
         const actual = fs.readFileSync(input, 'utf8');
         const expected = path.join(paths.expectations, `png/css.packed${testConfig.namespace}.png`);
 
@@ -145,7 +143,7 @@ describe('testing minimal config', () => {
         data.css = `../sprite${testConfig.namespace}.css`;
 
         const out = mustache.render(previewTemplate, data);
-        const preview = await writeFile(path.join(tmpPath, `css/html/css${testConfig.namespace}.html`), out);
+        const preview = await writeFile(path.join(temporaryPath, `css/html/css${testConfig.namespace}.html`), out);
         const expected = path.join(paths.expectations, `png/css.html${testConfig.namespace}.png`);
 
         await expect(preview).toBeVisuallyCorrectAsHTMLTo(expected);
@@ -155,13 +153,13 @@ describe('testing minimal config', () => {
       it('Sass format', async () => {
         expect.hasAssertions();
 
-        const scssText = sass.renderSync({file: path.join(tmpPath, `css/sprite${testConfig.namespace}.scss`)});
-        await writeFile(path.join(tmpPath, `css/sprite${testConfig.namespace}.scss.css`), scssText.css);
+        const scssText = sass.renderSync({file: path.join(temporaryPath, `css/sprite${testConfig.namespace}.scss`)});
+        await writeFile(path.join(temporaryPath, `css/sprite${testConfig.namespace}.scss.css`), scssText.css);
 
         data.css = `../sprite${testConfig.namespace}.scss.css`;
 
         const out = mustache.render(previewTemplate, data);
-        const preview = await writeFile(path.join(tmpPath, `css/html/scss${testConfig.namespace}.html`), out);
+        const preview = await writeFile(path.join(temporaryPath, `css/html/scss${testConfig.namespace}.html`), out);
         const expected = path.join(paths.expectations, `png/css.html${testConfig.namespace}.png`);
 
         await expect(preview).toBeVisuallyCorrectAsHTMLTo(expected);

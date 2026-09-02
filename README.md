@@ -1,8 +1,8 @@
-# svg-sprite
+# svgforge
 
 [![npm version][npm-image]][npm-url] [![Build Status][ci-image]][ci-url] [![Coverage Status][coveralls-image]][coveralls-url] [![npm downloads][npm-downloads]][npm-url]
 
-svg-sprite is a low-level [Node.js](https://nodejs.org/) module that **takes a bunch of [SVG](https://www.w3.org/TR/SVG/) files**, optimizes them and bakes them into **SVG sprites** of several types:
+svgforge is a low-level [Node.js](https://nodejs.org/) module that **takes a bunch of [SVG](https://www.w3.org/TR/SVG/) files**, optimizes them and bakes them into **SVG sprites** of several types:
 
 * Traditional [CSS sprites](https://en.wikipedia.org/wiki/Sprite_(computer_graphics)#Sprites_by_CSS) for use as background images,
 * CSS sprites with **pre-defined `<view>` elements**, useful for foreground images as well,
@@ -14,18 +14,12 @@ It comes with a set of [Mustache](https://mustache.github.io/) templates for cre
 
 For an up-to-date list of browsers supporting [SVG in general](https://caniuse.com/svg) respectively [SVG fragment identifiers](https://caniuse.com/svg-fragment) in particular (required for `<defs>` and `<symbol>` sprites as well as SVG stacks) please refer to [caniuse.com](https://caniuse.com/).
 
-## Grunt, Gulp & Co.
-
-Being a low-level library with support for [Node.js streams](https://github.com/substack/stream-handbook), *svg-sprite* doesn't take on the part of accessing the file system (i.e. reading the source SVGs from and writing the sprites and CSS files to disk). If you don't want to take care of this stuff yourself, you might rather have a look at the available wrappers for **Grunt** ([grunt-svg-sprite](https://github.com/svg-sprite/grunt-svg-sprite)) and **Gulp** ([gulp-svg-sprite](https://github.com/svg-sprite/gulp-svg-sprite)). *svg-sprite* is also the foundation of the **[iconizr](https://github.com/jkphl/node-iconizr)** project, which serves high-quality SVG based **CSS icon kits with PNG fallbacks**.
-
-
 ## Table of contents
 
 * [Installation](#installation)
 * [Getting started](#getting-started)
   * [Usage pattern](#usage-pattern)
   * [Standard API](docs/api.md)
-  * [Grunt & Gulp wrappers](docs/grunt-gulp.md)
 * [Configuration basics](#configuration-basics)
   * [General configuration options](#general-configuration-options)
   * [Output modes](#output-modes)
@@ -34,7 +28,7 @@ Being a low-level library with support for [Node.js streams](https://github.com/
   * [Output destinations](#output-destinations)
     * [Pre-processor formats and the sprite location](#pre-processor-formats-and-the-sprite-location)
   * [Full configuration documentation](docs/configuration.md)
-  * [Online configurator & project kickstarter](https://svg-sprite.github.io/svg-sprite/)
+  * [Online configurator & project kickstarter](https://svgforge.github.io/svgforge/)
 * [Advanced techniques](#advanced-techniques)
   * [Meta data injection](docs/meta-data.md)
   * [Aligning and duplicating shapes](docs/shape-alignment.md)
@@ -47,16 +41,16 @@ Being a low-level library with support for [Node.js streams](https://github.com/
 
 ## Installation
 
-To install *svg-sprite* globally, run:
+To install *svgforge* globally, run:
 
 ```bash
-npm install svg-sprite -g
+npm install svgforge -g
 ```
 
 
 ## Getting started
 
-Crafting a sprite with *svg-sprite* typically follows these steps:
+Crafting a sprite with *svgforge* typically follows these steps:
 
 1. You [create an instance of the SVGSpriter](docs/api.md#svgspriter-config-), passing a main configuration object to the constructor.
 2. You [register a couple of SVG source files](docs/api.md#svgspriteraddfile--name-svg-) for processing.
@@ -70,7 +64,7 @@ The procedure is the very same for all supported sprite types («modes»).
 ```js
 const fs = require('fs');
 const path = require('path');
-const SVGSpriter = require('svg-sprite');
+const SVGSpriter = require('svgforge');
 
 // Create spriter instance (see below for `config` examples)
 const spriter = new SVGSpriter(config);
@@ -103,12 +97,12 @@ for (const mode of Object.values(result)) {
 
 ```
 
-As you can see, big parts of the above are dealing with disk I/O. In this regard, you can make your life easier by [using the Grunt or Gulp wrappers](docs/grunt-gulp.md) instead of the [standard API](docs/api.md).
+As you can see, big parts of the above are dealing with disk I/O by writing the resulting [vinyl](https://github.com/gulpjs/vinyl) files to disk yourself.
 
 
 ## Configuration basics
 
-Of course you noticed the `config` variable passed to the constructor in the above example. This is *svg-sprite*'s **main configuration** — an `Object` with the following properties:
+Of course you noticed the `config` variable passed to the constructor in the above example. This is *svgforge*'s **main configuration** — an `Object` with the following properties:
 
 ```js
 {
@@ -121,7 +115,7 @@ Of course you noticed the `config` variable passed to the constructor in the abo
 }
 ```
 
-If you don't provide a configuration object altogether, *svg-sprite* uses built-in defaults for these properties, so in fact, they are all optional. However, you will need to enable at least one **output mode** (`mode` property) to get reasonable results (i.e. a sprite of some type).
+If you don't provide a configuration object altogether, *svgforge* uses built-in defaults for these properties, so in fact, they are all optional. However, you will need to enable at least one **output mode** (`mode` property) to get reasonable results (i.e. a sprite of some type).
 
 
 ### General configuration options
@@ -129,7 +123,7 @@ If you don't provide a configuration object altogether, *svg-sprite* uses built-
 Many configuration properties (all except `mode`) apply to all sprites created by the same spriter instance. The default values are:
 
 ```js
-// Common svg-sprite config options and their default values
+// Common svgforge config options and their default values
 const config = {
   dest: '.', // Main output directory
   log: null, // Logging verbosity (default: no logging)
@@ -171,7 +165,7 @@ Please refer to the [configuration documentation](docs/configuration.md) for det
 
 ### Output modes
 
-At the moment, *svg-sprite* supports **five different output modes** (i.e. sprite types), each of them has its own characteristics and use cases. It's up to you to decide which sprite type is the best choice for your project. The `mode` option controls which sprite types are created. You may enable more than one output mode at a time — *svg-sprite* will happily create several sprites in parallel.
+At the moment, *svgforge* supports **five different output modes** (i.e. sprite types), each of them has its own characteristics and use cases. It's up to you to decide which sprite type is the best choice for your project. The `mode` option controls which sprite types are created. You may enable more than one output mode at a time — *svgforge* will happily create several sprites in parallel.
 
 To enable the creation of a specific sprite type with default values, simply set the appropriate `mode` property to `true`:
 
@@ -299,7 +293,7 @@ const config = {
 
 ### Output destinations
 
-Depending on your particular configuration, *svg-sprite* creates a lot of files that partly refer to each other. Several configuration options are controlling the exact location of each file, and you are well advised to spend a moment understanding how they interrelate with each other.
+Depending on your particular configuration, *svgforge* creates a lot of files that partly refer to each other. Several configuration options are controlling the exact location of each file, and you are well advised to spend a moment understanding how they interrelate with each other.
 
 Relative destination paths refer to their ancestors as shown in the following scheme, with the current working directory being the ultimate base.
 
@@ -318,16 +312,16 @@ cwd $   <dest>/                .           Main output directory
 
 By default, stylesheet resources are generated directly into the respective **mode's base directory**.
 
-> "Oh wait! Didn't you say that *svg-sprite* doesn't access the file system? So why do you need output directories at all?" — Well, good point. *svg-sprite* uses [vinyl](https://github.com/gulpjs/vinyl) file objects to pass along virtual resources and to specify where they **are intended to be located**. This is especially important for relative file paths (e.g. the path of an SVG sprite as used by a CSS stylesheet).
+> "Oh wait! Didn't you say that *svgforge* doesn't access the file system? So why do you need output directories at all?" — Well, good point. *svgforge* uses [vinyl](https://github.com/gulpjs/vinyl) file objects to pass along virtual resources and to specify where they **are intended to be located**. This is especially important for relative file paths (e.g. the path of an SVG sprite as used by a CSS stylesheet).
 
 
 #### Pre-processor formats and the sprite location
 
-Special care needs to be taken when you create a **CSS sprite** («css» or «view» mode) along with a pre-processor stylesheet (Sass etc.). In this case, calculating the correct relative SVG sprite path as used by the stylesheets can become tricky, as your (future) plain CSS compilation doesn't necessarily lie side by side with the pre-processor file. *svg-sprite* doesn't know anything about your pre-processor workflow, so it might have to estimate the location of the CSS file:
+Special care needs to be taken when you create a **CSS sprite** («css» or «view» mode) along with a pre-processor stylesheet (Sass etc.). In this case, calculating the correct relative SVG sprite path as used by the stylesheets can become tricky, as your (future) plain CSS compilation doesn't necessarily lie side by side with the pre-processor file. *svgforge* doesn't know anything about your pre-processor workflow, so it might have to estimate the location of the CSS file:
 
-1. If you **truly configured CSS output** in addition to the pre-processor format, *svg-sprite* uses your custom `mode.<mode>.render.css.dest` as the CSS stylesheet location.
+1. If you **truly configured CSS output** in addition to the pre-processor format, *svgforge* uses your custom `mode.<mode>.render.css.dest` as the CSS stylesheet location.
 2. If you just **enabled CSS output** by setting `mode.<mode>.render.css` to `true`, the default value applies, which is `mode.<mode>.dest / "sprite.css"`.
-3. The same holds true when you **don't enable CSS output** at all. *svg-sprite* then simply assumes that the CSS file will be created where the defaults would put it, which is again `mode.<mode>.dest / "sprite.css"`.
+3. The same holds true when you **don't enable CSS output** at all. *svgforge* then simply assumes that the CSS file will be created where the defaults would put it, which is again `mode.<mode>.dest / "sprite.css"`.
 
 So even if you don't enable plain CSS output explicitly, please make sure to set `mode.<mode>.dest` to **where your final CSS file is intended to be**.
 
@@ -339,7 +333,7 @@ The complete configuration documentation including all options [can be found her
 
 ### Online configurator & project kickstarter
 
-To get you quickly off the ground, I made a simple [online configurator](https://svg-sprite.github.io/svg-sprite/) that lets you create a custom *svg-sprite* configuration in seconds. You may download the results as plain JSON, Node.js project, Gruntfile, or Gulpfile. Please visit the configurator at <https://svg-sprite.github.io/svg-sprite/>.
+To get you quickly off the ground, I made a simple [online configurator](https://svgforge.github.io/svgforge/) that lets you create a custom *svgforge* configuration in seconds. You may download the results as plain JSON or a Node.js project. Please visit the configurator at <https://svgforge.github.io/svgforge/>.
 
 
 ## Advanced techniques
@@ -347,34 +341,34 @@ To get you quickly off the ground, I made a simple [online configurator](https:/
 
 ### Meta data injection
 
-In order to improve accessibility, *svg-sprite* can read meta data from a YAML file and inject `<title>` and `<description>` elements into your SVGs. Please refer to the [meta data injection guide](docs/meta-data.md) for details.
+In order to improve accessibility, *svgforge* can read meta data from a YAML file and inject `<title>` and `<description>` elements into your SVGs. Please refer to the [meta data injection guide](docs/meta-data.md) for details.
 
 
 ### Aligning and duplicating shapes
 
-For CSS sprites using a `"horizontal"` or `"vertical"` layout it is sometimes desirable to align the shapes within the sprite. With the help of an external YAML file, *svg-sprite* can not only [control the alignment](docs/shape-alignment.md#aligning-and-duplicating-shapes) for each individual shape but also [create displaced copies](docs/shape-alignment.md#creating-displaced-shape-copies) of them without significantly increasing the sprite's file size.
+For CSS sprites using a `"horizontal"` or `"vertical"` layout it is sometimes desirable to align the shapes within the sprite. With the help of an external YAML file, *svgforge* can not only [control the alignment](docs/shape-alignment.md#aligning-and-duplicating-shapes) for each individual shape but also [create displaced copies](docs/shape-alignment.md#creating-displaced-shape-copies) of them without significantly increasing the sprite's file size.
 
 
 ### Tweaking and adding output formats
 
-*svg-sprite* uses [Mustache](https://mustache.github.io/) templates for rendering the various CSS resources. This makes it very easy to tailor the generated CSS / Sass resources to your needs or add completely new output formats. Please refer to the [templating guide](docs/templating.md) to learn about the details.
+*svgforge* uses [Mustache](https://mustache.github.io/) templates for rendering the various CSS resources. This makes it very easy to tailor the generated CSS / Sass resources to your needs or add completely new output formats. Please refer to the [templating guide](docs/templating.md) to learn about the details.
 
 
 ## Command line usage
 
-The command line interface has been split out into the separate [`svg-sprite-cli`](https://github.com/svg-sprite/svg-sprite) package. Install it globally to get the `svg-sprite` command:
+The command line interface has been split out into the separate [`svgforge-cli`](https://github.com/svgforge/svgforge) package. Install it globally to get the `svgforge` command:
 
 ```bash
-npm install svg-sprite-cli -g
+npm install svgforge-cli -g
 ```
 
 A typical example could look like this:
 
 ```bash
-svg-sprite --css --css-render-css --css-example --dest=out assets/*.svg
+svgforge --css --css-render-css --css-example --dest=out assets/*.svg
 ```
 
-Please refer to the [CLI guide](svg-sprite-cli/docs/command-line.md) for further details.
+Please refer to the [CLI guide](svgforge-cli/docs/command-line.md) for further details.
 
 
 ## Known problems / To-do
@@ -384,20 +378,20 @@ Please refer to the [CLI guide](svg-sprite-cli/docs/command-line.md) for further
 
 ## Changelog
 
-Please refer to the [GitHub releases](https://github.com/svg-sprite/svg-sprite/releases) for a complete release history.
+Please refer to the [GitHub releases](https://github.com/svgforge/svgforge/releases) for a complete release history.
 
 
 ## Legal
 
-Copyright © 2018 Joschi Kuphal <joschi@kuphal.net> / [@jkphl](https://twitter.com/jkphl). *svg-sprite* is licensed under the terms of the [MIT license](LICENSE). The contained example SVG icons are part of the [Tango Icon Library](http://tango.freedesktop.org/Tango_Icon_Library) and belong to the Public Domain.
+Copyright © 2018 Joschi Kuphal <joschi@kuphal.net> / [@jkphl](https://twitter.com/jkphl). *svgforge* is licensed under the terms of the [MIT license](LICENSE). The contained example SVG icons are part of the [Tango Icon Library](http://tango.freedesktop.org/Tango_Icon_Library) and belong to the Public Domain.
 
 
-[npm-url]: https://www.npmjs.com/package/svg-sprite
-[npm-image]: https://img.shields.io/npm/v/svg-sprite?logo=npm&logoColor=fff
-[npm-downloads]: https://img.shields.io/npm/dm/svg-sprite
+[npm-url]: https://www.npmjs.com/package/svgforge
+[npm-image]: https://img.shields.io/npm/v/svgforge?logo=npm&logoColor=fff
+[npm-downloads]: https://img.shields.io/npm/dm/svgforge
 
-[ci-url]: https://github.com/svg-sprite/svg-sprite/actions/workflows/test.yml?query=branch%3Amain
-[ci-image]: https://img.shields.io/github/actions/workflow/status/svg-sprite/svg-sprite/test.yml?branch=main&label=CI&logo=github
+[ci-url]: https://github.com/svgforge/svgforge/actions/workflows/test.yml?query=branch%3Amain
+[ci-image]: https://img.shields.io/github/actions/workflow/status/svgforge/svgforge/test.yml?branch=main&label=CI&logo=github
 
-[coveralls-url]: https://coveralls.io/github/svg-sprite/svg-sprite?branch=main
-[coveralls-image]: https://img.shields.io/coveralls/github/svg-sprite/svg-sprite/main?logo=coveralls
+[coveralls-url]: https://coveralls.io/github/svgforge/svgforge?branch=main
+[coveralls-image]: https://img.shields.io/coveralls/github/svgforge/svgforge/main?logo=coveralls

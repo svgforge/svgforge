@@ -3,9 +3,7 @@ import {chromium} from 'playwright-chromium';
 
 let browser;
 
-const getBrowser = () => {
-  return browser;
-};
+const getBrowser = () => browser;
 
 const launchBrowser = async () => {
   const currentBrowserInstance = getBrowser();

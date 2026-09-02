@@ -37,10 +37,11 @@ const TEST_FILE = new File({
 
 describe('testing setNamespace()', () => {
   /**
-   * @param {boolean} addNamespaceIds shape.spriter.config.svg.namespaceIDs
-   * @param {boolean} isNamespaced shape._namespaced
-   * @param {boolean} addNamespaceClassnames shape.spriter.config.svg.namespaceClassnames
-   * @returns {object} SVGShape
+   Creates a configured SVGShape for namespace testing.
+   @param {boolean} addNamespaceIds shape.spriter.config.svg.namespaceIDs
+   @param {boolean} isNamespaced shape._namespaced
+   @param {boolean} addNamespaceClassnames shape.spriter.config.svg.namespaceClassnames
+   @returns {object} SVGShape
    */
   const createShape = (addNamespaceIds, isNamespaced, addNamespaceClassnames) => {
     const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
@@ -102,7 +103,12 @@ describe('testing setNamespace()', () => {
       const SIXTH_ELEMENTS = [{
         ownerElement: {setAttribute: createMock()},
       }];
-      const mockSelect = createMock().mockReturnValueOnce(FIRST_ELEMENTS).mockReturnValueOnce(SECOND_ELEMENTS).mockReturnValueOnce(THIRD_ELEMENTS).mockReturnValueOnce(FOURTH_ELEMENTS).mockReturnValue(SIXTH_ELEMENTS);
+      const mockSelect = createMock()
+        .mockReturnValueOnce(FIRST_ELEMENTS)
+        .mockReturnValueOnce(SECOND_ELEMENTS)
+        .mockReturnValueOnce(THIRD_ELEMENTS)
+        .mockReturnValueOnce(FOURTH_ELEMENTS)
+        .mockReturnValue(SIXTH_ELEMENTS);
 
       spyOn(xpath, 'useNamespaces').mockReturnValueOnce(mockSelect);
 
