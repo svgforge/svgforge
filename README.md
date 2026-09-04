@@ -9,15 +9,18 @@ svgforge is a low-level [Node.js](https://nodejs.org/) module that **takes a bun
 * inline sprites using the **`<symbol>` element**
 * and [SVG stacks](https://simurai.com/blog/2012/04/02/svg-stacks).
 
+## Changes compared to svg-sprite
+
 This is a fork of [svg-sprite](https://github.com/svg-sprite/svg-sprite) with lots of changes. There may still be outdated documentation and bugs. Please help by submitting a PR, it's very welcome :)
 
 * Complete rewrite from CJS to ESM
+* All node dependencies are upgraded
 * You need Node.js version >= 24
 * Split package to `svgforge` and `svgforge-cli` for easier testing
 * Replace glob with native Node.js glob
-* Remove support for the sprite technique (CSS background position). I've found it antique and not required anymore and it simplifies the code a lot! If you want to use icons as `background-image` you can use the `stack` mode, and then: `background: url(icon.svg#ID)`
-* because there is no background-position
-* Finally all tests are fixed and use Node.js's native test runner instead of Jest
+* Remove SCSS and Stylus support, it was only usefull for sprite generation.
+* Remove support for the sprite technique (CSS background position). I've found it antique and not required anymore and it simplifies the code a lot! If you want to use icons as `background-image` you can use the `stack` mode, and then: `background: url(icon.svg#ID)`. See here: https://css-tricks.com/svg-fragment-identifiers-work/#syntax-for-css
+* Finally all tests are fixed with over 90% coverage and use Node.js's native test runner instead of Jest
 * The CLI now has tests.
 
 It comes with a set of [Mustache](https://mustache.github.io/) templates for creating stylesheets in good ol' [CSS](https://www.w3.org/Style/CSS/). Tweaking the templates or even adding your own **custom output format** is really easy, just as switching on the generation of an **HTML example document** along with your sprite.
