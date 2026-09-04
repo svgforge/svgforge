@@ -9,6 +9,17 @@ svgforge is a low-level [Node.js](https://nodejs.org/) module that **takes a bun
 * inline sprites using the **`<symbol>` element**
 * and [SVG stacks](https://simurai.com/blog/2012/04/02/svg-stacks).
 
+This is a fork of [svg-sprite](https://github.com/svg-sprite/svg-sprite) with lots of changes. There may still be outdated documentation and bugs. Please help by submitting a PR, it's very welcome :)
+
+* Complete rewrite from CJS to ESM
+* You need Node.js version >= 24
+* Split package to `svgforge` and `svgforge-cli` for easier testing
+* Replace glob with native Node.js glob
+* Remove support for the sprite technique (CSS background position). I've found it antique and not required anymore and it simplifies the code a lot! If you want to use icons as `background-image` you can use the `stack` mode, and then: `background: url(icon.svg#ID)`
+* because there is no background-position
+* Finally all tests are fixed and use Node.js's native test runner instead of Jest
+* The CLI now has tests.
+
 It comes with a set of [Mustache](https://mustache.github.io/) templates for creating stylesheets in good ol' [CSS](https://www.w3.org/Style/CSS/). Tweaking the templates or even adding your own **custom output format** is really easy, just as switching on the generation of an **HTML example document** along with your sprite.
 
 For an up-to-date list of browsers supporting [SVG in general](https://caniuse.com/svg) respectively [SVG fragment identifiers](https://caniuse.com/svg-fragment) in particular (required for `<defs>` and `<symbol>` sprites as well as SVG stacks) please refer to [caniuse.com](https://caniuse.com/).
@@ -30,7 +41,6 @@ For an up-to-date list of browsers supporting [SVG in general](https://caniuse.c
   * [Online configurator & project kickstarter](https://svgforge.github.io/svgforge/)
 * [Advanced techniques](#advanced-techniques)
   * [Meta data injection](docs/meta-data.md)
-  * [Aligning and duplicating shapes](docs/shape-alignment.md)
   * [Tweaking and adding output formats](docs/templating.md)
 * [Command line usage](#command-line-usage)
 * [Known problems / To-do](#known-problems--to-do)
@@ -61,32 +71,35 @@ The procedure is the very same for all supported sprite types («modes»).
 ### Usage pattern
 
 ```js
-const fs = require('fs');
-const path = require('path');
-const SVGSpriter = require('svgforge');
+import fs from 'node:fs';
+import path from 'node:path';
+import SVGSpriter from 'svgforge';
 
-// Create spriter instance (see below for `config` examples)
+// Define your configuration
+const config = {
+  // ...
+};
+
+// Create spriter instance
 const spriter = new SVGSpriter(config);
 
-// Add SVG source files — the manual way ...
-spriter.add('assets/svg-1.svg', null, fs.readFileSync('assets/svg-1.svg', 'utf-8'));
-spriter.add('assets/svg-2.svg', null, fs.readFileSync('assets/svg-2.svg', 'utf-8'));
-/* ... */
+// Add SVG source files
+spriter.add(
+  'assets/svg-1.svg',
+  null,
+  fs.readFileSync('assets/svg-1.svg', 'utf8')
+);
 
-// Compile the sprite
-spriter.compile((error, result) => {
-  /* Write `result` files to disk (or do whatever with them ...) */
-  for (const mode of Object.values(result)) {
-    for (const resource of Object.values(mode)) {
-      fs.mkdirSync(path.dirname(resource.path), { recursive: true });
-      fs.writeFileSync(resource.path, resource.contents);
-    }
-  }
-});
+spriter.add(
+  'assets/svg-2.svg',
+  null,
+  fs.readFileSync('assets/svg-2.svg', 'utf8')
+);
 
-// Or compile the sprite async
+// Compile the sprite asynchronously
 const { result } = await spriter.compileAsync();
-/* Write `result` files to disk (or do whatever with them ...) */
+
+// Write generated files to disk
 for (const mode of Object.values(result)) {
   for (const resource of Object.values(mode)) {
     fs.mkdirSync(path.dirname(resource.path), { recursive: true });
@@ -330,22 +343,12 @@ So even if you don't enable plain CSS output explicitly, please make sure to set
 The complete configuration documentation including all options [can be found here](docs/configuration.md).
 
 
-### Online configurator & project kickstarter
-
-To get you quickly off the ground, I made a simple [online configurator](https://svgforge.github.io/svgforge/) that lets you create a custom *svgforge* configuration in seconds. You may download the results as plain JSON or a Node.js project. Please visit the configurator at <https://svgforge.github.io/svgforge/>.
-
-
 ## Advanced techniques
 
 
 ### Meta data injection
 
 In order to improve accessibility, *svgforge* can read meta data from a YAML file and inject `<title>` and `<description>` elements into your SVGs. Please refer to the [meta data injection guide](docs/meta-data.md) for details.
-
-
-### Aligning and duplicating shapes
-
-For tiled sprites using a `"horizontal"` or `"vertical"` layout (the «view» mode) it is sometimes desirable to align the shapes within the sprite. With the help of an external YAML file, *svgforge* can not only [control the alignment](docs/shape-alignment.md#aligning-and-duplicating-shapes) for each individual shape but also [create displaced copies](docs/shape-alignment.md#creating-displaced-shape-copies) of them without significantly increasing the sprite's file size.
 
 
 ### Tweaking and adding output formats
@@ -355,7 +358,7 @@ For tiled sprites using a `"horizontal"` or `"vertical"` layout (the «view» mo
 
 ## Command line usage
 
-The command line interface has been split out into the separate [`svgforge-cli`](https://github.com/svgforge/svgforge) package. Install it globally to get the `svgforge` command:
+The command line interface has been split out into the separate [`svgforge-cli`](https://github.com/svgforge/svgforge-cli) package. Install it globally to get the `svgforge` command:
 
 ```bash
 npm install svgforge-cli -g
@@ -367,7 +370,7 @@ A typical example could look like this:
 svgforge --defs --defs-render-css --defs-example --dest=out assets/*.svg
 ```
 
-Please refer to the [CLI guide](svgforge-cli/docs/command-line.md) for further details.
+Please refer to the [CLI guide](https://github.com/svgforge/svgforge-cli/docs/command-line.md) for further details.
 
 
 ## Known problems / To-do
@@ -382,7 +385,7 @@ Please refer to the [GitHub releases](https://github.com/svgforge/svgforge/relea
 
 ## Legal
 
-Copyright © 2018 Joschi Kuphal <joschi@kuphal.net> / [@jkphl](https://twitter.com/jkphl). *svgforge* is licensed under the terms of the [MIT license](LICENSE). The contained example SVG icons are part of the [Tango Icon Library](http://tango.freedesktop.org/Tango_Icon_Library) and belong to the Public Domain.
+Copyright © 2026 Felix Müller. *svgforge* is licensed under the terms of the [MIT license](LICENSE). The original author is Joschi Kuphal <joschi@kuphal.net> / [@jkphl](https://twitter.com/jkphl). The contained example SVG icons are part of the [Tango Icon Library](http://tango.freedesktop.org/Tango_Icon_Library) and belong to the Public Domain.
 
 
 [npm-url]: https://www.npmjs.com/package/svgforge
