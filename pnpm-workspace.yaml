@@ -1,3 +1,3 @@
-onlyBuiltDependencies:
-  - playwright-chromium
-  - unrs-resolver
+allowBuilds:
+  playwright-chromium: true
+  unrs-resolver: true
