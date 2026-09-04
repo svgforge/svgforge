@@ -11,7 +11,7 @@ on:
 
 env:
   FORCE_COLOR: 2
-  NODE_COV: 22 # The Node.js version to run coveralls on
+  NODE_COV: 24 # The Node.js version to run coveralls on
 
 permissions:
   contents: read
@@ -25,12 +25,12 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        node: [22, 24, 25]
+        node: [24, 25]
         include:
           - os: macos-latest
-            node: 22
+            node: 24
           - os: windows-latest
-            node: 22
+            node: 24
 
     steps:
       - name: Clone repository
@@ -38,17 +38,14 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install pnpm
-        run: npm install --global pnpm
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v7
+      - name: Install pnpm and Node.js
+        uses: pnpm/setup@c9883cc79df532ad1a7b81bf9ab944ceb090d65c # v2.0.0
         with:
-          node-version: ${{ matrix.node }}
-          cache: pnpm
+          runtime: node@${{ matrix.node }}
+          cache: true
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Run example
         run: npm run example
