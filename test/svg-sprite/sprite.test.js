@@ -127,6 +127,16 @@ describe('testing SVGSprite', () => {
       expect(sprite._serialized).toBe(expected);
     });
 
+    it('should escape special characters in root attributes', () => {
+      expect.hasAssertions();
+
+      const sprite = new SVGSprite(false, false, {title: 'A&B <tag> "q" \'s\''}, false, []);
+      sprite.content = ['content'];
+      const expected = '<svg title="A&amp;B &lt;tag&gt; &quot;q&quot; &#39;s&#39;">content</svg>';
+
+      expect(sprite.toString()).toBe(expected);
+    });
+
     it('should transform svg in series', () => {
       expect.hasAssertions();
 

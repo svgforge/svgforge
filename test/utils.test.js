@@ -9,6 +9,7 @@ import {
   trimStart,
   zipObject,
   deepMerge,
+  escapeHtml,
 } from '../lib/svg-sprite/utils/index.js';
 import {describe, expect, it} from './helpers/jest-compat.js';
 
@@ -296,6 +297,22 @@ describe('utils', () => {
       const destination = {a: 1};
 
       expect(deepMerge(destination, {b: 2})).toBe(destination);
+    });
+  });
+
+  describe('escapeHtml', () => {
+    it('should escape all five reserved characters', () => {
+      expect(escapeHtml('&<>"\'')).toBe('&amp;&lt;&gt;&quot;&#39;');
+    });
+
+    it('should return plain text unescaped', () => {
+      expect(escapeHtml('simple text')).toBe('simple text');
+    });
+
+    it('should stringify non-string values', () => {
+      expect(escapeHtml(42)).toBe('42');
+      expect(escapeHtml(null)).toBe('null');
+      expect(escapeHtml(undefined)).toBe('undefined');
     });
   });
 });

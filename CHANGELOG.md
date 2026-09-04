@@ -50,6 +50,16 @@ Newer release notes are published on the GitHub release page: <https://github.co
   `path.normalize()` so both values use the same path separators (fixes
   svg-sprite/svg-sprite#942, per PR svg-sprite/svg-sprite#944); the now
   redundant `trimStart()` call on `name` was dropped
+* Replace the `async` package with native Promise-based helpers
+  (`runWaterfall`/`runParallelLimit`) and drop `async` from the dependencies;
+  the shape processing queue now uses a fixed concurrency limit of 4 instead
+  of scaling with the CPU core count
+* Replace `lodash.merge` with a native `deepMerge` utility
+  (`lib/svg-sprite/utils/index.js`) and drop `lodash.merge` from the
+  dependencies
+* Replace `lodash.escape` with a native `escapeHtml` utility
+  (`lib/svg-sprite/utils/index.js`) and drop `lodash.escape` from the
+  dependencies
 
 
 # About
