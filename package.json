@@ -6,13 +6,13 @@
     "Joschi Kuphal <joschi@kuphal.net> (https://jkphl.is)"
   ],
   "description": "SVG sprites & stacks galore — A low-level Node.js module that takes a bunch of SVG files, optimizes them and bakes them into SVG sprites of several types along with suitable stylesheet resources (e.g. CSS, Sass, etc.)",
-  "homepage": "https://github.com/joeda1/svgforge",
+  "homepage": "https://github.com/svgforge/svgforge",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/joeda1/svgforge.git"
+    "url": "git+https://github.com/svgforge/svgforge.git"
   },
   "bugs": {
-    "url": "https://github.com/joeda1/svgforge/issues"
+    "url": "https://github.com/svgforge/svgforge/issues"
   },
   "license": "MIT",
   "keywords": [
@@ -35,7 +35,7 @@
   ],
   "type": "module",
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "packageManager": "pnpm@11.25.0",
   "main": "lib/svg-sprite.js",
