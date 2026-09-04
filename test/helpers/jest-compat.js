@@ -512,6 +512,34 @@ function expect(received) {
         return make(true);
       },
 
+      get rejects() {
+        return {
+          toThrow(expected) {
+            return (async () => {
+              try {
+                const result = received();
+                if (result && typeof result.then === 'function') {
+                  await result;
+                }
+
+                if (!negated) {
+                  fail('rejects.toThrow: expected promise to reject but it resolved');
+                }
+              } catch (error) {
+                const didMatch = expected === undefined
+                  || (typeof expected === 'function' && error instanceof expected)
+                  || (typeof expected === 'string' && error.message === expected)
+                  || (expected instanceof RegExp && expected.test(error.message));
+
+                if (negated ? didMatch : !didMatch) {
+                  fail(`rejects.toThrow: ${negated ? 'expected promise not to reject with' : 'received'} ${error.constructor.name}: ${error.message}`);
+                }
+              }
+            })();
+          },
+        };
+      },
+
       toBe(expected) {
         const isPass = Object.is(received, expected);
         if (isPass === negated) {
@@ -852,6 +880,17 @@ function it(name, fn, options) {
     currentTestName = typeof name === 'string' ? name : 'test';
     currentSnapshotKey = key;
     if (typeof fn === 'function') {
+      if (fn.length > 0) {
+        return new Promise((resolve, reject) => {
+          const done = error => (error ? reject(error) : resolve());
+          try {
+            fn.call(this, done, ...args);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      }
+
       return fn(...args);
     }
 
@@ -878,7 +917,7 @@ function describeEach(kind) {
         for (const row of rows) {
           const name = interpolateTitle(title, Array.isArray(row) ? row : [row]);
           if (kind === 'describe') {
-            describe(name, () => fn(...row));
+            describe(name, () => fn(...(Array.isArray(row) ? row : [row])));
           } else {
             it(name, () => fn(...(Array.isArray(row) ? row : [row])));
           }
