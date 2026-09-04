@@ -8,6 +8,7 @@ import {
   isPlainObject,
   trimStart,
   zipObject,
+  deepMerge,
 } from '../lib/svg-sprite/utils/index.js';
 import {describe, expect, it} from './helpers/jest-compat.js';
 
@@ -247,6 +248,54 @@ describe('utils', () => {
       expect(() => {
         zipObject(1, false);
       }).toThrow(new TypeError('Both parameters must be an array'));
+    });
+  });
+
+  describe('deepMerge', () => {
+    it('should merge multiple source objects into the destination', () => {
+      expect(deepMerge({a: 1}, {b: 2}, {c: 3})).toStrictEqual({a: 1, b: 2, c: 3});
+    });
+
+    it('should overwrite destination properties with later sources', () => {
+      expect(deepMerge({a: 1}, {a: 2})).toStrictEqual({a: 2});
+    });
+
+    it('should merge nested plain objects recursively', () => {
+      const result = deepMerge({spacing: {box: 'content'}}, {spacing: {padding: {top: 0}}});
+
+      expect(result).toStrictEqual({spacing: {box: 'content', padding: {top: 0}}});
+    });
+
+    it('should keep partial nested overrides instead of replacing the object', () => {
+      const defaults = {
+        padding: {
+          top: 0, right: 0, bottom: 0, left: 0,
+        },
+      };
+
+      expect(deepMerge({}, defaults, {padding: {top: 10}})).toStrictEqual({
+        padding: {
+          top: 10, right: 0, bottom: 0, left: 0,
+        },
+      });
+    });
+
+    it('should replace arrays instead of merging them by index', () => {
+      expect(deepMerge({list: ['a']}, {list: ['b', 'c']})).toStrictEqual({list: ['b', 'c']});
+    });
+
+    it('should leave the source objects untouched', () => {
+      const source = {nested: {padding: {top: 0}}};
+      const result = deepMerge({}, source);
+
+      result.nested.padding.top = 10;
+      expect(source.nested.padding).toStrictEqual({top: 0});
+    });
+
+    it('should return the (mutated) destination object', () => {
+      const destination = {a: 1};
+
+      expect(deepMerge(destination, {b: 2})).toBe(destination);
     });
   });
 });

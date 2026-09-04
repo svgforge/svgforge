@@ -32,9 +32,6 @@ importers:
       lodash.escape:
         specifier: ^4.0.1
         version: 4.0.1
-      lodash.merge:
-        specifier: ^4.6.2
-        version: 4.6.2
       mustache:
         specifier: ^4.2.0
         version: 4.2.0
@@ -1382,9 +1379,6 @@ packages:
 
   lodash.escape@4.0.1:
     resolution: {integrity: sha512-nXEOnb/jK9g0DYMr1/Xvq6l5xMD7GDG55+GSYIYmS0G4tBk/hURD4JR9WCavs04t33WmJx9kCyp9vJ+mr4BOUw==}
-
-  lodash.merge@4.6.2:
-    resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
 
   log-symbols@7.0.1:
     resolution: {integrity: sha512-ja1E3yCr9i/0hmBVaM0bfwDjnGy8I/s6PP4DFp+yP+a+mrHO4Rm7DtmnqROTUkHIkqffC84YY7AeqX6oFk0WFg==}
@@ -3347,8 +3341,6 @@ snapshots:
       p-locate: 5.0.0
 
   lodash.escape@4.0.1: {}
-
-  lodash.merge@4.6.2: {}
 
   log-symbols@7.0.1:
     dependencies:
