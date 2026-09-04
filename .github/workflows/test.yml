@@ -69,4 +69,5 @@ jobs:
         uses: coverallsapp/github-action@v2
         if: startsWith(matrix.os, 'ubuntu') && matrix.node == env.NODE_COV
         with:
+          lcov-file: coverage/lcov.info
           github-token: "${{ secrets.GITHUB_TOKEN }}"
