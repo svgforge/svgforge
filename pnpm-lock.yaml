@@ -14,9 +14,6 @@ importers:
       '@xmldom/xmldom':
         specifier: ^0.9.12
         version: 0.9.12
-      async:
-        specifier: ^3.2.6
-        version: 3.2.6
       css-selector-parser:
         specifier: ^3.3.0
         version: 3.3.0
