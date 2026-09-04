@@ -319,7 +319,7 @@ describe('testing _initSVG()', () => {
     });
     const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
 
-    expect(shape.title.toString()).toBe('<title>test title</title>');
-    expect(shape.description.toString()).toBe('<desc>test description</desc>');
+    expect(shape.title.toString()).toBe('<title xmlns="http://www.w3.org/2000/svg">test title</title>');
+    expect(shape.description.toString()).toBe('<desc xmlns="http://www.w3.org/2000/svg">test description</desc>');
   });
 });
