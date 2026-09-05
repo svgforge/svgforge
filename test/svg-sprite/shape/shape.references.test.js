@@ -1,7 +1,7 @@
 
 import {Buffer} from 'node:buffer';
 import File from 'vinyl';
-import SVGShape from '../../../lib/svg-sprite/shape.js';
+import createShape from '../../../lib/svg-sprite/shape.js';
 import {setDependency} from '../../../lib/deps.js';
 import {
   describe,
@@ -39,7 +39,7 @@ describe('testing _replaceIdAndClassnameReferences()', () => {
   it('should replace ids if subs ids passed', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_STRING = 'url(id1) url(id2)';
     const TEST_SUBS_IDS = {
       id1: 'NEW ID 1',
@@ -51,7 +51,7 @@ describe('testing _replaceIdAndClassnameReferences()', () => {
   it('should not change string if subs ids is null', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_STRING = 'url(id1) url(id2)';
 
     expect(shape._replaceIdAndClassnameReferences(TEST_STRING, null, {}, false)).toBe(TEST_STRING);
@@ -60,7 +60,7 @@ describe('testing _replaceIdAndClassnameReferences()', () => {
   it('should return value of _replaceIdAndClassnameReferencesInCssSelectors() if selectors passed', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_RESULT = 'test result';
     const TEST_STR = 'test str';
     const TEST_SUBS_IDS = {a: '1'};
@@ -76,7 +76,7 @@ describe('testing _replaceIdAndClassnameReferencesInCssSelectors()', () => {
   it('should follow keyText or cssRules if selectorText of passed rule is undefined', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_RULES = [{
       keyText: '2',
       __starts: 0,
@@ -100,7 +100,7 @@ describe('testing _replaceIdAndClassnameReferencesInCssSelectors()', () => {
   it('should follow selectors', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_ID = 'test-id';
     const TEST_RULES = [{
       selectorText: `div.cls1:has(div),#${TEST_ID}`,

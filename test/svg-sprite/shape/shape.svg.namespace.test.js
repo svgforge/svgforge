@@ -2,7 +2,7 @@
 import {Buffer} from 'node:buffer';
 import xpath from 'xpath';
 import File from 'vinyl';
-import SVGShape from '../../../lib/svg-sprite/shape.js';
+import createShape from '../../../lib/svg-sprite/shape.js';
 import NotPermittedError from '../../../lib/svg-sprite/errors/not-permitted-error.js';
 import {setDependency} from '../../../lib/deps.js';
 import {
@@ -43,8 +43,8 @@ describe('testing setNamespace()', () => {
    @param {boolean} addNamespaceClassnames shape.spriter.config.svg.namespaceClassnames
    @returns {object} SVGShape
    */
-  const createShape = (addNamespaceIds, isNamespaced, addNamespaceClassnames) => {
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+  const makeShape = (addNamespaceIds, isNamespaced, addNamespaceClassnames) => {
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
 
     shape.spriter.config.svg.namespaceIDs = addNamespaceIds;
     shape.spriter.config.svg.namespaceClassnames = addNamespaceClassnames;
@@ -56,7 +56,7 @@ describe('testing setNamespace()', () => {
   it('should raise error if shape is not ready', () => {
     expect.hasAssertions();
 
-    const shape = createShape(true, false, true);
+    const shape = makeShape(true, false, true);
     shape.svg.ready = false;
 
     expect(() => {
@@ -68,7 +68,7 @@ describe('testing setNamespace()', () => {
     it('should call multiple xpath.select and set attributes', () => {
       expect.hasAssertions();
 
-      const shape = createShape(true, false, false);
+      const shape = makeShape(true, false, false);
       spyOn(shape, '_replaceIdAndClassnameReferences').mockImplementation().mockReturnValue('');
       const TEST_NAMESPACE = 'test-namespace';
       const TEST_ATTR_VALUE = 'id';
@@ -140,7 +140,7 @@ describe('testing setNamespace()', () => {
     it('should set aria-labelledby', () => {
       expect.hasAssertions();
 
-      const shape = createShape(true, false, false);
+      const shape = makeShape(true, false, false);
       spyOn(shape, '_replaceIdAndClassnameReferences').mockImplementation();
       const TEST_ATTR_VALUE = 'id';
       const TEST_NAMESPACE = 'test-namespace';
@@ -165,7 +165,7 @@ describe('testing setNamespace()', () => {
     it('should call xpath.select with //*[@class]', () => {
       expect.hasAssertions();
 
-      const shape = createShape(false, false, true);
+      const shape = makeShape(false, false, true);
       spyOn(shape, '_replaceIdAndClassnameReferences').mockImplementation();
       const TEST_ELEMENTS = [{
         getAttribute: createMock().mockReturnValueOnce('1 2 3 4 5  6 '),
@@ -188,7 +188,7 @@ describe('testing setNamespace()', () => {
   it('should not call anything if already namespaced', () => {
     expect.hasAssertions();
 
-    const shape = createShape(true, true, true);
+    const shape = makeShape(true, true, true);
     spyOn(xpath, 'useNamespaces');
 
     shape.setNamespace('123');
@@ -199,7 +199,7 @@ describe('testing setNamespace()', () => {
   it('should not call anything if shape has no namespaceIds and namespaceClassnames', () => {
     expect.hasAssertions();
 
-    const shape = createShape(false, false, false);
+    const shape = makeShape(false, false, false);
     spyOn(xpath, 'useNamespaces');
 
     shape.setNamespace('123');
@@ -212,7 +212,7 @@ describe('testing resetNamespace()', () => {
   it('should not change _namespaced if it is already not namespaced', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     shape._namespaced = false;
     shape.resetNamespace();
 
@@ -222,7 +222,7 @@ describe('testing resetNamespace()', () => {
   it('should not change _namespaced if this.spriter.config.svg.namespaceIDs is falsy', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     shape.spriter.config.svg.namespaceIDs = false;
     shape._namespaced = true;
     shape.resetNamespace();
@@ -233,7 +233,7 @@ describe('testing resetNamespace()', () => {
   it('should change _namespaced if it is namespaced and this.spriter.config.svg.namespaceIDs is truthy', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     shape.spriter.config.svg.namespaceIDs = true;
     shape._namespaced = true;
     shape.svg.ready = TEST_FILE.contents.toString();

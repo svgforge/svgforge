@@ -1,7 +1,7 @@
 
 import {Buffer} from 'node:buffer';
 import File from 'vinyl';
-import SVGShape from '../../../lib/svg-sprite/shape.js';
+import createShape from '../../../lib/svg-sprite/shape.js';
 import DimensionsCalculationError from '../../../lib/svg-sprite/errors/dimensions-calculation-error.js';
 import {setDependency, resetDependencies} from '../../../lib/deps.js';
 import {
@@ -48,7 +48,7 @@ describe('testing _complementDimensions()', () => {
   it('should call _setDimensions if shape has width and height', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const cb = jest.fn();
 
     shape.width = 10;
@@ -63,7 +63,7 @@ describe('testing _complementDimensions()', () => {
   it('should call _determineDimensions and then _setDimensions if shape has no width and height', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const cb = jest.fn();
     const testSetDimensions = jest.fn();
 
@@ -85,7 +85,7 @@ describe('testing _determineDimensions()', () => {
   it('should set viewBox', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const cb = jest.fn();
     jest.spyOn(shape, '_round').mockReturnValueOnce(10).mockReturnValueOnce(20);
     shape.viewBox = [0, 1, 2, 3];
@@ -105,7 +105,7 @@ describe('testing _determineDimensions()', () => {
   it('should call calculateSvgDimensions', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_WIDTH = 200;
     const TEST_HEIGHT = 100;
     const TEST_SVG = 'svg';
@@ -129,7 +129,7 @@ describe('testing _determineDimensions()', () => {
   it('should call callback with error raised in calculateSvgDimensions', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const cb = jest.fn();
     const TEST_ERROR = 'test error';
     shape.width = 0;
@@ -150,7 +150,7 @@ describe('testing _setDimensions()', () => {
 
     const TEST_WIDTH = 300;
     const TEST_HEIGHT = 100;
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     shape.width = TEST_WIDTH;
     shape.height = TEST_HEIGHT;
 
@@ -165,7 +165,7 @@ describe('testing _setDimensions()', () => {
   it('should set attributes for all dimensions', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_WIDTH = 300;
     const TEST_HEIGHT = 100;
     jest.spyOn(shape.dom.documentElement, 'setAttribute').mockImplementation();
@@ -184,7 +184,7 @@ describe('testing _setDimensions()', () => {
 
       const TEST_WIDTH = 400;
       const TEST_HEIGHT = 100;
-      const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+      const shape = createShape(TEST_FILE, TEST_SPRITER);
       shape.width = TEST_WIDTH;
       shape.height = TEST_HEIGHT;
       shape.config.spacing.box = 'padding';
@@ -204,7 +204,7 @@ describe('testing _setDimensions()', () => {
 
       const TEST_WIDTH = 300;
       const TEST_HEIGHT = 100;
-      const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+      const shape = createShape(TEST_FILE, TEST_SPRITER);
       shape.width = TEST_WIDTH;
       shape.height = TEST_HEIGHT;
       shape.config.spacing.box = 'padding';
@@ -224,7 +224,7 @@ describe('testing _setDimensions()', () => {
 
       const TEST_WIDTH = 300;
       const TEST_HEIGHT = 100;
-      const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+      const shape = createShape(TEST_FILE, TEST_SPRITER);
       shape.width = TEST_WIDTH / 2;
       shape.height = TEST_HEIGHT / 2;
       shape.config.spacing.box = 'icon';
@@ -245,7 +245,7 @@ describe('testing _setDimensions()', () => {
 
       const TEST_WIDTH = 300;
       const TEST_HEIGHT = 100;
-      const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+      const shape = createShape(TEST_FILE, TEST_SPRITER);
       shape.width = TEST_WIDTH * 2;
       shape.height = TEST_HEIGHT;
       shape.config.spacing.box = 'icon';
@@ -267,7 +267,7 @@ describe('testing _addPadding()', () => {
     expect.hasAssertions();
 
     const noop = jest.fn();
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
 
     jest.spyOn(shape, 'getViewbox').mockReturnValueOnce([100, 200, 300, 400]);
     jest.spyOn(shape, 'setViewbox');
@@ -292,7 +292,7 @@ describe('testing _addPadding()', () => {
     expect.hasAssertions();
 
     const noop = jest.fn();
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
 
     jest.spyOn(shape, 'getViewbox');
     jest.spyOn(shape, 'setViewbox');
@@ -317,7 +317,7 @@ describe('testing _addMetadata()', () => {
   it('should set meta description', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const noop = jest.fn();
     const TEST_DESCRIPTION = 'TEST';
 
@@ -337,7 +337,7 @@ describe('testing _addMetadata()', () => {
   it('should set description if not exists', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const noop = jest.fn();
     const TEST_DESCRIPTION = 'TEST';
 
@@ -353,7 +353,7 @@ describe('testing _addMetadata()', () => {
   it('should set meta title', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const noop = jest.fn();
     const TEST_TITLE = 'TEST';
 
@@ -373,7 +373,7 @@ describe('testing _addMetadata()', () => {
   it('should set title if not exists', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const noop = jest.fn();
     const TEST_TITLE = 'TEST';
 
@@ -389,7 +389,7 @@ describe('testing _addMetadata()', () => {
   it('should remove aria-labelledby if neither title or descriptions contains in meta', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const noop = jest.fn();
 
     jest.spyOn(shape.dom.documentElement, 'hasAttribute').mockReturnValueOnce(true);
@@ -411,7 +411,7 @@ describe('testing complement()', () => {
     const testAddMetadata = jest.fn().mockImplementation(fn => fn(null));
     const noop = jest.fn();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
 
     shape._complementDimensions = {
       bind() {
