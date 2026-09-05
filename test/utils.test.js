@@ -298,6 +298,13 @@ describe('utils', () => {
 
       expect(deepMerge(destination, {b: 2})).toBe(destination);
     });
+
+    it('should not pollute the prototype via __proto__/constructor keys', () => {
+      const result = deepMerge({}, JSON.parse('{"__proto__": {"polluted": true}}'));
+
+      expect(Object.hasOwn(result, '__proto__')).toBe(false);
+      expect(Object.getPrototypeOf(result).polluted).toBeUndefined();
+    });
   });
 
   describe('escapeHtml', () => {
