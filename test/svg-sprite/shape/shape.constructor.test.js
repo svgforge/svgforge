@@ -4,7 +4,7 @@
 import path from 'node:path';
 import {Buffer} from 'node:buffer';
 import File from 'vinyl';
-import SVGShape from '../../../lib/svg-sprite/shape.js';
+import createShape from '../../../lib/svg-sprite/shape.js';
 import {
   describe,
   expect,
@@ -31,7 +31,7 @@ describe('testing Shape.constructor', () => {
         },
         verbose: jest.fn(),
       };
-      const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+      const shape = createShape(TEST_FILE, TEST_SPRITER);
 
       expect(shape.spriter).toBe(TEST_SPRITER);
       expect(shape.source).toBe(TEST_FILE);
@@ -55,7 +55,7 @@ describe('testing Shape.constructor', () => {
           },
           verbose: jest.fn(),
         };
-        const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+        const shape = createShape(TEST_FILE, TEST_SPRITER);
 
         expect(shape.config).toStrictEqual(expect.objectContaining({TEST: 1, TEST_2: 2}));
       });
@@ -75,7 +75,7 @@ describe('testing Shape.constructor', () => {
             },
             verbose: jest.fn(),
           };
-          const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+          const shape = createShape(TEST_FILE, TEST_SPRITER);
 
           expect(shape.config.id.generator(`test${path.sep}test.f.svg`)).toBe('test--test.f');
           expect(shape.config.id.generator('test 1.svg')).toBe('test_1');
@@ -103,7 +103,7 @@ describe('testing Shape.constructor', () => {
             },
             verbose: jest.fn(),
           };
-          const shape = new SVGShape(TEST_FILE_WITH_FOLDERS, TEST_SPRITER);
+          const shape = createShape(TEST_FILE_WITH_FOLDERS, TEST_SPRITER);
 
           expect(shape.config.id.generator(TEST_FILE_WITH_FOLDERS.relative, TEST_FILE_WITH_FOLDERS)).toBe('folder--test_path.f');
         });
@@ -122,7 +122,7 @@ describe('testing Shape.constructor', () => {
             },
             verbose: jest.fn(),
           };
-          const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+          const shape = createShape(TEST_FILE, TEST_SPRITER);
 
           expect(shape.config.id.generator(`test${path.sep}test.f.svg`)).toBe('generatortest--test.f');
           expect(shape.config.id.generator('test 1.svg')).toBe('generatortest_1');
@@ -142,7 +142,7 @@ describe('testing Shape.constructor', () => {
             },
             verbose: jest.fn(),
           };
-          const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+          const shape = createShape(TEST_FILE, TEST_SPRITER);
 
           expect(shape.config.id.generator(`test${path.sep}test.f.svg`)).toBe('test--test.f-test');
           expect(shape.config.id.generator('test 1.svg')).toBe('test_1-test');
@@ -163,7 +163,7 @@ describe('testing Shape.constructor', () => {
             },
             verbose: jest.fn(),
           };
-          const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+          const shape = createShape(TEST_FILE, TEST_SPRITER);
 
           expect(shape.config.id.generator(`test${path.sep}test.f.svg`)).toBe('test!test.f-test');
           expect(shape.config.id.generator('test 1.svg')).toBe('test_1-test');
@@ -184,7 +184,7 @@ describe('testing Shape.constructor', () => {
             },
             verbose: jest.fn(),
           };
-          const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+          const shape = createShape(TEST_FILE, TEST_SPRITER);
 
           expect(shape.config.id.generator(`test${path.sep}test.f.svg`)).toBe('test.f-test');
           expect(shape.config.id.generator('test 1.svg')).toBe('test_1-test');
@@ -209,7 +209,7 @@ describe('testing Shape.constructor', () => {
           },
           verbose: jest.fn(),
         };
-        const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+        const shape = createShape(TEST_FILE, TEST_SPRITER);
 
         expect(shape.meta).toBe('TEST_META');
       });
@@ -230,7 +230,7 @@ describe('testing Shape.constructor', () => {
           },
           verbose: jest.fn(),
         };
-        const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+        const shape = createShape(TEST_FILE, TEST_SPRITER);
 
         expect(shape.meta).toBe('TEST_META');
       });

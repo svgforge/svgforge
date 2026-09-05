@@ -2,7 +2,7 @@
 import {Buffer} from 'node:buffer';
 import File from 'vinyl';
 import {XMLSerializer} from '@xmldom/xmldom';
-import SVGShape from '../../../lib/svg-sprite/shape.js';
+import createShape from '../../../lib/svg-sprite/shape.js';
 import {
   describe,
   expect,
@@ -32,7 +32,7 @@ describe('testing getSVG()', () => {
   it('should clone the node', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     jest.spyOn(shape.dom.documentElement, 'cloneNode');
 
     shape.getSVG();
@@ -43,7 +43,7 @@ describe('testing getSVG()', () => {
   it('should return serialized string with declarations if inline is true', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_NODE = shape.dom.createElementNS(shape.DEFAULT_SVG_NAMESPACE, 'svg');
     jest.spyOn(shape, '_stripInlineNamespaceDeclarations').mockReturnValueOnce(TEST_NODE);
 
@@ -53,7 +53,7 @@ describe('testing getSVG()', () => {
   it('should call transform if it is a function', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const testFn = jest.fn();
 
     shape.getSVG(false, testFn);
@@ -64,7 +64,7 @@ describe('testing getSVG()', () => {
   it('should return serialized xml if inline is true', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_NODE = shape.dom.createElementNS(shape.DEFAULT_SVG_NAMESPACE, 'svg');
     jest.spyOn(shape, '_stripInlineNamespaceDeclarations').mockReturnValueOnce(TEST_NODE);
 
@@ -76,7 +76,7 @@ describe('testing getSVG()', () => {
 
     const TEST_XML_DECLARATION = 'TEST XML DECLARATION';
     const TEST_DOCTYPE_DECLARATION = 'TEST DOCTYPE DECLARATION';
-    const shape = new SVGShape(TEST_FILE, {
+    const shape = createShape(TEST_FILE, {
       config: {
         shape: {
           meta: {},
@@ -98,7 +98,7 @@ describe('testing getSVG()', () => {
   it('should substitute ID references in href attributes', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(new File({
+    const shape = createShape(new File({
       base: TEST_FILE.base,
       path: TEST_FILE.path,
       cwd: TEST_FILE.cwd,
@@ -129,7 +129,7 @@ describe('testing getSVG()', () => {
   it('should substitute ID references in xlink:href attributes', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(new File({
+    const shape = createShape(new File({
       base: TEST_FILE.base,
       path: TEST_FILE.path,
       cwd: TEST_FILE.cwd,
@@ -162,7 +162,7 @@ describe('testing _stripInlineNamespaceDeclarations()', () => {
   it('should deal with nsMap if passed', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_ELEMENT = {
       childNodes: [],
     };
@@ -189,7 +189,7 @@ describe('testing _stripInlineNamespaceDeclarations()', () => {
   it('should remove xmlns if it exists', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_ELEMENT = {
       attributes: {
         getNamedItem: jest.fn().mockReturnValueOnce({value: shape.DEFAULT_SVG_NAMESPACE}),
@@ -206,7 +206,7 @@ describe('testing _stripInlineNamespaceDeclarations()', () => {
   it('should remove xmlns:xlink if it not exists in nsMap', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_ELEMENT = {
       attributes: {
         getNamedItem: jest.fn().mockReturnValueOnce({value: shape.XLINK_NAMESPACE}),
@@ -223,7 +223,7 @@ describe('testing _stripInlineNamespaceDeclarations()', () => {
   it('should remove xmlns:xlink if it exists in nsMap', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_ELEMENT = {
       attributes: {
         getNamedItem: jest.fn().mockReturnValueOnce({value: shape.XLINK_NAMESPACE}),
@@ -241,7 +241,7 @@ describe('testing _stripInlineNamespaceDeclarations()', () => {
     expect.hasAssertions();
 
     let isMethodMocked = false;
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_CHILD_1 = {nodeType: 1};
     const TEST_CHILD_2 = {nodeType: 1};
     const TEST_CHILD_3 = {nodeType: 666};
@@ -281,7 +281,7 @@ describe('testing setSVG()', () => {
   it('should set attributes to svg and call _initSVG()', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_SVG = 'TEST_svg';
     const TEST_RESULT = {TEST: 'result'};
 
@@ -298,7 +298,7 @@ describe('testing _round()', () => {
   it('should return expected result', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
 
     shape._precision = 0.1;
 

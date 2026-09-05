@@ -1,7 +1,7 @@
 
 import {Buffer} from 'node:buffer';
 import File from 'vinyl';
-import SVGShape from '../../../lib/svg-sprite/shape.js';
+import createShape from '../../../lib/svg-sprite/shape.js';
 import {
   describe,
   expect,
@@ -29,7 +29,7 @@ describe('testing getDimensions()', () => {
   it('should return expected width, height', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     shape.width = 100;
     shape.height = 200;
 
@@ -46,7 +46,7 @@ describe('testing setDimensions()', () => {
 
     const TEST_WIDTH = 200;
     const TEST_HEIGHT = 100;
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
 
     shape.setDimensions(TEST_WIDTH, TEST_HEIGHT);
 
@@ -61,7 +61,7 @@ describe('testing getViewbox()', () => {
   it('should set viewbox if it has not', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     shape.viewBox = null;
     shape.width = null;
     shape.height = null;
@@ -76,7 +76,7 @@ describe('testing getViewbox()', () => {
   it('should set viewbox with provided values', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     shape.viewBox = null;
     shape.width = null;
     shape.height = null;
@@ -92,7 +92,7 @@ describe('testing getViewbox()', () => {
     expect.hasAssertions();
 
     const TEST_VIEWBOX = 'test viewbox';
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     shape.viewBox = TEST_VIEWBOX;
 
     expect(shape.getViewbox()).toBe(TEST_VIEWBOX);
@@ -103,7 +103,7 @@ describe('testing setViewbox()', () => {
   it('should set accordingly if first param is array', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const expected = [0, 1, 2, 3, 4, 23, NaN];
 
     expect(shape.setViewbox([0, 1, 2, 3, 4, '23', 'string'])).toStrictEqual(expected);
@@ -114,7 +114,7 @@ describe('testing setViewbox()', () => {
   it('should fill with zeros if first param is empty array', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const expected = [0, 0, 0, 0];
 
     expect(shape.setViewbox([])).toStrictEqual(expected);
@@ -125,7 +125,7 @@ describe('testing setViewbox()', () => {
   it('should accordingly to passed params', () => {
     expect.hasAssertions();
 
-    const shape = new SVGShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, TEST_SPRITER);
     const expected = [0, 1, 2, 3];
 
     expect(shape.setViewbox(...expected)).toStrictEqual(expected);
