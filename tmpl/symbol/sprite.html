@@ -29,16 +29,18 @@
         padding: 2em 3em 0;
       }
 
-      section ul {
+      .grid {
+        display: grid;
+        gap: clamp(1rem, 2.5vw, 2rem);
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        list-style: none;
         margin: 0;
         padding: 0;
       }
 
-      section li {
-        display: inline-block;
+      .grid li {
         background-color: #fff;
         position: relative;
-        margin: 0 2em 2em 0;
         vertical-align: top;
         border: 1px solid #ccc;
         padding: 1em 1em 3em;
@@ -46,15 +48,15 @@
       }
 
       .icon-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         margin: 0;
-        width: 144px;
+        width: 100%;
         height: 144px;
         position: relative;
         background: #ccc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath fill='%23fff' d='M6 0h6v6H6zM0 6h6v6H0z'/%3E%3C/svg%3E") top left repeat;
         border: 1px solid #ccc;
-        display: table-cell;
-        vertical-align: middle;
-        text-align: center;
       }
 
       .icon {
@@ -138,7 +140,7 @@ for further details on how to create this embeddable sprite variant.
     <header>
       <h1>SVG <code>&lt;symbol&gt;</code> sprite preview</h1>
       <p>This preview features two methods of using the generated sprite in conjunction with inline SVG. Please have a look at the HTML source for further details and be aware of the following constraints:</p>
-      <ul>
+      <ul class="grid">
         <li>Your browser has to <a href="https://caniuse.com/svg-html5" target="_blank" rel="noopener noreferrer">support inline SVG</a> for these techniques to work.</li>
         <li>The embedded sprite (A) slightly differs from the generated external one. Please <a href="https://github.com/svg-sprite/svg-sprite/blob/main/docs/configuration.md#defs--symbol-mode" target="_blank" rel="noopener noreferrer">see the documentation</a> for details on how to create such an embeddable sprite.</li>
       </ul>
@@ -153,7 +155,7 @@ embedded above. They may be styled via CSS.
 -->
 
       <h3>A) Inline SVG with embedded sprite</h3>
-      <ul>
+      <ul class="grid">
 
 {{#shapes}}       <li title="{{name}}">
           <div class="icon-box">
@@ -180,7 +182,7 @@ SVG sprite. They may be styled via CSS.
 -->
 
       <h3>B) Inline SVG with external sprite</h3>
-      {{#inline}}<p>Please set the <code>inline</code> option to <code>false</code> in order to preview this method.</p>{{/inline}}{{^inline}}<ul>
+      {{#inline}}<p>Please set the <code>inline</code> option to <code>false</code> in order to preview this method.</p>{{/inline}}{{^inline}}<ul class="grid">
 
 {{#shapes}}       <li title="{{name}}">
           <div class="icon-box">
@@ -191,6 +193,34 @@ SVG sprite. They may be styled via CSS.
           <h2>{{name}}</h2>
         </li>
 {{/shapes}}     </ul>{{/inline}}
+
+<!--
+====================================================================================================
+-->
+
+    </section>
+    <section>
+
+<!--
+C) Inline SVG, sized by viewBox only (stacksvg-style)
+====================================================================================================
+This method needs no CSS at all: the SVG is sized by a single `width` (or `height`) attribute and the
+missing other dimension is derived from the shape's viewBox — the same technique the
+[stacksvg](https://github.com/stacksvg/stacksvg) project relies on.
+-->
+
+      <h3>C) Inline SVG, sized by viewBox only (stacksvg-style)</h3>
+      <ul class="grid">
+
+{{#shapes}}       <li title="{{name}}">
+          <div class="icon-box">
+            <svg viewBox="0 0 {{width.outer}} {{height.outer}}" width="1.5em">
+              <use xlink:href="{{{example}}}#{{name}}"></use>
+            </svg>
+          </div>
+          <h2>{{name}}</h2>
+        </li>
+{{/shapes}}     </ul>
 
 <!--
 ====================================================================================================

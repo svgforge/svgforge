@@ -29,16 +29,18 @@
         padding: 2em 3em 0;
       }
 
-      section ul {
+      .grid {
+        display: grid;
+        gap: clamp(1rem, 2.5vw, 2rem);
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        list-style: none;
         margin: 0;
         padding: 0;
       }
 
-      section li {
-        display: inline-block;
+      .grid li {
         background-color: #fff;
         position: relative;
-        margin: 0 2em 2em 0;
         vertical-align: top;
         border: 1px solid #ccc;
         padding: 1em 1em 3em;
@@ -46,15 +48,15 @@
       }
 
       .icon-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         margin: 0;
-        width: 144px;
+        width: 100%;
         height: 144px;
         position: relative;
         background: #ccc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath fill='%23fff' d='M6 0h6v6H6zM0 6h6v6H0z'/%3E%3C/svg%3E") top left repeat;
         border: 1px solid #ccc;
-        display: table-cell;
-        vertical-align: middle;
-        text-align: center;
       }
 
       .icon {
@@ -117,7 +119,7 @@ They might well be outsourced to an external stylesheet of course.
     <header>
       <h1>SVG stack preview</h1>
       <p>This preview features an SVG stack. Please have a look at the HTML source for further details and be aware of the following constraints:</p>
-      <ul>
+      <ul class="grid">
         <li>Your browser has to <a href="https://caniuse.com/svg-fragment" target="_blank" rel="noopener noreferrer">support SVG fragment identifiers</a> for SVG stacks to work.</li>
         <li>Support for SVG fragment identifiers hasn't always been that decent. For older browsers you will have to use some prolyfill like <a href="https://github.com/preciousforever/SVG-Stacker/blob/master/fixsvgstack.jquery.js" target="_blank" rel="noopener noreferrer">fixsvgstack.jquery.js</a>.</li>
       </ul>
@@ -132,7 +134,7 @@ external sprite. By default, all shapes inside the sprite are hidden by CSS. The
 selector is used to show the very shape that is referenced by the fragment identifier.
 -->
 
-      <ul>
+      <ul class="grid">
 
 {{#shapes}}       <li title="{{name}}">
           <div class="icon-box">
@@ -145,6 +147,40 @@ selector is used to show the very shape that is referenced by the fragment ident
 <!--
 ====================================================================================================
 -->
+
+      <h3>B) Inline SVG, sized by viewBox only (stacksvg-style)</h3>
+      <ul class="grid">
+
+{{#shapes}}       <li title="{{name}}">
+          <div class="icon-box">
+            <svg viewBox="0 0 {{width.outer}} {{height.outer}}" width="1.5em">
+              <use xlink:href="{{{example}}}#{{name}}"></use>
+            </svg>
+          </div>
+          <h2>{{name}}, {{ fileSize }}</h2>
+        </li>
+{{/shapes}}     </ul>
+
+<!--
+C) Sprite as CSS background image (inline style)
+====================================================================================================
+The stack sprite may also be used as a CSS background image. The fragment identifier (`#id`) selects
+the section to show, just like with `<img>` before. The `:target` pseudo selector reveals the
+referenced shape. This variant only works with the stack mode — the other modes don't expose their
+shapes this way. Note the `background-repeat: no-repeat` and the `-dims` class that provides the
+shape dimensions.
+-->
+
+      <h3>C) Sprite as CSS background image (inline style)</h3>
+      <ul class="grid">
+
+{{#shapes}}       <li title="{{name}}">
+          <div class="icon-box">
+            <div class="{{#selector.dimensions}}{{#last}}{{#classname}}{{raw}}{{/classname}}{{/last}}{{/selector.dimensions}}" style="background-image: url('{{{example}}}#{{name}}');"></div>
+          </div>
+          <h2>{{name}}, {{ fileSize }}</h2>
+        </li>
+{{/shapes}}     </ul>
 
     </section>
     <footer>
