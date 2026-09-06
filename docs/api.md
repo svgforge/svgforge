@@ -18,11 +18,9 @@ To understand these methods' roles and interactions, please have a look at the f
 ### Usage example
 
 ```js
-'use strict';
-
-const fs = require('fs');
-const path = require('path');
-const SVGSpriter = require('svgforge'),
+import fs from 'node:fs';
+import path from 'node:path';
+import SVGSpriter from 'svgforge';
 
 // 1. Create and configure a spriter instance
 // ====================================================================
@@ -89,12 +87,10 @@ It is important to know that the spriter **optimizes the SVG files as soon as yo
 ##### Example using [glob](https://github.com/isaacs/node-glob) and [vinyl](https://github.com/gulpjs/vinyl)
 
 ```js
-'use strict';
-
-const fs = require('fs');
-const path = require('path');
-const SVGSpriter = require('svgforge');
-const File = require('vinyl');
+import fs from 'node:fs';
+import path from 'node:path';
+import SVGSpriter from 'svgforge';
+import File from 'vinyl';
 
 const spriter = new SVGSpriter({
   dest: 'out',
@@ -229,8 +225,8 @@ try {
 ##### Shape access example
 
 ```js
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
 
 spriter.getShapes(path.resolve('tmp/svg'), (error, result) => {
   result.forEach(file => {

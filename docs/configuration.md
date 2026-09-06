@@ -18,7 +18,7 @@ The *svgforge* **main configuration** is provided to the [constructor](api.md#sv
 }
 ```
 
-All of these properties are optional so in fact, even an empty object `{}` is a valid configuration for *svgforge*. What follows is a complete reference of all available configuration settings. For getting off the ground quickly, you may also use the [online configurator & kickstarter](https://svgforge.github.io/svgforge/), which lets you create a custom configuration in seconds.
+All of these properties are optional so in fact, even an empty object `{}` is a valid configuration for *svgforge*. What follows is a complete reference of all available configuration settings. For getting off the ground quickly, [DeepWiki](https://deepwiki.com/svgforge/svgforge) can help you create a custom configuration in seconds.
 
 
 ## Table of contents
@@ -275,7 +275,7 @@ The `svg.transform` option can be used to post-process and customize the SVG spr
 }
 ```
 
-The callbacks are processed synchronously and in the given order. Each one is passed to the sprite's SVG source as its first (and only) argument and is expected to return the modified SVG source after transformation. It's completely up to what you do with the SVG source, just don't forget to return it in the end. You may e.g. run some regex or even full-blown DOM operations on the SVG contents (*svgforge* depends on [xmldom](https://github.com/xmldom/xmldom), so you may require a parser instance `const DOMParser = require('@xmldom/xmldom').DOMParser; /* ... */` within your callback ...).
+The callbacks are processed synchronously and in the given order. Each one is passed to the sprite's SVG source as its first (and only) argument and is expected to return the modified SVG source after transformation. It's completely up to what you do with the SVG source, just don't forget to return it in the end. You may e.g. run some regex or even full-blown DOM operations on the SVG contents (*svgforge* depends on [xmldom](https://github.com/xmldom/xmldom), so you may import a parser instance `import {DOMParser} from '@xmldom/xmldom'; /* ... */` within your callback ...).
 
 
 ### Custom templating variables

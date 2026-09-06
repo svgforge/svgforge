@@ -15,15 +15,19 @@ You can explore the API with [DeepWiki](https://deepwiki.com/svgforge/svgforge),
 
 This is a fork of [svg-sprite](https://github.com/svg-sprite/svg-sprite) with lots of changes. There may still be outdated documentation and bugs. Please help by submitting a PR, it's very welcome :)
 
+The idea is to have it as a *drop-in replacement of svg-sprite*, with the exception of the removed CSS preprocessor support and old school sprite technique.
+
 * Complete rewrite from CJS to ESM
 * All node dependencies are upgraded
 * You need Node.js version >= 24
 * Split package to `svgforge` and `svgforge-cli` for easier testing
 * Drop grunt and gulp (you can still use it with a few lines of code)
-* Replace glob with native Node.js glob
+* Replace glob with native [Node.js glob](https://nodejs.org/api/fs.html#fspromisesglobpattern-options)
 * Remove SCSS, LESS and Stylus support, it was only useful for sprite generation.
+* Replace async npm package with native ES6 Promise API
+* Replace lodash with native ES6 + utility functions
 * Remove support for the sprite technique (CSS background position). I've found it antique and not required anymore and it simplifies the code a lot! If you want to use icons as `background-image` you can use the `stack` mode, and then: `background: url(icon.svg#ID)`. See here: https://css-tricks.com/svg-fragment-identifiers-work/#syntax-for-css
-* Finally all tests are fixed with over 90% coverage and use Node.js's native test runner instead of Jest
+* Finally all tests are fixed with over 90% coverage and use [Node.js's native test runner](https://nodejs.org/api/test.html) instead of Jest
 * The CLI now has tests.
 
 It comes with a set of [Mustache](https://mustache.github.io/) templates for creating stylesheets in good ol' [CSS](https://www.w3.org/Style/CSS/). Tweaking the templates or even adding your own **custom output format** is really easy, just as switching on the generation of an **HTML example document** along with your sprite.
@@ -44,7 +48,6 @@ For an up-to-date list of browsers supporting [SVG in general](https://caniuse.c
   * [Output destinations](#output-destinations)
     * [Pre-processor formats and the sprite location](#pre-processor-formats-and-the-sprite-location)
   * [Full configuration documentation](docs/configuration.md)
-  * [Online configurator & project kickstarter](https://svgforge.github.io/svgforge/)
 * [Advanced techniques](#advanced-techniques)
   * [Meta data injection](docs/meta-data.md)
   * [Tweaking and adding output formats](docs/templating.md)
@@ -75,6 +78,8 @@ The procedure is the very same for all supported sprite types («modes»).
 
 
 ### Usage pattern
+
+Hint: Even the library is ESM only, since Node 22+ you can also [use CJS (require) instead of ESM imports](https://nodejs.org/api/modules.html#loading-ecmascript-modules-using-require)
 
 ```js
 import fs from 'node:fs';
