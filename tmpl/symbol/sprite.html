@@ -46,15 +46,15 @@
       }
 
       .icon-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         margin: 0;
         width: 144px;
         height: 144px;
         position: relative;
         background: #ccc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath fill='%23fff' d='M6 0h6v6H6zM0 6h6v6H0z'/%3E%3C/svg%3E") top left repeat;
         border: 1px solid #ccc;
-        display: table-cell;
-        vertical-align: middle;
-        text-align: center;
       }
 
       .icon {
@@ -191,6 +191,34 @@ SVG sprite. They may be styled via CSS.
           <h2>{{name}}</h2>
         </li>
 {{/shapes}}     </ul>{{/inline}}
+
+<!--
+====================================================================================================
+-->
+
+    </section>
+    <section>
+
+<!--
+C) Inline SVG, sized by viewBox only (stacksvg-style)
+====================================================================================================
+This method needs no CSS at all: the SVG is sized by a single `width` (or `height`) attribute and the
+missing other dimension is derived from the shape's viewBox — the same technique the
+[stacksvg](https://github.com/stacksvg/stacksvg) project relies on.
+-->
+
+      <h3>C) Inline SVG, sized by viewBox only (stacksvg-style)</h3>
+      <ul>
+
+{{#shapes}}       <li title="{{name}}">
+          <div class="icon-box">
+            <svg viewBox="0 0 {{width.outer}} {{height.outer}}" width="1.5em">
+              <use xlink:href="{{{example}}}#{{name}}"></use>
+            </svg>
+          </div>
+          <h2>{{name}}</h2>
+        </li>
+{{/shapes}}     </ul>
 
 <!--
 ====================================================================================================

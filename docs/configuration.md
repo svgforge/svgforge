@@ -307,6 +307,19 @@ Please refer to the [templating guide](templating.md) to learn about the [builti
 
 Please see the configuration sections below to learn a little about their natures and differences.
 
+At a glance, the four modes differ in **how they store the icons inside the sprite** and in **how a consumer shows a single icon**:
+
+Mode        | Sprite structure | Show one icon with | Background-image?
+---         | --- | --- | ---
+`defs`      | All icons inside a global `<defs>` (each as `<svg id="…" viewBox="…">`) | `<svg viewBox="0 0 …"><use href="#id"/></svg>` (inline) or `href="sprite.svg#id"` (external) | No
+`symbol`    | All icons as top-level `<symbol id="…" viewBox="…">` | `<svg><use href="#id"/></svg>` (inline) or `href="sprite.svg#id"` (external) | No
+`stack`     | Every icon as its own `<svg id="…" viewBox="…">`, hidden via CSS and revealed by `:target` | `<img src="sprite.svg#id">` | **Yes** (`background: url("sprite.stack.svg#id")`)
+`view`      | One large sprite image (`<svg width height viewBox>`); each icon has a `<view id="…" viewBox="…">` slice | `<img src="sprite.svg#id">` | No
+
+In short: `defs` and `symbol` are two flavours of the same **inline `<use>` technique** — if you can only keep one, choose `symbol` (it is the modern, more convenient variant). `stack` and `view` both work through [SVG fragment identifiers](https://css-tricks.com/svg-fragment-identifiers-work/) (`<img src="…svg#id">`) but differ in the underlying file structure: `stack` behaves like many individual SVG documents in one file, `view` behaves like one big spritesheet with rectangular slices.
+
+The `stack` mode is the **only** one that works as a CSS `background-image` (verified in-browser): its `:target` mechanism is a fragment-URL feature, so `background: url("path/to/sprite.stack.svg#icon-id") no-repeat` shows exactly that icon. The other three modes all rely on `<use>`/inline rendering or `<img>` slicing, which produce nothing in a background-image context.
+
 
 #### Enabling & configuring
 
@@ -369,11 +382,53 @@ Property     | Type      | Default     | Description                |
 
 The **«view»** mode creates a single SVG file by combining the original shapes as nested `<svg>` elements with individual horizontal and vertical offsets. In addition, a `<view>` element is created for each shape in the sprite. By using the views' IDs as fragment identifiers when linking to the sprite, modern browsers will show the referenced shapes only, thus making the sprite useful for **foreground images**. Please see [this article by Chris Coyier](https://css-tricks.com/svg-fragment-identifiers-work/) for further explanation of the technique.
 
+The generated sprite is a single large image with one `<view>` slice per icon. Because it is really one big graphic, always size it explicitly — otherwise it renders huge. Use the `-dims` classes (see [common mode properties](#common-mode-properties)) or set `width`/`height` yourself:
+
+```svg
+<svg width="10224" height="48" viewBox="0 0 10224 48">
+  <view id="actions--document-new" viewBox="0 0 48 48"/>
+  <view id="actions--open" viewBox="48 0 48 48"/>
+  <svg width="48" height="48" viewBox="0 0 48 48">…</svg>
+  …
+</svg>
+```
+
+```html
+<img src="sprite.view.svg#actions--document-new" class="svg-actions--document-new-dims">
+```
+
 ##### «defs» & «symbol» mode
 
-The **«defs»** mode creates a single SVG file combining the original shapes as children of a global `<defs>` element. You can then `<use>` the shapes with either **document-internal references** (`<svg viewBox="0 0 100 100"><use xlink:href="#internal-id"/></svg>` while having the SVG sprite embedded inline into the very same document) or as an **external SVG spritemap** (`<svg viewBox="0 0 100 100"><use xlink:href="http://example.com/sprite.svg#fragment-id"/></svg>`). Please see [this article by Chris Coyier](https://css-tricks.com/svg-use-external-source/) for further explanation of the technique.
+The **«defs»** mode creates a single SVG file combining the original shapes as children of a global `<defs>` element. You can then `<use>` the shapes with either **document-internal references** (`<svg viewBox="0 0 100 100"><use xlink:href="#internal-id"/></svg>` while having the SVG sprite embedded inline into the very same document) or as an **external SVG spritemap** (`<svg viewBox="0 0 100 100"><use xlink:href="http://example.com/sprite.svg#fragment-id"/></svg>`). Please see [this article by Chris Coyier](https://css-tricks.com/svg-use-external-source/) for further explanation of the technique. Note that «defs» is the classic variant — for new projects prefer **«symbol»**, which is the modern, slightly more convenient implementation of the very same technique.
 
 The **«symbol»** mode behaves pretty much like the «defs» mode except it's using `<symbol>` elements to combine the original shapes into a sprite. Again, you can `<use>` the shapes with either **document-internal references** (`<svg><use xlink:href="#internal-id"/></svg>` while having the SVG sprite embedded inline into the very same document) or as an **external SVG spritemap** (`<svg><use xlink:href="http://example.com/sprite.svg#fragment-id"/></svg>`). Please see [this article by Chris Coyier](https://css-tricks.com/svg-symbol-good-choice-icons/) for further explanation of the `<symbol>` technique. Compared to the `defs` mode, one of the main benefits is that you don't have to provide the `viewBox` attribute on every `<use>` element which makes it a lot easier.
+
+The generated sprites differ only in the container element around each icon, and both are consumed identically:
+
+```svg
+<!-- defs: <defs><svg id…> -->
+<svg>
+  <defs>
+    <svg id="actions--document-new" viewBox="0 0 48 48">…</svg>
+  </defs>
+</svg>
+```
+
+```svg
+<!-- symbol: <symbol id…> -->
+<svg>
+  <symbol id="actions--document-new" viewBox="0 0 48 48">…</symbol>
+</svg>
+```
+
+```html
+<!-- defs: the <use> wrapper needs its own viewBox -->
+<svg viewBox="0 0 48 48"><use href="sprite.svg#actions--document-new"/></svg>
+<!-- symbol: the <symbol> provides the viewBox -->
+<svg><use href="sprite.svg#actions--document-new"/></svg>
+```
+
+Both work identically whether the sprite is embedded inline (`href="#id"`) or referenced externally (`href="sprite.svg#id"`), and unlike `stack`/`view` the icons stay in the document as real SVG elements — so you can style them with CSS, recolor via `currentColor`, and reuse the same icon multiple times without extra requests.
 
 In addition to the [common mode properties](#common-mode-properties), «defs» and «symbol» sprites have one extra option:
 
@@ -382,10 +437,46 @@ Property     | Type      | Default     | Description                |
 ---------------- | --------------- | ------------- | ------------------------------------------ |
 `mode.<mode>.inline` | Boolean   | `false`     | If you want to embed the sprite into your HTML source, you will want to set this to `true` in order to prevent the creation of SVG namespace declarations and to set some other attributes for effectively hiding the library sprite. |
 
+##### Sizing defs/symbol icons without CSS (stacksvg-style)
+
+Since version 2, the bundled example HTML for the «defs» and «symbol» modes additionally demonstrates a **CSS-free** way of sizing the icons — the technique used by [stacksvg](https://github.com/stacksvg/stacksvg). Instead of setting an explicit width and height (via the `-dims` classes or CSS), you only provide **a single** `width` (or `height`) attribute on the `<svg>` element; the missing dimension is then derived automatically from the shape's `viewBox`:
+
+```html
+<svg viewBox="0 0 24 24" width="1em">
+  <use xlink:href="sprite.svg#icon-id"></use>
+</svg>
+```
+
+The `<svg viewBox="0 0 …">` wrapper duplicates the inner viewBox, so keeping `0 0 {{width.outer}} {{height.outer}}` is important for the automatic aspect ratio to apply. This works for document-internal and external references alike (`href="#id"` or `href="sprite.svg#id"`), because both go through inline `<use>`. It does **not** apply to `<img>`-based fragment references (see the «stack»/«view» modes) — those need explicit dimensions via the `-dims` classes.
+
 
 ##### «stack» mode
 
 The «stack» mode creates a single SVG file by combining the original shapes as nested `<svg>` elements. Instead of spreading the shapes using individual horizontal and/or vertical offsets, the stack contains a small CSS portion that hides all the shapes by default. Only the *active* shape as determined by the `:target` pseudo selector will be visible. For this technique to work, the client will have to [support SVG fragment identifiers](https://caniuse.com/svg-fragment) or use a polyfill like [fixsvgstack.jquery.js](https://github.com/preciousforever/SVG-Stacker/blob/master/fixsvgstack.jquery.js). Please see [this post by simurai](https://simurai.com/blog/2012/04/02/svg-stacks) for a further explanation of SVG stacks.
+
+The sprite behaves like a bundle of **individual SVG documents**: each icon is a standalone `<svg id="…" viewBox="…">` element and browsers show exactly the one addressed via `:target` — everything else stays hidden:
+
+```svg
+<svg>
+  <style>:root>svg{display:none}:root>svg:target{display:block}</style>
+  <svg id="actions--document-new" viewBox="0 0 48 48">…</svg>
+  <svg id="actions--open" viewBox="0 0 48 48">…</svg>
+</svg>
+```
+
+```html
+<img src="sprite.stack.svg#actions--document-new" class="svg-actions--document-new-dims">
+```
+
+Because the mechanism is based on fragment URLs, the same reference also works as a **CSS background image** — the only mode that supports this:
+
+```css
+.icon {
+  background: url("path/to/sprite.stack.svg#actions--document-new") no-repeat center/contain;
+}
+```
+
+With the fragment identifier, the browser shows exactly that one icon as a regular image. Without an explicit size the icon would render huge (SVG defaults to 100% of the viewport), so use the `-dims` class (or set `width`/`height` yourself via `background-size`) — same as with the other modes.
 
 In addition to the [common mode properties](#common-mode-properties), «stack» sprites have one extra option:
 

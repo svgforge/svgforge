@@ -9,6 +9,8 @@ svgforge is a low-level [Node.js](https://nodejs.org/) module that **takes a bun
 * inline sprites using the **`<symbol>` element**
 * and [SVG stacks](https://simurai.com/blog/2012/04/02/svg-stacks).
 
+You can explore the API with [DeepWiki](https://deepwiki.com/svgforge/svgforge)
+
 ## Changes compared to svg-sprite
 
 This is a fork of [svg-sprite](https://github.com/svg-sprite/svg-sprite) with lots of changes. There may still be outdated documentation and bugs. Please help by submitting a PR, it's very welcome :)
@@ -17,6 +19,7 @@ This is a fork of [svg-sprite](https://github.com/svg-sprite/svg-sprite) with lo
 * All node dependencies are upgraded
 * You need Node.js version >= 24
 * Split package to `svgforge` and `svgforge-cli` for easier testing
+* Drop grunt and gulp (you can still use it with a few lines of code)
 * Replace glob with native Node.js glob
 * Remove SCSS and Stylus support, it was only usefull for sprite generation.
 * Remove support for the sprite technique (CSS background position). I've found it antique and not required anymore and it simplifies the code a lot! If you want to use icons as `background-image` you can use the `stack` mode, and then: `background: url(icon.svg#ID)`. See here: https://css-tricks.com/svg-fragment-identifiers-work/#syntax-for-css
