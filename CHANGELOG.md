@@ -2,6 +2,20 @@ Newer release notes are published on the GitHub release page: <https://github.co
 
 ---
 
+## Unreleased
+
+### Changed: bring back the `.dims` size API for the «view» mode
+
+* The «view» mode can again render the plain `.dims` size stylesheet via
+  `render: {css: true}` (using the shared `tmpl/common/sprite.css`), providing
+  `width`/`height`-only classes (`<icon>-dims`) so consumers can size an icon by
+  class name without knowing its dimensions — exactly like defs/symbol/stack.
+* The «view» preview HTML sets the `.svg-…-dims` class on its `<img>` elements
+  and inlines the matching dimension rules (stack-style), so the preview renders
+  at the correct icon size even without an external stylesheet.
+
+---
+
 ## 1.0.1 — Patch release (first publishable fix)
 
 ### Refactor: Drop remaining lodash/async dependencies
