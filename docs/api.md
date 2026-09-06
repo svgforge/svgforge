@@ -165,14 +165,14 @@ The spriter is instructed to create a defs sprite along with the accompanying st
 ```js
 {
   defs: {
-    sprite: <File "defs/svg/sprite.css.svg" <Buffer 3c 3f 78 ...>>,
+    sprite: <File "defs/svg/sprite.defs.svg" <Buffer 3c 3f 78 ...>>,
     css: <File "defs/sprite.css" <Buffer 2e 73 76 ...>>,
     example: <File "defs/sprite.defs.html" <Buffer 3c 21 44 ...>>
   }
 }
 ```
 
-For each configured output mode (`defs` in the example), the `result` object holds an item containing the resources generated for this particular mode. There is always a `sprite` resource (obviously) and possibly an `example` resource for the demo HTML document (if configured). For the output modes with stylesheet rendering (the [defs, symbol and stack modes](configuration.md#defs--symbol-mode)), there are additional items named after the configured [rendering configurations](configuration.md#rendering-configurations) (`css` in the example).
+For each configured output mode (`defs` in the example), the `result` object holds an item containing the resources generated for this particular mode. There is always a `sprite` resource (obviously) and possibly an `example` resource for the demo HTML document (if configured). For the output modes with stylesheet rendering (the [defs, symbol, view and stack modes](configuration.md#defs--symbol-mode)), there are additional items named after the configured [rendering configurations](configuration.md#rendering-configurations) (`css` in the example).
 
 Please note that the resources are always returned as [vinyl](https://github.com/gulpjs/vinyl) files. Have a look above for an [example of how to write these files to disk](#example-using-glob-and-vinyl).
 

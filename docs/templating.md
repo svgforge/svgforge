@@ -101,7 +101,7 @@ For each sprite generation process, a data object is constructed that is passed 
         },
         // Shape SVG (inline embeddable version)
         svg: '<svg> ... </svg>',
-        // file size, pretty formated. Check the note below.
+        // file size, pretty formatted. Check the note below.
         fileSize: '1 Kb'
       }
     ],
