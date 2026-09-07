@@ -60,4 +60,24 @@ describe('svg-sprite: layouter fileSize data', () => {
     expect(data.stack.shapes).toHaveLength(1);
     expect(data.stack.shapes[0].fileSize).toBeNull();
   });
+
+  it('renders a copy button for each shape in the HTML example', async () => {
+    expect.hasAssertions();
+
+    const spriter = new SVGSpriter({dest: temporaryPath});
+    addFixtureFiles(spriter, ['weather-clear.svg'], path.dirname(fixtest));
+
+    const {result} = await spriter.compileAsync({
+      defs: {
+        sprite: 'svg/sprite.svg',
+        example: true,
+      },
+    });
+
+    const html = result.defs.example.contents.toString('utf8');
+
+    expect(html).toContain('data-copy-label="Copy ID"');
+    expect(html).toContain('data-copy="weather-clear"');
+    expect(html).toContain('<button type="button" class="copy" data-copy="weather-clear" data-copy-label="Copy ID">Copy ID</button>');
+  });
 });
