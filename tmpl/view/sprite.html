@@ -3,104 +3,26 @@
   <head>
     <meta charset="utf-8">
     <title>SVG &lt;view&gt; sprite preview | svgforge</title>
+
+<!--
+Common preview styles (shared via tmpl/common/preview.css)
+====================================================================================================
+-->
+
     <style>
-      body {
-        padding: 0;
-        margin: 0;
-        color: #666;
-        background: #fafafa;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 1em;
-        line-height: 1.4;
-      }
-
-      header {
-        display: block;
-        padding: 3em 3em 2em;
-        background-color: #fff;
-      }
-
-      header p {
-        margin: 2em 0 0;
-      }
-
-      section {
-        border-top: 1px solid #eee;
-        padding: 2em 3em 0;
-      }
-
-      section ul {
-        margin: 0;
-        padding: 0;
-      }
-
-      section li {
-        display: inline-block;
-        background-color: #fff;
-        position: relative;
-        margin: 0 2em 2em 0;
-        vertical-align: top;
-        border: 1px solid #ccc;
-        padding: 1em 1em 3em;
-        cursor: default;
-      }
-
-      .icon-box {
-        margin: 0;
-        width: 144px;
-        height: 144px;
-        position: relative;
-        background: #ccc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath fill='%23fff' d='M6 0h6v6H6zM0 6h6v6H0z'/%3E%3C/svg%3E") top left repeat;
-        border: 1px solid #ccc;
-        display: table-cell;
-        vertical-align: middle;
-        text-align: center;
-      }
-
-      .icon {
-        display: inline-block;
-      }
-
-      h1 {
-        margin-top: 0;
-      }
-
-      h2 {
-        margin: 0;
-        padding: 0;
-        font-size: 1em;
-        font-weight: 400;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        position: absolute;
-        left: 1em;
-        right: 1em;
-        bottom: 1em;
-      }
-
-      footer {
-        display: block;
-        margin: 0;
-        padding: 0 3em 3em;
-      }
-
-      footer p {
-        margin: 0;
-        font-size: .7em;
-      }
-
-      footer a {
-        color: #0f7595;
-        margin-left: 0;
-      }
+{{> preview-css }}
     </style>
+
+<!--
+====================================================================================================
+-->
+
   </head>
   <body>
     <header>
       <h1>SVG <code>&lt;view&gt;</code> sprite preview</h1>
       <p>This preview features the use of the generated sprite by referencing the pre-defined <code>&lt;view&gt;</code> elements (fragment identifiers). Please have a look at the HTML source for further details and be aware of the following constraints:</p>
-      <ul>
+      <ul class="grid">
         <li>Your browser has to <a href="https://caniuse.com/svg-fragment" target="_blank" rel="noopener noreferrer">support SVG fragment identifiers</a> for SVG stacks to work.</li>
         <li>Support for SVG fragment identifiers hasn't always been that decent. For older browsers you might have to use a prolyfill (if available?).</li>
       </ul>
@@ -115,23 +37,31 @@ pre-defined in the external sprite.
 -->
 
       <h3>External sprite with pre-defined views referenced by fragment identifiers</h3>
-      <ul>
-
-{{#shapes}}        <li title="{{name}}">
-          <div class="icon-box">
-            <img src="{{{example}}}#{{name}}" class="icon" alt="{{name}}">
-          </div>
-          <h2>{{name}}, {{ fileSize }}</h2>
+      <ul class="grid">
+{{#shapes}}
+        <li title="{{name}}">
+          <figure>
+            <div class="icon-box">
+              <img src="{{{example}}}#{{name}}" class="{{#selector.dimensions}}{{#last}}{{#classname}}{{raw}}{{/classname}}{{/last}}{{/selector.dimensions}}" alt="{{name}}">
+            </div>
+            {{> figcaption}}
+          </figure>
         </li>
-{{/shapes}}      </ul>
-
-<!--
-====================================================================================================
--->
+{{/shapes}}
+      </ul>
 
     </section>
     <footer>
       <p>Generated at {{date}} by <a href="https://github.com/joeda1/svgforge" target="_blank" rel="noopener noreferrer">svgforge</a>.</p>
     </footer>
+
+<!--
+Common preview behavior (shared via tmpl/common/preview.js)
+====================================================================================================
+-->
+
+<script>
+{{> preview-js }}
+</script>
   </body>
 </html>

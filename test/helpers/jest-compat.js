@@ -501,6 +501,37 @@ function normalizeForSnapshot(value) {
 // ---------------------------------------------------------------------------
 // expect()
 // ---------------------------------------------------------------------------
+/**
+ Check whether a thrown error matches a toThrow expectation
+
+ @param {Error} error Thrown error
+ @param {unknown} expected Expected error (constructor, Error instance, message string or regexp)
+ @returns {boolean} Whether the error matches the expectation
+ */
+function errorMatches(error, expected) {
+  if (expected === undefined) {
+    return true;
+  }
+
+  if (expected instanceof Error) {
+    return error instanceof expected.constructor && error.message === expected.message;
+  }
+
+  if (typeof expected === 'function') {
+    return error instanceof expected;
+  }
+
+  if (typeof expected === 'string') {
+    return error.message.includes(expected);
+  }
+
+  if (expected instanceof RegExp) {
+    return expected.test(error.message);
+  }
+
+  return false;
+}
+
 function expect(received) {
   const make = negated => {
     const fail = message => {
@@ -526,10 +557,7 @@ function expect(received) {
                   fail('rejects.toThrow: expected promise to reject but it resolved');
                 }
               } catch (error) {
-                const didMatch = expected === undefined
-                  || (typeof expected === 'function' && error instanceof expected)
-                  || (typeof expected === 'string' && error.message === expected)
-                  || (expected instanceof RegExp && expected.test(error.message));
+                const didMatch = errorMatches(error, expected);
 
                 if (negated ? didMatch : !didMatch) {
                   fail(`rejects.toThrow: ${negated ? 'expected promise not to reject with' : 'received'} ${error.constructor.name}: ${error.message}`);
@@ -690,7 +718,8 @@ function expect(received) {
         }
       },
 
-      toThrow() {
+      toThrow(expected) {
+        let error;
         let isThrown = false;
         try {
           if (typeof received === 'function') {
@@ -698,12 +727,16 @@ function expect(received) {
           } else {
             throw received;
           }
-        } catch {
+        } catch (error_) {
           isThrown = true;
+          error = error_;
         }
 
-        if (isThrown === negated) {
-          fail('toThrow failed');
+        const didMatch = isThrown && errorMatches(error, expected);
+
+        if (didMatch === negated) {
+          const thrown = isThrown ? `threw ${error.constructor.name}: ${error.message}` : 'did not throw';
+          fail(`toThrow: ${negated ? 'expected not to throw' : 'expected to throw'} ${format(expected)} but ${thrown}`);
         }
       },
 

@@ -1,0 +1,140 @@
+body {
+  padding: 0;
+  margin: 0;
+  color: #666;
+  background: #fafafa;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1em;
+  line-height: 1.4;
+}
+
+header {
+  display: block;
+  padding: 3em 3em 2em;
+  background-color: #fff;
+}
+
+header p {
+  margin: 2em 0 0;
+}
+
+section {
+  border-top: 1px solid #eee;
+  padding: 2em 3em 0;
+}
+
+.grid {
+  display: grid;
+  gap: clamp(1rem, 2.5vw, 2rem);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.grid li {
+  background-color: #fff;
+  vertical-align: top;
+  border: 1px solid #ccc;
+  padding: 1em;
+  cursor: default;
+}
+
+.icon-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  width: 100%;
+  height: 144px;
+  position: relative;
+  background: #ccc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath fill='%23fff' d='M6 0h6v6H6zM0 6h6v6H0z'/%3E%3C/svg%3E") top left repeat;
+  border: 1px solid #ccc;
+}
+
+.icon {
+  display: inline-block;
+}
+
+h1 {
+  margin-top: 0;
+}
+
+.grid li figure {
+  margin: 0;
+  padding: 0;
+}
+
+.grid li figcaption .name {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.grid li figcaption .file-size {
+  font-size: .8em;
+  opacity: .7;
+}
+
+.grid li figcaption .meta {
+  display: flex;
+  align-items: center;
+  margin-top: .5em;
+}
+
+.grid li figcaption .meta .copy {
+  display: inline-block;
+  margin-left: auto;
+  padding: .05em .5em;
+  font-size: .65em;
+  line-height: 1.5;
+  color: #0f7595;
+  background: #fff;
+  border: 1px solid #0f7595;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.grid li figcaption .meta .copy:hover {
+  background: #0f7595;
+  color: #fff;
+}
+
+.grid li figcaption .meta .copy:active {
+  background: #0b5f79;
+}
+
+.grid li figcaption .meta .copy.copied {
+  color: #0f7595;
+  border-color: #0f7595;
+  background: #e8f4f8;
+  cursor: default;
+}
+
+footer {
+  display: block;
+  margin: 0;
+  padding: 0 3em 3em;
+}
+
+footer p {
+  margin: 0;
+  font-size: .7em;
+}
+
+footer a {
+  color: #0f7595;
+  margin-left: 0;
+}
+
+/*
+Sprite shape dimensions
+====================================================================================================
+You will need to set the sprite shape dimensions via CSS when you use them as SVGs, otherwise
+they would become a huge 100% in size. You may use the following dimension classes for doing so.
+They might well be outsourced to an external stylesheet of course.
+*/
+
+{{#shapes}} {{#selector.dimensions}}{{expression}}{{^last}}, {{/last}}{{/selector.dimensions}} { width: {{width.outer}}px; height: {{height.outer}}px; }
+{{/shapes}}

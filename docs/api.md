@@ -18,11 +18,9 @@ To understand these methods' roles and interactions, please have a look at the f
 ### Usage example
 
 ```js
-'use strict';
-
-const fs = require('fs');
-const path = require('path');
-const SVGSpriter = require('svgforge'),
+import fs from 'node:fs';
+import path from 'node:path';
+import SVGSpriter from 'svgforge';
 
 // 1. Create and configure a spriter instance
 // ====================================================================
@@ -89,12 +87,10 @@ It is important to know that the spriter **optimizes the SVG files as soon as yo
 ##### Example using [glob](https://github.com/isaacs/node-glob) and [vinyl](https://github.com/gulpjs/vinyl)
 
 ```js
-'use strict';
-
-const fs = require('fs');
-const path = require('path');
-const SVGSpriter = require('svgforge');
-const File = require('vinyl');
+import fs from 'node:fs';
+import path from 'node:path';
+import SVGSpriter from 'svgforge';
+import File from 'vinyl';
 
 const spriter = new SVGSpriter({
   dest: 'out',
@@ -165,14 +161,14 @@ The spriter is instructed to create a defs sprite along with the accompanying st
 ```js
 {
   defs: {
-    sprite: <File "defs/svg/sprite.css.svg" <Buffer 3c 3f 78 ...>>,
+    sprite: <File "defs/svg/sprite.defs.svg" <Buffer 3c 3f 78 ...>>,
     css: <File "defs/sprite.css" <Buffer 2e 73 76 ...>>,
     example: <File "defs/sprite.defs.html" <Buffer 3c 21 44 ...>>
   }
 }
 ```
 
-For each configured output mode (`defs` in the example), the `result` object holds an item containing the resources generated for this particular mode. There is always a `sprite` resource (obviously) and possibly an `example` resource for the demo HTML document (if configured). For the output modes with stylesheet rendering (the [defs, symbol and stack modes](configuration.md#defs--symbol-mode)), there are additional items named after the configured [rendering configurations](configuration.md#rendering-configurations) (`css` in the example).
+For each configured output mode (`defs` in the example), the `result` object holds an item containing the resources generated for this particular mode. There is always a `sprite` resource (obviously) and possibly an `example` resource for the demo HTML document (if configured). For the output modes with stylesheet rendering (the [defs, symbol, view and stack modes](configuration.md#defs--symbol-mode)), there are additional items named after the configured [rendering configurations](configuration.md#rendering-configurations) (`css` in the example).
 
 Please note that the resources are always returned as [vinyl](https://github.com/gulpjs/vinyl) files. Have a look above for an [example of how to write these files to disk](#example-using-glob-and-vinyl).
 
@@ -229,8 +225,8 @@ try {
 ##### Shape access example
 
 ```js
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
 
 spriter.getShapes(path.resolve('tmp/svg'), (error, result) => {
   result.forEach(file => {

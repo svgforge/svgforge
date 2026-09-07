@@ -1,4 +1,59 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
 Newer release notes are published on the GitHub release page: <https://github.com/svgforge/svgforge/releases>
+
+---
+
+## 1.1.0 — View-mode `.dims` stylesheet, example previews and fixes
+
+### Changed: bring back the `.dims` size API for the «view» mode
+
+* The «view» mode can again render the plain `.dims` size stylesheet via
+  `render: {css: true}` (using the shared `tmpl/common/sprite.css`), providing
+  `width`/`height`-only classes (`<icon>-dims`) so consumers can size an icon by
+  class name without knowing its dimensions — exactly like defs/symbol/stack.
+* The «view» preview HTML sets the `.svg-…-dims` class on its `<img>` elements
+  and inlines the matching dimension rules (stack-style), so the preview renders
+  at the correct icon size even without an external stylesheet.
+
+### Changed: Example documents
+
+* Switch the example tiles of the defs, symbol, stack and view modes to a
+  responsive CSS grid (`auto-fit`/`minmax`) with flex-centered icon boxes
+  stretching to the full tile width
+* Add a stacksvg-style sizing preview (an `<use>`-based inline SVG sized by
+  `viewBox` only) to the defs, symbol and stack examples, plus a
+  background-image usage example for the stack mode
+* Populate the per-icon `fileSize` in the example HTML (the example flag is
+  now read from the per-mode configuration, so it no longer stays
+  `undefined` and the tiles show no dangling trailing comma)
+
+### Fixed: Invalid XML reliably raises `XmlFixingError`
+
+* `@xmldom/xmldom` throws its parse error synchronously instead of invoking
+  the `DOMParser` error callback, so the documented `XmlFixingError` was
+  never actually raised. The parser error is now caught and rethrown as
+  `XmlFixingError`
+
+### Hardened: Test matcher and view-mode coverage
+
+* The synchronous `toThrow` matcher now honors its expected argument
+  (error constructor, `Error` instance, message substring or regular
+  expression) instead of accepting any thrown error
+* Add non-visual unit tests for the «view» mode (fragment composition,
+  sprite dimensions, `.dims` stylesheet, dimensions placeholder), raising the
+  line coverage of `mode/view.js` and `mode/viewbase.js` to 100% and 98%
+
+### Documentation
+
+* Restore the README introduction and migrate the code examples to ESM
+* Fix typos and outdated sprite filenames in the documentation
+* Improve the mode documentation and link the DeepWiki API reference
 
 ---
 
