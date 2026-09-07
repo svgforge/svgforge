@@ -33,6 +33,11 @@ jobs:
         with:
           languages: "javascript"
           queries: +security-and-quality
+          # The Mustache templates ({{> partial}}) in tmpl/ trip the JS
+          # parser with false-positive "syntax error" alerts; only the
+          # library sources under lib/ should be analyzed.
+          paths-ignore: |
+            tmpl/**
 
       - name: Autobuild
         uses: github/codeql-action/autobuild@v4
