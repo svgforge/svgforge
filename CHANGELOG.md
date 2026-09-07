@@ -9,7 +9,7 @@ Newer release notes are published on the GitHub release page: <https://github.co
 
 ---
 
-## Unreleased
+## 1.1.0 — View-mode `.dims` stylesheet, example previews and fixes
 
 ### Changed: bring back the `.dims` size API for the «view» mode
 
