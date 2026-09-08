@@ -60,10 +60,10 @@ For an up-to-date list of browsers supporting [SVG in general](https://caniuse.c
 
 ## Installation
 
-To install *svgforge* globally, run:
+To install *svgforge* in your project, run:
 
 ```bash
-npm install @svgforge/svgforge -g
+npm install @svgforge/svgforge
 ```
 
 
