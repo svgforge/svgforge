@@ -22,6 +22,12 @@ Newer release notes are published on the GitHub release page: <https://github.co
 * The command line interface is likewise published as
   [`@svgforge/svgforge-cli`](https://www.npmjs.com/package/@svgforge/svgforge-cli).
 
+### Changed: Examples use the modern «symbol» mode
+
+* All code examples (README, `docs/api.md`, `example.js`) now demonstrate the
+  «symbol» mode instead of the legacy «defs» mode. The «defs» mode itself stays
+  supported.
+
 ## 1.1.0 — View-mode `.dims` stylesheet, example previews and fixes
 
 ### Changed: bring back the `.dims` size API for the «view» mode

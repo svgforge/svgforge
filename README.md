@@ -267,13 +267,13 @@ const config = {
 
 ##### B) Sprite with CSS resource
 
-**«defs» sprite** with a **CSS stylesheet**:
+**«symbol» sprite** with a **CSS stylesheet**:
 
 ```js
-// «defs» sprite with CSS stylesheet resource
+// «symbol» sprite with CSS stylesheet resource
 const config = {
   mode: {
-    defs: { // Create a «defs» sprite
+    symbol: { // Create a «symbol» sprite
       render: {
         css: true // Render a CSS stylesheet
       }
@@ -285,13 +285,12 @@ const config = {
 
 ##### C) Multiple sprites
 
-**`<defs>` sprite**, **`<symbol>` sprite** and an **SVG stack** all at once:
+**`<symbol>` sprite** and an **SVG stack** all at once:
 
 ```js
-// «defs», «symbol» and «stack» sprites in parallel
+// «symbol» and «stack» sprites in parallel
 const config = {
   mode: {
-    defs: true,
     symbol: true,
     stack: true
   }
@@ -379,7 +378,7 @@ npm install @svgforge/svgforge-cli -g
 A typical example could look like this:
 
 ```bash
-svgforge --defs --defs-render-css --defs-example --dest=out assets/*.svg
+svgforge --symbol --symbol-render-css --symbol-example --dest=out assets/*.svg
 ```
 
 Please refer to the [CLI guide](https://github.com/svgforge/svgforge-cli/docs/command-line.md) for further details.

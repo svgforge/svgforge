@@ -27,7 +27,7 @@ import SVGSpriter from '@svgforge/svgforge';
 const spriter = new SVGSpriter({
   dest: 'out', // Main output directory
   mode: {
-    defs: { // Create a defs sprite
+    symbol: { // Create a symbol sprite
       render: {
         css: true // Render a CSS stylesheet
       }
@@ -54,8 +54,8 @@ spriter.add(
 // 3. Trigger the (asynchronous) compilation process
 // ====================================================================
 spriter.compile((error, result, data) => {
-  // Run through all files that have been created for the `defs` mode
-  for (const type of Object.values(result.defs)) {
+  // Run through all files that have been created for the `symbol` mode
+  for (const type of Object.values(result.symbol)) {
     // Recursively create directories as needed
     fs.mkdirSync(path.dirname(type.path), { recursive: true });
     // Write the generated resource to disk
@@ -95,7 +95,7 @@ import File from 'vinyl';
 const spriter = new SVGSpriter({
   dest: 'out',
   mode: {
-    defs: {
+    symbol: {
       render: {
         css: true
       }
@@ -117,7 +117,7 @@ for (const file of files) {
 }
 
 spriter.compile((error, result, data) => {
-    for (const type of Object.values(result.defs)) {
+    for (const type of Object.values(result.symbol)) {
       fs.mkdirSync(path.dirname(type.path), { recursive: true });
       fs.writeFileSync(type.path, type.contents);
     }
@@ -143,7 +143,7 @@ Depending on the particular mode and render configuration, quite a lot of resour
 ```js
 spriter.compile(
   {
-    defs: {
+    symbol: {
       render: {
         css: true
       },
@@ -156,19 +156,19 @@ spriter.compile(
 );
 ```
 
-The spriter is instructed to create a defs sprite along with the accompanying stylesheet resource in CSS format and an example HTML document demonstrating the use of the sprite. The output will look something like this (shortened for brevity):
+The spriter is instructed to create a symbol sprite along with the accompanying stylesheet resource in CSS format and an example HTML document demonstrating the use of the sprite. The output will look something like this (shortened for brevity):
 
 ```js
 {
-  defs: {
-    sprite: <File "defs/svg/sprite.defs.svg" <Buffer 3c 3f 78 ...>>,
-    css: <File "defs/sprite.css" <Buffer 2e 73 76 ...>>,
-    example: <File "defs/sprite.defs.html" <Buffer 3c 21 44 ...>>
+  symbol: {
+    sprite: <File "symbol/svg/sprite.symbol.svg" <Buffer 3c 3f 78 ...>>,
+    css: <File "symbol/sprite.css" <Buffer 2e 73 76 ...>>,
+    example: <File "symbol/sprite.symbol.html" <Buffer 3c 21 44 ...>>
   }
 }
 ```
 
-For each configured output mode (`defs` in the example), the `result` object holds an item containing the resources generated for this particular mode. There is always a `sprite` resource (obviously) and possibly an `example` resource for the demo HTML document (if configured). For the output modes with stylesheet rendering (the [defs, symbol, view and stack modes](configuration.md#defs--symbol-mode)), there are additional items named after the configured [rendering configurations](configuration.md#rendering-configurations) (`css` in the example).
+For each configured output mode (`symbol` in the example), the `result` object holds an item containing the resources generated for this particular mode. There is always a `sprite` resource (obviously) and possibly an `example` resource for the demo HTML document (if configured). For the output modes with stylesheet rendering (the [defs, symbol, view and stack modes](configuration.md#defs--symbol-mode)), there are additional items named after the configured [rendering configurations](configuration.md#rendering-configurations) (`css` in the example).
 
 Please note that the resources are always returned as [vinyl](https://github.com/gulpjs/vinyl) files. Have a look above for an [example of how to write these files to disk](#example-using-glob-and-vinyl).
 
@@ -197,7 +197,7 @@ Promise
 ```js
 try {
   const { result, data } = await spriter.compileAsync({
-    defs: {
+    symbol: {
       render: {
         css: true
       },
