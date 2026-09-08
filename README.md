@@ -63,7 +63,7 @@ For an up-to-date list of browsers supporting [SVG in general](https://caniuse.c
 To install *svgforge* globally, run:
 
 ```bash
-npm install svgforge -g
+npm install @svgforge/svgforge -g
 ```
 
 
@@ -373,7 +373,7 @@ In order to improve accessibility, *svgforge* can read meta data from a YAML fil
 The command line interface has been split out into the separate [`svgforge-cli`](https://github.com/svgforge/svgforge-cli) package. Install it globally to get the `svgforge` command:
 
 ```bash
-npm install svgforge-cli -g
+npm install @svgforge/svgforge-cli -g
 ```
 
 A typical example could look like this:
@@ -398,11 +398,11 @@ Please refer to the [GitHub releases](https://github.com/svgforge/svgforge/relea
 ## Legal
 
 Copyright © 2026 Felix Müller. *svgforge* is licensed under the terms of the [MIT license](LICENSE). The original author is Joschi Kuphal <joschi@kuphal.net> / [@jkphl](https://twitter.com/jkphl). The contained example SVG icons are part of the [Tango Icon Library](http://tango.freedesktop.org/Tango_Icon_Library) and belong to the Public Domain.
+[npm-url]: https://www.npmjs.com/package/@svgforge/svgforge
 
+[npm-image]: https://img.shields.io/npm/v/@svgforge/svgforge?logo=npm&logoColor=fff
 
-[npm-url]: https://www.npmjs.com/package/svgforge
-[npm-image]: https://img.shields.io/npm/v/svgforge?logo=npm&logoColor=fff
-[npm-downloads]: https://img.shields.io/npm/dm/svgforge
+[npm-downloads]: https://img.shields.io/npm/dm/@svgforge/svgforge
 
 [ci-url]: https://github.com/svgforge/svgforge/actions/workflows/test.yml?query=branch%3Amain
 [ci-image]: https://img.shields.io/github/actions/workflow/status/svgforge/svgforge/test.yml?branch=main&label=CI&logo=github

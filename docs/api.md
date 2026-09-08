@@ -20,7 +20,7 @@ To understand these methods' roles and interactions, please have a look at the f
 ```js
 import fs from 'node:fs';
 import path from 'node:path';
-import SVGSpriter from 'svgforge';
+import SVGSpriter from '@svgforge/svgforge';
 
 // 1. Create and configure a spriter instance
 // ====================================================================
@@ -89,7 +89,7 @@ It is important to know that the spriter **optimizes the SVG files as soon as yo
 ```js
 import fs from 'node:fs';
 import path from 'node:path';
-import SVGSpriter from 'svgforge';
+import SVGSpriter from '@svgforge/svgforge';
 import File from 'vinyl';
 
 const spriter = new SVGSpriter({
