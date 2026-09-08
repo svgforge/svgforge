@@ -67,14 +67,14 @@ function addFixtureFiles(targetSpriter, targetFiles) {
 }
 
 addFixtureFiles(spriter, files).compile({
-  defs: {
+  symbol: {
     dimensions: true,
     render: {
       css: true,
     },
   },
 }, (error, result) => {
-  for (const type of Object.values(result.defs)) {
+  for (const type of Object.values(result.symbol)) {
     fs.mkdirSync(path.dirname(type.path), {recursive: true});
     fs.writeFileSync(type.path, type.contents);
   }

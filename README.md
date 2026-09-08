@@ -60,10 +60,10 @@ For an up-to-date list of browsers supporting [SVG in general](https://caniuse.c
 
 ## Installation
 
-To install *svgforge* globally, run:
+To install *svgforge* in your project, run:
 
 ```bash
-npm install svgforge -g
+npm install @svgforge/svgforge
 ```
 
 
@@ -267,13 +267,13 @@ const config = {
 
 ##### B) Sprite with CSS resource
 
-**«defs» sprite** with a **CSS stylesheet**:
+**«symbol» sprite** with a **CSS stylesheet**:
 
 ```js
-// «defs» sprite with CSS stylesheet resource
+// «symbol» sprite with CSS stylesheet resource
 const config = {
   mode: {
-    defs: { // Create a «defs» sprite
+    symbol: { // Create a «symbol» sprite
       render: {
         css: true // Render a CSS stylesheet
       }
@@ -285,13 +285,12 @@ const config = {
 
 ##### C) Multiple sprites
 
-**`<defs>` sprite**, **`<symbol>` sprite** and an **SVG stack** all at once:
+**`<symbol>` sprite** and an **SVG stack** all at once:
 
 ```js
-// «defs», «symbol» and «stack» sprites in parallel
+// «symbol» and «stack» sprites in parallel
 const config = {
   mode: {
-    defs: true,
     symbol: true,
     stack: true
   }
@@ -373,13 +372,13 @@ In order to improve accessibility, *svgforge* can read meta data from a YAML fil
 The command line interface has been split out into the separate [`svgforge-cli`](https://github.com/svgforge/svgforge-cli) package. Install it globally to get the `svgforge` command:
 
 ```bash
-npm install svgforge-cli -g
+npm install @svgforge/svgforge-cli -g
 ```
 
 A typical example could look like this:
 
 ```bash
-svgforge --defs --defs-render-css --defs-example --dest=out assets/*.svg
+svgforge --symbol --symbol-render-css --symbol-example --dest=out assets/*.svg
 ```
 
 Please refer to the [CLI guide](https://github.com/svgforge/svgforge-cli/docs/command-line.md) for further details.
@@ -398,11 +397,11 @@ Please refer to the [GitHub releases](https://github.com/svgforge/svgforge/relea
 ## Legal
 
 Copyright © 2026 Felix Müller. *svgforge* is licensed under the terms of the [MIT license](LICENSE). The original author is Joschi Kuphal <joschi@kuphal.net> / [@jkphl](https://twitter.com/jkphl). The contained example SVG icons are part of the [Tango Icon Library](http://tango.freedesktop.org/Tango_Icon_Library) and belong to the Public Domain.
+[npm-url]: https://www.npmjs.com/package/@svgforge/svgforge
 
+[npm-image]: https://img.shields.io/npm/v/@svgforge/svgforge?logo=npm&logoColor=fff
 
-[npm-url]: https://www.npmjs.com/package/svgforge
-[npm-image]: https://img.shields.io/npm/v/svgforge?logo=npm&logoColor=fff
-[npm-downloads]: https://img.shields.io/npm/dm/svgforge
+[npm-downloads]: https://img.shields.io/npm/dm/@svgforge/svgforge
 
 [ci-url]: https://github.com/svgforge/svgforge/actions/workflows/test.yml?query=branch%3Amain
 [ci-image]: https://img.shields.io/github/actions/workflow/status/svgforge/svgforge/test.yml?branch=main&label=CI&logo=github

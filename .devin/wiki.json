@@ -1,0 +1,243 @@
+{
+  "repo_notes": [
+    {
+      "content": ""
+    }
+  ],
+  "pages": [
+    {
+      "title": "Overview",
+      "purpose": "What svgforge is, high-level architecture (spriter -> queue -> shape -> layouter -> modes -> templates), repo layout, links to child pages.",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Getting Started & Usage",
+      "purpose": "Installation, Node/pnpm requirements, example.js walkthrough, public API (createSpriter, add, compile, compileAsync).",
+      "parent": "Overview",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Configuration Reference",
+      "purpose": "Config object structure, defaults, filtering, logging setup, shape/dimension/mode options from lib/svg-sprite/config.js and docs/configuration.md.",
+      "parent": "Overview",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Version History & Migration from svg-sprite",
+      "purpose": "Summary of 1.0 rewrite: dropped css mode, ES6 classes, dependency removals, migration notes.",
+      "parent": "Overview",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Core Engine",
+      "purpose": "Overview of the compilation pipeline components; links to child pages for spriter, queue, shape, sprite, layouter.",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "SVGSpriter Orchestration",
+      "purpose": "SVGSpriter class: shape ingestion, Vinyl handling, namespace assignment, compile lifecycle, stats/logging.",
+      "parent": "Core Engine",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Shape Queue",
+      "purpose": "lib/svg-sprite/queue.js: async shape queue, concurrency, empty events, interaction with spriter.",
+      "parent": "Core Engine",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "SVGShape",
+      "purpose": "Overview of the SVGShape abstraction and its sub-pipelines; links to children.",
+      "parent": "Core Engine",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Shape Parsing, Dimensions & Complement Pipeline",
+      "purpose": "SVG init/validation, entity inlining, viewBox/dimension resolution, padding and box sizing, metadata injection.",
+      "parent": "Core Engine",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Namespacing & Reference Rewriting",
+      "purpose": "setNamespace/resetNamespace, ID and class substitution, xlink/href and reference property rewriting, embedded CSS rewriting via cssom/csso.",
+      "parent": "Core Engine",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Sprite Assembly & Layouter",
+      "purpose": "lib/svg-sprite/sprite.js SVG document builder and layouter.js mode dispatch.",
+      "parent": "Core Engine",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Transforms, Utilities & Errors",
+      "purpose": "SVGO transform, utils (deepMerge, runWaterfall, runParallelLimit, escapeHtml, fix-xml-string), error classes, lib/deps.js injection.",
+      "parent": "Core Engine",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Sprite Modes",
+      "purpose": "Overview of the mode system and shared base behavior; links to per-mode child pages.",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "SVGSpriteBase & Shared Mode Behavior",
+      "purpose": "Path resolution, render config, CSS resource building, HTML examples, cache busting.",
+      "parent": "Sprite Modes",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "defs, symbol & stack Modes",
+      "purpose": "Implementation details and outputs of the three inline sprite modes.",
+      "parent": "Sprite Modes",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "view & standalone Modes",
+      "purpose": "viewbase.js layout (horizontal row placement), view mode fragments, standalone mode output.",
+      "parent": "Sprite Modes",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Templating (tmpl/)",
+      "purpose": "Mustache templates in tmpl/common, defs, stack, symbol, view; render data model and custom templates (docs/templating.md).",
+      "parent": "Sprite Modes",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Testing & Quality",
+      "purpose": "Overview of the test suite structure and tooling; links to children.",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Test Suite Structure",
+      "purpose": "node --test layout, unit tests for utils/config/shape/mode, minimal-configuration snapshot tests, fixtures.",
+      "parent": "Testing & Quality",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Test Helpers & Visual Regression",
+      "purpose": "jest-compat shim, add-files/write-files, capture-browser with playwright, svg->png conversion and pixelmatch comparisons.",
+      "parent": "Testing & Quality",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Infrastructure & Tooling",
+      "purpose": "Overview of CI/CD, dependency management and lint tooling; links to children.",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "CI/CD Workflows",
+      "purpose": "test.yml matrix and coverage, lint.yml, codeql.yml, release.yml, auto-assign.yml.",
+      "parent": "Infrastructure & Tooling",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Dependencies & Lint Configuration",
+      "purpose": "pnpm workspace/lockfile, native resvg bindings, xo.config.js lint rules.",
+      "parent": "Infrastructure & Tooling",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Glossary",
+      "purpose": "Definitions of svgforge-specific terms with code pointers: spriter, shape, sprite mode, viewbase, namespacing, box sizing, cache busting, Vinyl file, complement pipeline, modeless run, render config, etc.",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    }
+  ]
+}
