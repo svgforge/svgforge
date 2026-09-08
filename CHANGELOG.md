@@ -9,16 +9,18 @@ Newer release notes are published on the GitHub release page: <https://github.co
 
 ---
 
-## Unreleased
+## 2.0.0 — Scoped package names
 
-### Changed: Scoped package name
+### Breaking: Scoped package name
 
 * The package is now published as **`@svgforge/svgforge`** on both
   [npmjs](https://www.npmjs.com/package/@svgforge/svgforge) and
   [GitHub Packages](https://github.com/svgforge/svgforge/pkgs/npm/svgforge)
   (GitHub's package registry requires scoped package names).
-* The old unscoped `svgforge` package name on npmjs is deprecated and no longer
-  receives updates — use `import SVGSpriter from '@svgforge/svgforge'`.
+* **Upgrade path from 1.x:** the unscoped `svgforge` package is deprecated and
+  no longer receives updates. Existing installs must switch the dependency to
+  `@svgforge/svgforge@^2.0.0` and update imports from
+  `require('svgforge')` to `require('@svgforge/svgforge')`.
 * The command line interface is likewise published as
   [`@svgforge/svgforge-cli`](https://www.npmjs.com/package/@svgforge/svgforge-cli).
 
