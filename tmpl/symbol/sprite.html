@@ -4,22 +4,14 @@
     <meta charset="utf-8">
     <title>SVG &lt;symbol&gt; sprite preview | svg-sprite</title>
 
-<!--
-Common preview styles (shared via tmpl/common/preview.css)
-====================================================================================================
--->
-
     <style>
-{{> preview-css }}
+    {{> preview-css }}
     </style>
-
-<!--
-====================================================================================================
--->
 
   </head>
   <body>
 
+{{#inline}}
 <!--
 Inline <symbol> SVG sprite
 ====================================================================================================
@@ -36,20 +28,26 @@ for further details on how to create this embeddable sprite variant.
   {{{svg}}}
 {{/shapes}}
 </svg>
-
-<!--
-====================================================================================================
--->
+{{/inline}}
 
     <header>
       <h1>SVG <code>&lt;symbol&gt;</code> sprite preview</h1>
-      <p>This preview features two methods of using the generated sprite in conjunction with inline SVG. Please have a look at the HTML source for further details and be aware of the following constraints:</p>
+{{#inline}}
+      <p>This preview features the use of the generated sprite as inline SVG based on the embedded sprite below. Please have a look at the HTML source for further details and be aware of the following constraints:</p>
       <ul class="grid">
         <li>Your browser has to <a href="https://caniuse.com/svg-html5" target="_blank" rel="noopener noreferrer">support inline SVG</a> for these techniques to work.</li>
         <li>The embedded sprite (A) slightly differs from the generated external one. Please <a href="https://github.com/svg-sprite/svg-sprite/blob/main/docs/configuration.md#defs--symbol-mode" target="_blank" rel="noopener noreferrer">see the documentation</a> for details on how to create such an embeddable sprite.</li>
       </ul>
+{{/inline}}
+{{^inline}}
+      <p>This preview features the use of the generated sprite as an external SVG spritemap. Please have a look at the HTML source for further details and be aware of the following constraints:</p>
+      <ul class="grid">
+        <li>Your browser has to <a href="https://caniuse.com/svg-html5" target="_blank" rel="noopener noreferrer">support inline SVG</a> for these techniques to work.</li>
+      </ul>
+{{/inline}}
     </header>
     <section>
+{{#inline}}
 
 <!--
 A) Inline SVG with embedded sprite
@@ -73,13 +71,10 @@ embedded above. They may be styled via CSS.
         </li>
 {{/shapes}}
       </ul>
-
-<!--
-====================================================================================================
--->
-
+{{/inline}}
     </section>
     <section>
+{{^inline}}
 
 <!--
 B) Inline SVG with external sprite
@@ -89,7 +84,7 @@ SVG sprite. They may be styled via CSS.
 -->
 
       <h3>B) Inline SVG with external sprite</h3>
-      {{#inline}}<p>Please set the <code>inline</code> option to <code>false</code> in order to preview this method.</p>{{/inline}}{{^inline}}<ul class="grid">
+      <ul class="grid">
 {{#shapes}}
         <li title="{{name}}">
           <figure>
@@ -102,12 +97,8 @@ SVG sprite. They may be styled via CSS.
           </figure>
         </li>
 {{/shapes}}
-    </ul>{{/inline}}
-
-<!--
-====================================================================================================
--->
-
+      </ul>
+{{/inline}}
     </section>
     <section>
 
@@ -126,7 +117,7 @@ missing other dimension is derived from the shape's viewBox — the same techniq
           <figure>
             <div class="icon-box">
               <svg viewBox="0 0 {{width.outer}} {{height.outer}}" width="1.5em">
-                <use xlink:href="{{{example}}}#{{name}}"></use>
+                <use xlink:href="{{#inline}}#{{name}}{{/inline}}{{^inline}}{{{example}}}#{{name}}{{/inline}}"></use>
               </svg>
             </div>
             {{> figcaption}}
@@ -135,14 +126,8 @@ missing other dimension is derived from the shape's viewBox — the same techniq
 {{/shapes}}
       </ul>
 
-<!--
-====================================================================================================
--->
-
     </section>
-    <footer>
-      <p>Generated at {{date}} by <a href="https://github.com/svg-sprite/svg-sprite" target="_blank" rel="noopener noreferrer">svg-sprite</a>.</p>
-    </footer>
+    {{> footer}}
 
 <!--
 Common preview behavior (shared via tmpl/common/preview.js)

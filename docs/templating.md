@@ -111,8 +111,9 @@ For each sprite generation process, a data object is constructed that is passed 
 }
 ```
 
-**NOTE!**  `fileSize` property of each shape is null unless the `example` [config is passed](api.md#compilation-example)
-
+**NOTE!**
+1. `fileSize` property of each shape is null unless the `example` [config is passed](api.md#compilation-example)
+2. The Copy Id Button only works if the html is served by http (it's a security restriction from your browser).
 
 ### Builtin templating functions
 
