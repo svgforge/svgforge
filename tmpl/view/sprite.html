@@ -10,12 +10,8 @@ Common preview styles (shared via tmpl/common/preview.css)
 -->
 
     <style>
-{{> preview-css }}
+    {{> preview-css }}
     </style>
-
-<!--
-====================================================================================================
--->
 
   </head>
   <body>
@@ -24,7 +20,7 @@ Common preview styles (shared via tmpl/common/preview.css)
       <p>This preview features the use of the generated sprite by referencing the pre-defined <code>&lt;view&gt;</code> elements (fragment identifiers). Please have a look at the HTML source for further details and be aware of the following constraints:</p>
       <ul class="grid">
         <li>Your browser has to <a href="https://caniuse.com/svg-fragment" target="_blank" rel="noopener noreferrer">support SVG fragment identifiers</a> for SVG stacks to work.</li>
-        <li>Support for SVG fragment identifiers hasn't always been that decent. For older browsers you might have to use a prolyfill (if available?).</li>
+        <li></li>
       </ul>
     </header>
     <section>
@@ -51,9 +47,7 @@ pre-defined in the external sprite.
       </ul>
 
     </section>
-    <footer>
-      <p>Generated at {{date}} by <a href="https://github.com/joeda1/svgforge" target="_blank" rel="noopener noreferrer">svgforge</a>.</p>
-    </footer>
+    {{> footer}}
 
 <!--
 Common preview behavior (shared via tmpl/common/preview.js)
