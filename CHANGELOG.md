@@ -9,6 +9,25 @@ Newer release notes are published on the GitHub release page: <https://github.co
 
 ---
 
+## 2.0.1 — Preview templates, robust shape naming
+
+### Changed: Preview templates reflect the `inline` option
+
+* The `defs`, `symbol` and `stack` preview templates now adapt to the `inline`
+  option: with `inline: true` the embedded-sprite sections (`A`) are shown and
+  the `<use>` references point to the local sprite, while with external sprites
+  the external variant is shown instead. The shared footer partial is used
+  consistently across all modes.
+
+### Fixed: Shape naming with mixed or unnormalized paths
+
+* `SVGSpriter.add()` now resolves the vinyl file path, so base and path always
+  share the same absolute frame (previously a relative `file.path` combined
+  with an absolute `file.base` produced inconsistent shapes).
+* Shape names are now derived with `path.relative()` instead of manual string
+  slicing, which is more robust with differing path separators and trailing
+  separator edge cases.
+
 ## 2.0.0 — Scoped package names
 
 ### Breaking: Scoped package name

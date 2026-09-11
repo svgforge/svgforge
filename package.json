@@ -1,6 +1,6 @@
 {
   "name": "@svgforge/svgforge",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "Felix Müller (https://github.com/joeda1)",
   "contributors": [
     "Joschi Kuphal <joschi@kuphal.net> (https://jkphl.is)"
@@ -37,7 +37,6 @@
   "engines": {
     "node": ">=24"
   },
-  "packageManager": "pnpm@11.25.0",
   "main": "lib/svg-sprite.js",
   "files": [
     "lib",

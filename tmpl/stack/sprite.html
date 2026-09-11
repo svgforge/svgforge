@@ -4,27 +4,36 @@
     <meta charset="utf-8">
     <title>SVG stack preview | svg-sprite</title>
 
-<!--
-Common preview styles (shared via tmpl/common/preview.css)
-====================================================================================================
--->
-
     <style>
-{{> preview-css }}
+    {{> preview-css }}
     </style>
-
-<!--
-====================================================================================================
--->
 
   </head>
   <body>
+{{#inline}}
+<!--
+Inline SVG stack
+====================================================================================================
+This is an inlined version of the generated SVG stack. The single images may be <use>d everywhere
+below within this document. Please see
+
+  https://github.com/svg-sprite/svg-sprite/blob/main/docs/configuration.md#stack-mode
+
+for further details on how to create this embeddable sprite variant.
+-->
+
+<svg width="0" height="0" style="position:absolute">
+{{#shapes}}
+  {{{svg}}}
+{{/shapes}}
+</svg>
+{{/inline}}
     <header>
       <h1>SVG stack preview</h1>
       <p>This preview features an SVG stack. Please have a look at the HTML source for further details and be aware of the following constraints:</p>
       <ul class="grid">
         <li>Your browser has to <a href="https://caniuse.com/svg-fragment" target="_blank" rel="noopener noreferrer">support SVG fragment identifiers</a> for SVG stacks to work.</li>
-        <li>Support for SVG fragment identifiers hasn't always been that decent. For older browsers you will have to use some prolyfill like <a href="https://github.com/preciousforever/SVG-Stacker/blob/master/fixsvgstack.jquery.js" target="_blank" rel="noopener noreferrer">fixsvgstack.jquery.js</a>.</li>
+        <li></li>
       </ul>
     </header>
     <section>
@@ -61,7 +70,7 @@ selector is used to show the very shape that is referenced by the fragment ident
           <figure>
             <div class="icon-box">
               <svg viewBox="0 0 {{width.outer}} {{height.outer}}" width="1.5em">
-                <use xlink:href="{{{example}}}#{{name}}"></use>
+                <use xlink:href="{{#inline}}#{{name}}{{/inline}}{{^inline}}{{{example}}}#{{name}}{{/inline}}"></use>
               </svg>
             </div>
             {{> figcaption}}
@@ -95,9 +104,7 @@ shape dimensions.
       </ul>
 
     </section>
-    <footer>
-      <p>Generated at {{date}} by <a href="https://github.com/svg-sprite/svg-sprite" target="_blank" rel="noopener noreferrer">svg-sprite</a>.</p>
-    </footer>
+    {{> footer}}
 
 <!--
 Common preview behavior (shared via tmpl/common/preview.js)

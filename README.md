@@ -4,10 +4,10 @@
 
 svgforge is a low-level [Node.js](https://nodejs.org/) module that **takes a bunch of [SVG](https://www.w3.org/TR/SVG/) files**, optimizes them and bakes them into **SVG sprites** of several types:
 
-* tiled sprites with **pre-defined `<view>` elements**, useful for foreground images via [SVG fragment identifiers](https://css-tricks.com/svg-fragment-identifiers-work/),
-* inline sprites using the **`<defs>` element**,
-* inline sprites using the **`<symbol>` element**
-* and [SVG stacks](https://simurai.com/blog/2012/04/02/svg-stacks).
+* **view**: tiled sprites with **pre-defined `<view>` elements**, useful for foreground images via [SVG fragment identifiers](https://css-tricks.com/svg-fragment-identifiers-work/),
+* **stack**: [SVG stacks](https://simurai.com/blog/2012/04/02/svg-stacks), also usable as CSS `background-image` via fragment identifiers,
+* **symbol**: sprites using the **`<symbol>` element**, referenced via `<use href="#id">` (inline) or `href="sprite.svg#id"` (external) — the modern, more convenient variant,
+* **defs**: sprites using the **`<defs>` element**, the same technique as `<symbol>`, but with the `viewBox` duplicated on every `<use>`.
 
 You can explore the API with [DeepWiki](https://deepwiki.com/svgforge/svgforge), which can also help you create a configuration file or short script for building the icons. If you need a CLI, there's a separate project [svgforge-cli](https://github.com/svgforge/svgforge-cli)
 
@@ -15,7 +15,7 @@ You can explore the API with [DeepWiki](https://deepwiki.com/svgforge/svgforge),
 
 This is a fork of [svg-sprite](https://github.com/svg-sprite/svg-sprite) with lots of changes. There may still be outdated documentation and bugs. Please help by submitting a PR, it's very welcome :)
 
-The idea is to have it as a *drop-in replacement of svg-sprite*, with the exception of the removed CSS preprocessor support and old school sprite technique.
+The idea is to have it as a ***drop-in replacement of svg-sprite***, with the exception of the removed CSS preprocessor support and old school sprite technique.
 
 * Complete rewrite from CJS to ESM
 * All node dependencies are upgraded
@@ -33,7 +33,7 @@ The idea is to have it as a *drop-in replacement of svg-sprite*, with the except
 
 It comes with a set of [Mustache](https://mustache.github.io/) templates for creating stylesheets in good ol' [CSS](https://www.w3.org/Style/CSS/). Tweaking the templates or even adding your own **custom output format** is really easy, just as switching on the generation of an **HTML example document** along with your sprite.
 
-For an up-to-date list of browsers supporting [SVG in general](https://caniuse.com/svg) respectively [SVG fragment identifiers](https://caniuse.com/svg-fragment) in particular (required for `<defs>` and `<symbol>` sprites as well as SVG stacks) please refer to [caniuse.com](https://caniuse.com/).
+For an up-to-date list of browsers supporting [SVG fragment identifiers](https://caniuse.com/svg-fragment) in particular (required for `<defs>` and `<symbol>` sprites as well as SVG stacks) please refer to [caniuse.com](https://caniuse.com/).
 
 ## Table of contents
 
@@ -92,10 +92,10 @@ const config = {
   // ...
 };
 
-// Create spriter instance
+// 1. Create spriter instance
 const spriter = new SVGSpriter(config);
 
-// Add SVG source files
+// 2. Add SVG source files
 spriter.add(
   'assets/svg-1.svg',
   null,
@@ -108,7 +108,7 @@ spriter.add(
   fs.readFileSync('assets/svg-2.svg', 'utf8')
 );
 
-// Compile the sprite asynchronously
+// 3. Compile the sprite asynchronously
 const { result } = await spriter.compileAsync();
 
 // Write generated files to disk
@@ -318,20 +318,18 @@ Depending on your particular configuration, *svgforge* creates a lot of files th
 
 Relative destination paths refer to their ancestors as shown in the following scheme, with the current working directory being the ultimate base.
 
-```text
-    Destination option           Default         Comment
--------------------------------------------------------------------------------------------------------------------------------------------------------------
-cwd $   <dest>/                .           Main output directory
-      <mode.view.dest>/          view          «view» base directory
-        <mode.view.sprite>       svg/sprite.view.svg  Sprite location
-        (rendering resources are created by the respective modes, e.g. defs/symbol/stack)
-      <mode.defs.dest>/          defs          «defs» base directory
-        ...
-      <mode.symbol.dest>/        symbol        «symbol» base directory
-        ...
-      <mode.stack.dest>/         stack         «stack» base directory
-        ...
-```
+| Destination option              | Default              | Comment |
+|----------------------------------|----------------------|---------|
+| `cwd $`                          | `<dest>/`            | Main output directory |
+| &nbsp;&nbsp;`<mode.view.dest>/`  | `view`               | «view» base directory |
+| &nbsp;&nbsp;&nbsp;&nbsp;`<mode.view.sprite>` | `svg/sprite.view.svg` | Sprite location |
+| &nbsp;&nbsp;&nbsp;&nbsp;*(rendering resources)* |  | Created by the respective modes, e.g. `defs/symbol/stack` |
+| &nbsp;&nbsp;`<mode.defs.dest>/`  | `defs`               | «defs» base directory |
+| &nbsp;&nbsp;&nbsp;&nbsp;`...`    |                      |         |
+| &nbsp;&nbsp;`<mode.symbol.dest>/` | `symbol`           | «symbol» base directory |
+| &nbsp;&nbsp;&nbsp;&nbsp;`...`    |                      |         |
+| &nbsp;&nbsp;`<mode.stack.dest>/` | `stack`              | «stack» base directory |
+
 
 By default, stylesheet resources are generated directly into the respective **mode's base directory**.
 
@@ -391,12 +389,13 @@ Please refer to the [CLI guide](https://github.com/svgforge/svgforge-cli/docs/co
 
 ## Changelog
 
-Please refer to the [GitHub releases](https://github.com/svgforge/svgforge/releases) for a complete release history.
+Please refer to the [Changelog.md](CHANGELOG.md) or the git commits for a complete release history.
 
 
 ## Legal
 
 Copyright © 2026 Felix Müller. *svgforge* is licensed under the terms of the [MIT license](LICENSE). The original author is Joschi Kuphal <joschi@kuphal.net> / [@jkphl](https://twitter.com/jkphl). The contained example SVG icons are part of the [Tango Icon Library](http://tango.freedesktop.org/Tango_Icon_Library) and belong to the Public Domain.
+
 [npm-url]: https://www.npmjs.com/package/@svgforge/svgforge
 
 [npm-image]: https://img.shields.io/npm/v/@svgforge/svgforge?logo=npm&logoColor=fff
