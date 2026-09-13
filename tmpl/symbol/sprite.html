@@ -18,7 +18,7 @@ Inline <symbol> SVG sprite
 This is an inlined version of the generated SVG sprite. The single images may be <use>d everywhere
 below within this document. Please see
 
-  https://github.com/svg-sprite/svg-sprite/blob/main/docs/configuration.md#defs--symbol-mode
+  https://github.com/svgforge/svgforge/blob/main/docs/configuration.md#defs--symbol-mode
 
 for further details on how to create this embeddable sprite variant.
 -->
@@ -36,7 +36,7 @@ for further details on how to create this embeddable sprite variant.
       <p>This preview features the use of the generated sprite as inline SVG based on the embedded sprite below. Please have a look at the HTML source for further details and be aware of the following constraints:</p>
       <ul class="grid">
         <li>Your browser has to <a href="https://caniuse.com/svg-html5" target="_blank" rel="noopener noreferrer">support inline SVG</a> for these techniques to work.</li>
-        <li>The embedded sprite (A) slightly differs from the generated external one. Please <a href="https://github.com/svg-sprite/svg-sprite/blob/main/docs/configuration.md#defs--symbol-mode" target="_blank" rel="noopener noreferrer">see the documentation</a> for details on how to create such an embeddable sprite.</li>
+        <li>The embedded sprite (A) slightly differs from the generated external one. Please <a href="https://github.com/svgforge/svgforge/blob/main/docs/configuration.md#defs--symbol-mode" target="_blank" rel="noopener noreferrer">see the documentation</a> for details on how to create such an embeddable sprite.</li>
       </ul>
 {{/inline}}
 {{^inline}}
@@ -63,7 +63,7 @@ embedded above. They may be styled via CSS.
           <figure>
             <div class="icon-box">
               <svg class="{{#selector.dimensions}}{{#last}}{{#classname}}{{raw}}{{/classname}}{{/last}}{{/selector.dimensions}}">
-                <use xlink:href="#{{name}}"></use>
+                <use href="#{{name}}"></use>
               </svg>
             </div>
             {{> figcaption}}
@@ -90,7 +90,7 @@ SVG sprite. They may be styled via CSS.
           <figure>
             <div class="icon-box">
               <svg class="{{#selector.dimensions}}{{#last}}{{#classname}}{{raw}}{{/classname}}{{/last}}{{/selector.dimensions}}">
-                <use xlink:href="{{{example}}}#{{name}}"></use>
+                <use href="{{{example}}}#{{name}}"></use>
               </svg>
             </div>
             {{> figcaption}}
@@ -117,7 +117,7 @@ missing other dimension is derived from the shape's viewBox — the same techniq
           <figure>
             <div class="icon-box">
               <svg viewBox="0 0 {{width.outer}} {{height.outer}}" width="1.5em">
-                <use xlink:href="{{#inline}}#{{name}}{{/inline}}{{^inline}}{{{example}}}#{{name}}{{/inline}}"></use>
+                <use href="{{#inline}}#{{name}}{{/inline}}{{^inline}}{{{example}}}#{{name}}{{/inline}}"></use>
               </svg>
             </div>
             {{> figcaption}}

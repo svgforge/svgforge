@@ -85,7 +85,7 @@ Hint: Even the library is ESM only, since Node 22+ you can also [use CJS (requir
 ```js
 import fs from 'node:fs';
 import path from 'node:path';
-import SVGSpriter from 'svgforge';
+import SVGSpriter from '@svgforge/svgforge';
 
 // Define your configuration
 const config = {

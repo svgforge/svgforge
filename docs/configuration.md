@@ -399,9 +399,9 @@ The generated sprite is a single large image with one `<view>` slice per icon. B
 
 ##### «defs» & «symbol» mode
 
-The **«defs»** mode creates a single SVG file combining the original shapes as children of a global `<defs>` element. You can then `<use>` the shapes with either **document-internal references** (`<svg viewBox="0 0 100 100"><use xlink:href="#internal-id"/></svg>` while having the SVG sprite embedded inline into the very same document) or as an **external SVG spritemap** (`<svg viewBox="0 0 100 100"><use xlink:href="http://example.com/sprite.svg#fragment-id"/></svg>`). Please see [this article by Chris Coyier](https://css-tricks.com/svg-use-external-source/) for further explanation of the technique. Note that «defs» is the classic variant — for new projects prefer **«symbol»**, which is the modern, slightly more convenient implementation of the very same technique.
+The **«defs»** mode creates a single SVG file combining the original shapes as children of a global `<defs>` element. You can then `<use>` the shapes with either **document-internal references** (`<svg viewBox="0 0 100 100"><use href="#internal-id"/></svg>` while having the SVG sprite embedded inline into the very same document) or as an **external SVG spritemap** (`<svg viewBox="0 0 100 100"><use href="http://example.com/sprite.svg#fragment-id"/></svg>`). Please see [this article by Chris Coyier](https://css-tricks.com/svg-use-external-source/) for further explanation of the technique. Note that «defs» is the classic variant — for new projects prefer **«symbol»**, which is the modern, slightly more convenient implementation of the very same technique.
 
-The **«symbol»** mode behaves pretty much like the «defs» mode except it's using `<symbol>` elements to combine the original shapes into a sprite. Again, you can `<use>` the shapes with either **document-internal references** (`<svg><use xlink:href="#internal-id"/></svg>` while having the SVG sprite embedded inline into the very same document) or as an **external SVG spritemap** (`<svg><use xlink:href="http://example.com/sprite.svg#fragment-id"/></svg>`). Please see [this article by Chris Coyier](https://css-tricks.com/svg-symbol-good-choice-icons/) for further explanation of the `<symbol>` technique. Compared to the `defs` mode, one of the main benefits is that you don't have to provide the `viewBox` attribute on every `<use>` element which makes it a lot easier.
+The **«symbol»** mode behaves pretty much like the «defs» mode except it's using `<symbol>` elements to combine the original shapes into a sprite. Again, you can `<use>` the shapes with either **document-internal references** (`<svg><use href="#internal-id"/></svg>` while having the SVG sprite embedded inline into the very same document) or as an **external SVG spritemap** (`<svg><use href="http://example.com/sprite.svg#fragment-id"/></svg>`). Please see [this article by Chris Coyier](https://css-tricks.com/svg-symbol-good-choice-icons/) for further explanation of the `<symbol>` technique. Compared to the `defs` mode, one of the main benefits is that you don't have to provide the `viewBox` attribute on every `<use>` element which makes it a lot easier.
 
 The generated sprites differ only in the container element around each icon, and both are consumed identically:
 
@@ -443,7 +443,7 @@ Since version 2, the bundled example HTML for the «defs» and «symbol» modes 
 
 ```html
 <svg viewBox="0 0 24 24" width="1em">
-  <use xlink:href="sprite.svg#icon-id"></use>
+  <use href="sprite.svg#icon-id"></use>
 </svg>
 ```
 
