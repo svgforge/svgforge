@@ -17,7 +17,7 @@ Inline SVG stack
 This is an inlined version of the generated SVG stack. The single images may be <use>d everywhere
 below within this document. Please see
 
-  https://github.com/svg-sprite/svg-sprite/blob/main/docs/configuration.md#stack-mode
+  https://github.com/svgforge/svgforge/blob/main/docs/configuration.md#stack-mode
 
 for further details on how to create this embeddable sprite variant.
 -->
@@ -70,7 +70,7 @@ selector is used to show the very shape that is referenced by the fragment ident
           <figure>
             <div class="icon-box">
               <svg viewBox="0 0 {{width.outer}} {{height.outer}}" width="1.5em">
-                <use xlink:href="{{#inline}}#{{name}}{{/inline}}{{^inline}}{{{example}}}#{{name}}{{/inline}}"></use>
+                <use href="{{#inline}}#{{name}}{{/inline}}{{^inline}}{{{example}}}#{{name}}{{/inline}}"></use>
               </svg>
             </div>
             {{> figcaption}}

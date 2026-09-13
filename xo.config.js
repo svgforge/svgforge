@@ -11,7 +11,7 @@ const xoConfig = [
       'require-unicode-regexp': ['error', {requireFlag: 'u'}],
       'unicorn/max-nested-calls': ['error', {max: 6}],
       'jsdoc/no-undefined-types': ['error', {definedTypes: ['SVGSpriter', 'File', 'SVGShape', 'SVGSprite', 'playwright', 'HTMLElement', 'Document', 'Element']}],
-      'jsdoc/check-values': ['error', {allowedLicenses: ['MIT https://github.com/joeda1/svgforge/blob/main/LICENSE']}],
+      'jsdoc/check-values': ['error', {allowedLicenses: ['MIT https://github.com/svgforge/svgforge/blob/main/LICENSE']}],
     },
   },
   {

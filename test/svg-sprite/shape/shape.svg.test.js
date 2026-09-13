@@ -154,7 +154,7 @@ describe('testing getSVG()', () => {
     shape.complement(jest.fn);
     shape.setNamespace('ns-');
 
-    expect(shape.getSVG()).toBe('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="someprefix-ns-abc" height="0" width="0" viewBox="0 0 0 0"><use xlink:href="#someprefix-ns-abc"/></svg>');
+    expect(shape.getSVG()).toBe('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="someprefix-ns-abc" height="0" width="0" viewBox="0 0 0 0"><use href="#someprefix-ns-abc"/></svg>');
   });
 });
 

@@ -83,6 +83,7 @@ describe('testing setNamespace()', () => {
         nodeValue: `#${TEST_ATTR_VALUE}`,
         ownerElement: {
           setAttribute: createMock(),
+          removeAttributeNS: createMock(),
         },
       }];
       const THIRD_ELEMENTS = [{
@@ -100,15 +101,21 @@ describe('testing setNamespace()', () => {
         },
       }];
 
-      const SIXTH_ELEMENTS = [{
-        ownerElement: {setAttribute: createMock()},
-      }];
       const mockSelect = createMock()
         .mockReturnValueOnce(FIRST_ELEMENTS)
-        .mockReturnValueOnce(SECOND_ELEMENTS)
         .mockReturnValueOnce(THIRD_ELEMENTS)
         .mockReturnValueOnce(FOURTH_ELEMENTS)
-        .mockReturnValue(SIXTH_ELEMENTS);
+        .mockReturnValueOnce([])
+        .mockReturnValueOnce([])
+        .mockReturnValueOnce([])
+        .mockReturnValueOnce([])
+        .mockReturnValueOnce([])
+        .mockReturnValueOnce([])
+        .mockReturnValueOnce([])
+        .mockReturnValueOnce([])
+        .mockReturnValueOnce(SECOND_ELEMENTS)
+        .mockReturnValueOnce([{}])
+        .mockReturnValueOnce([{}]);
 
       spyOn(xpath, 'useNamespaces').mockReturnValueOnce(mockSelect);
 
@@ -116,20 +123,21 @@ describe('testing setNamespace()', () => {
 
       expect(mockSelect).toHaveBeenCalledTimes(14);
       expect(mockSelect.mock.calls[0][0]).toBe('//*[@id]');
-      expect(mockSelect.mock.calls[1][0]).toBe('//@xlink:href');
-      expect(mockSelect.mock.calls[2][0]).toBe('//@href');
+      expect(mockSelect.mock.calls[1][0]).toBe('//@href');
+      expect(mockSelect.mock.calls[11][0]).toBe('//@xlink:href');
 
       const attributes = ['style', 'fill', 'stroke', 'filter', 'clip-path', 'mask', 'marker-start', 'marker-end', 'marker-mid'];
 
       for (const [i, ref] of attributes.entries()) {
-        expect(mockSelect.mock.calls[3 + i][0]).toBe(`//@${ref}`);
+        expect(mockSelect.mock.calls[2 + i][0]).toBe(`//@${ref}`);
       }
 
       expect(mockSelect.mock.calls[12][0]).toBe('//svg:style');
       expect(mockSelect.mock.calls[13][0]).toBe('//svg:style');
 
       expect(FIRST_ELEMENTS[0].setAttribute).toHaveBeenCalledWith('id', `${TEST_NAMESPACE}${TEST_ATTR_VALUE}`);
-      expect(SECOND_ELEMENTS[1].ownerElement.setAttribute).toHaveBeenCalledWith('xlink:href', `#${TEST_NAMESPACE}${TEST_ATTR_VALUE}`);
+      expect(SECOND_ELEMENTS[1].ownerElement.setAttribute).toHaveBeenCalledWith('href', `#${TEST_NAMESPACE}${TEST_ATTR_VALUE}`);
+      expect(SECOND_ELEMENTS[1].ownerElement.removeAttributeNS).toHaveBeenCalledWith(shape.XLINK_NAMESPACE, 'href');
       expect(THIRD_ELEMENTS[1].ownerElement.setAttribute).toHaveBeenCalledWith('href', `#${TEST_NAMESPACE}${TEST_ATTR_VALUE}`);
       expect(FOURTH_ELEMENTS[0].ownerElement.setAttribute).toHaveBeenCalledWith(FOURTH_ELEMENTS[0].localName, '');
       expect(shape._namespaced).toBe(true);
@@ -173,7 +181,7 @@ describe('testing setNamespace()', () => {
       }];
       const TEST_NAMESPACE = 'ns';
 
-      const mockSelect = createMock().mockReturnValueOnce(TEST_ELEMENTS).mockReturnValueOnce([]);
+      const mockSelect = createMock().mockReturnValueOnce([]).mockReturnValueOnce(TEST_ELEMENTS).mockReturnValue([]);
 
       spyOn(xpath, 'useNamespaces').mockReturnValueOnce(mockSelect);
 
@@ -196,15 +204,28 @@ describe('testing setNamespace()', () => {
     expect(xpath.useNamespaces).not.toHaveBeenCalled();
   });
 
-  it('should not call anything if shape has no namespaceIds and namespaceClassnames', () => {
+  it('should convert xlink:href attributes even without namespaceIds and namespaceClassnames', () => {
     expect.hasAssertions();
 
     const shape = makeShape(false, false, false);
-    spyOn(xpath, 'useNamespaces');
+    const TEST_ELEMENTS = [{
+      nodeValue: '#id',
+      ownerElement: {
+        setAttribute: createMock(),
+        removeAttributeNS: createMock(),
+      },
+    }];
+
+    const mockSelect = createMock().mockReturnValueOnce(TEST_ELEMENTS).mockReturnValue([]);
+
+    spyOn(xpath, 'useNamespaces').mockReturnValueOnce(mockSelect);
 
     shape.setNamespace('123');
 
-    expect(xpath.useNamespaces).not.toHaveBeenCalled();
+    expect(mockSelect.mock.calls[0][0]).toBe('//@xlink:href');
+    expect(TEST_ELEMENTS[0].ownerElement.setAttribute).toHaveBeenCalledWith('href', '#id');
+    expect(TEST_ELEMENTS[0].ownerElement.removeAttributeNS).toHaveBeenCalledWith(shape.XLINK_NAMESPACE, 'href');
+    expect(shape._namespaced).toBe(true);
   });
 });
 
