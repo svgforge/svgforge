@@ -1,7 +1,7 @@
 
 import {Buffer} from 'node:buffer';
 import File from 'vinyl';
-import createShape from '../../../lib/svg-sprite/shape.js';
+import createShape from '../../../lib/svg-sprite/shape/index.js';
 import {setDependency} from '../../../lib/deps.js';
 import {
   describe,

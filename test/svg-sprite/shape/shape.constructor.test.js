@@ -4,7 +4,7 @@
 import path from 'node:path';
 import {Buffer} from 'node:buffer';
 import File from 'vinyl';
-import createShape from '../../../lib/svg-sprite/shape.js';
+import createShape from '../../../lib/svg-sprite/shape/index.js';
 import {
   describe,
   expect,

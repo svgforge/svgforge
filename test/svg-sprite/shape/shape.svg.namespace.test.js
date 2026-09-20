@@ -2,7 +2,7 @@
 import {Buffer} from 'node:buffer';
 import xpath from 'xpath';
 import File from 'vinyl';
-import createShape from '../../../lib/svg-sprite/shape.js';
+import createShape from '../../../lib/svg-sprite/shape/index.js';
 import NotPermittedError from '../../../lib/svg-sprite/errors/not-permitted-error.js';
 import {setDependency} from '../../../lib/deps.js';
 import {
