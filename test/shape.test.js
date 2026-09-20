@@ -3,7 +3,7 @@ import {Buffer} from 'node:buffer';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {DOMParser} from '@xmldom/xmldom';
-import SVGSpriter from '../lib/svg-sprite.js';
+import SVGSpriter from '../lib/svgforge.js';
 import {setDependency} from '../lib/deps.js';
 import {
   describe,

@@ -10,7 +10,7 @@ import {
   zipObject,
   deepMerge,
   escapeHtml,
-} from '../lib/svg-sprite/utils/index.js';
+} from '../lib/svgforge/utils/index.js';
 import {describe, expect, it} from './helpers/jest-compat.js';
 
 describe('utils', () => {

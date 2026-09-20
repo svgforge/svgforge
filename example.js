@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
-import SVGSpriter from './lib/svg-sprite.js';
+import SVGSpriter from './lib/svgforge.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const cwd = path.join(__dirname, 'test/fixture/svg/single');

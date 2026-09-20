@@ -6,7 +6,7 @@ import path from 'node:path';
 import {Buffer} from 'node:buffer';
 import {fileURLToPath} from 'node:url';
 import File from 'vinyl';
-import SVGSpriter from '../lib/svg-sprite.js';
+import SVGSpriter from '../lib/svgforge.js';
 import {
   beforeEach,
   describe,
