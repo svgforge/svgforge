@@ -9,7 +9,7 @@ Newer release notes are published on the GitHub release page: <https://github.co
 
 ---
 
-## Unreleased
+## 2.1.0 — Public utils export
 
 ### Added
 
