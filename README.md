@@ -394,7 +394,7 @@ Please refer to the [Changelog.md](CHANGELOG.md) or the git commits for a comple
 
 ## Legal
 
-Copyright © 2026 Felix Müller. *svgforge* is licensed under the terms of the [MIT license](LICENSE). The original author is Joschi Kuphal <joschi@kuphal.net> / [@jkphl](https://twitter.com/jkphl). The contained example SVG icons are part of the [Tango Icon Library](http://tango.freedesktop.org/Tango_Icon_Library) and belong to the Public Domain.
+Copyright © 2026 svgforge. *svgforge* is licensed under the terms of the [MIT license](LICENSE). The original author is Joschi Kuphal <joschi@kuphal.net> / [@jkphl](https://twitter.com/jkphl). The contained example SVG icons are part of the [Tango Icon Library](http://tango.freedesktop.org/Tango_Icon_Library) and belong to the Public Domain.
 
 [npm-url]: https://www.npmjs.com/package/@svgforge/svgforge
 
