@@ -1,6 +1,6 @@
 
-import fixXMLString from '../lib/svg-sprite/utils/fix-xml-string.js';
-import XmlFixingError from '../lib/svg-sprite/errors/xml-fixing-error.js';
+import fixXMLString from '../lib/svgforge/utils/fix-xml-string.js';
+import XmlFixingError from '../lib/svgforge/errors/xml-fixing-error.js';
 import {describe, expect, it} from './helpers/jest-compat.js';
 
 describe('testing fixing svg string', () => {

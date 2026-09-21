@@ -37,7 +37,12 @@
   "engines": {
     "node": ">=24"
   },
-  "main": "lib/svg-sprite.js",
+  "main": "lib/svgforge.js",
+  "exports": {
+    ".": "./lib/svgforge.js",
+    "./utils": "./lib/svgforge/utils/index.js",
+    "./lib/svg-sprite/utils/index.js": "./lib/svgforge/utils/index.js"
+  },
   "files": [
     "lib",
     "tmpl"

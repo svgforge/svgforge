@@ -4,10 +4,10 @@ import path from 'node:path';
 import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import File from 'vinyl';
-import getShape from '../lib/svg-sprite/shape.js';
-import SVGSpriter from '../lib/svg-sprite.js';
+import getShape from '../lib/svgforge/shape/index.js';
+import SVGSpriter from '../lib/svgforge.js';
 import {setDependency} from '../lib/deps.js';
-import ArgumentError from '../lib/svg-sprite/errors/argument-error.js';
+import ArgumentError from '../lib/svgforge/errors/argument-error.js';
 import {
   beforeEach,
   describe,

@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import File from 'vinyl';
-import {isObject} from '../../lib/svg-sprite/utils/index.js';
+import {isObject} from '../../lib/svgforge/utils/index.js';
 /**
  Recursively write files to disc
 

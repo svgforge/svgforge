@@ -13,7 +13,7 @@ import {
 
   mock,
 } from 'node:test';
-import {isObject} from '../../lib/svg-sprite/utils/index.js';
+import {isObject} from '../../lib/svgforge/utils/index.js';
 import compareSvg2Png from './compare-svg-2-png.js';
 import compareHTML2Png from './compare-html-2-png.js';
 import {closeBrowser} from './capture-browser.js';

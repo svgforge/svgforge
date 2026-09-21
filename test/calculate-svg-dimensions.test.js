@@ -2,9 +2,9 @@
 import {readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import calculateSvgDimensions from '../lib/svg-sprite/utils/calculate-svg-dimensions.js';
+import calculateSvgDimensions from '../lib/svgforge/utils/calculate-svg-dimensions.js';
 import {setDependency, resetDependencies} from '../lib/deps.js';
-import DimensionsCalculationError from '../lib/svg-sprite/errors/dimensions-calculation-error.js';
+import DimensionsCalculationError from '../lib/svgforge/errors/dimensions-calculation-error.js';
 import {
   describe,
   expect,

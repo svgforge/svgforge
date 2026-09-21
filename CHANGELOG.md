@@ -9,6 +9,13 @@ Newer release notes are published on the GitHub release page: <https://github.co
 
 ---
 
+## Unreleased
+
+### Added
+
+* Public `@svgforge/svgforge/utils` export (`deepMerge`, `isObject`, `zipObject`, …).
+  The previous CLI deep-import path `lib/svg-sprite/utils` remains available.
+
 ## 2.0.1 — Preview templates, robust shape naming
 
 ### Changed: Preview templates reflect the `inline` option
