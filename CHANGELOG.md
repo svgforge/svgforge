@@ -9,7 +9,7 @@ Newer release notes are published on the GitHub release page: <https://github.co
 
 ---
 
-## Unreleased
+## 2.1.0 — Public utils export
 
 ### Added
 
@@ -159,7 +159,7 @@ Newer release notes are published on the GitHub release page: <https://github.co
 * Drop LESS/Stylus support entirely (code, dependencies, documentation)
 * Raise pixelmatch tolerance (`MAX_MISMATCH` 5 → 130) for AA differences under
   the upgraded Chromium/Playwright rendering pipeline
-* Change primary author to Felix Müller; Joschi Kuphal remains as contributor
+* Change primary author to svgforge; Joschi Kuphal remains as contributor
 * Replace the `glob` package with the native `fs.globSync`/`node:fs` API and
   drop `glob` from the (dev) dependencies; `engines.node` is `>= 22` (required
   for the glob API introduced in Node 22)
