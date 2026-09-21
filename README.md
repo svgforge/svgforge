@@ -9,11 +9,13 @@ svgforge is a low-level [Node.js](https://nodejs.org/) module that **takes a bun
 * **symbol**: sprites using the **`<symbol>` element**, referenced via `<use href="#id">` (inline) or `href="sprite.svg#id"` (external) — the modern, more convenient variant,
 * **defs**: sprites using the **`<defs>` element**, the same technique as `<symbol>`, but with the `viewBox` duplicated on every `<use>`.
 
-You can explore the API with [DeepWiki](https://deepwiki.com/svgforge/svgforge), which can also help you create a configuration file or short script for building the icons. If you need a CLI, there's a separate project [svgforge-cli](https://github.com/svgforge/svgforge-cli)
+You can explore the API with [DeepWiki](https://deepwiki.com/svgforge/svgforge), which can also help you create a configuration file or short script for building the icons. If you need a CLI, there's a separate project [svgforge-cli](https://github.com/svgforge/svgforge-cli).
+
+There is also a Github page, with some [tutorials how to use svgforge](https://svgforge.github.io) and related projects.
 
 ## Changes compared to svg-sprite
 
-This is a fork of [svg-sprite](https://github.com/svg-sprite/svg-sprite) with lots of changes. There may still be outdated documentation and bugs. Please help by submitting a PR, it's very welcome :)
+This is a fork of [svg-sprite](https://github.com/svg-sprite/svg-sprite) with lots of changes.
 
 The idea is to have it as a ***drop-in replacement of svg-sprite***, with the exception of the removed CSS preprocessor support and old school sprite technique.
 
@@ -22,7 +24,7 @@ The idea is to have it as a ***drop-in replacement of svg-sprite***, with the ex
 * You need Node.js version >= 24
 * Split package to `svgforge` and `svgforge-cli` for easier testing
 * Drop grunt and gulp (you can still use it with a few lines of code)
-* Replace glob with native [Node.js glob](https://nodejs.org/api/fs.html#fspromisesglobpattern-options)
+* Replace glob with native [fs.glob](https://nodejs.org/api/fs.html#fspromisesglobpattern-options)
 * Remove SCSS, LESS and Stylus support, it was only useful for sprite generation.
 * Replace async npm package with native ES6 Promise API
 * Replace lodash with native ES6 + utility functions
@@ -362,7 +364,7 @@ In order to improve accessibility, *svgforge* can read meta data from a YAML fil
 
 ### Tweaking and adding output formats
 
-*svgforge* uses [Mustache](https://mustache.github.io/) templates for rendering the various CSS resources. This makes it very easy to tailor the generated CSS / Sass resources to your needs or add completely new output formats. Please refer to the [templating guide](docs/templating.md) to learn about the details.
+*svgforge* uses [Mustache](https://mustache.github.io/) templates for rendering the various CSS resources. This makes it very easy to tailor the generated CSS resources to your needs or add completely new output formats. Please refer to the [templating guide](docs/templating.md) to learn about the details.
 
 
 ## Command line usage
