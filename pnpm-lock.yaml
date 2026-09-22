@@ -35,9 +35,6 @@ importers:
       vinyl:
         specifier: ^3.0.1
         version: 3.0.1
-      xpath:
-        specifier: ^0.0.34
-        version: 0.0.34
     devDependencies:
       eslint-plugin-jsdoc:
         specifier: ^64.5.4
@@ -1873,10 +1870,6 @@ packages:
     peerDependenciesMeta:
       webpack:
         optional: true
-
-  xpath@0.0.34:
-    resolution: {integrity: sha512-FxF6+rkr1rNSQrhUNYrAFJpRXNzlDoMxeXN5qI84939ylEv3qqPFKa85Oxr6tDaJKqwW6KKyo2v26TSv3k6LeA==}
-    engines: {node: '>=0.6.0'}
 
   yaml@2.9.1:
     resolution: {integrity: sha512-3NxN8+78OdzbT7C/WjGsyfPAtJaN3FNDsWxv7Y7mcDsT/oOmgW8BpyQQFFBnvZE3j9Y2Sdz1ULFLezL7Eb2yFw==}
@@ -3914,8 +3907,6 @@ snapshots:
       - eslint-plugin-import
       - supports-color
       - ts-declaration-location
-
-  xpath@0.0.34: {}
 
   yaml@2.9.1: {}
 

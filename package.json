@@ -64,8 +64,7 @@
     "js-yaml": "^5.4.2",
     "mustache": "^4.2.0",
     "svgo": "^4.1.0",
-    "vinyl": "^3.0.1",
-    "xpath": "^0.0.34"
+    "vinyl": "^3.0.1"
   },
   "devDependencies": {
     "eslint-plugin-jsdoc": "^64.5.4",

@@ -11,10 +11,12 @@ Newer release notes are published on the GitHub release page: <https://github.co
 
 ### Removed
 
-* Dropped the `prettysize`, `import-lazy` and `winston` runtime dependencies:
-  file sizes are formatted by an internal helper, lazy imports are replaced by
-  native ESM imports, and the default logger is now a small built-in console
-  logger with the same `YYYY-MM-DD HH:MM:ss.SSS - level: message` output.
+* Dropped the `prettysize`, `import-lazy`, `winston` and `xpath` runtime
+  dependencies: file sizes are formatted by an internal helper, lazy imports are
+  replaced by native ESM imports, the default logger is now a small built-in
+  console logger with the same `YYYY-MM-DD HH:MM:ss.SSS - level: message`
+  output, and the XPath-based namespace rewriting uses the native
+  `@xmldom/xmldom` DOM traversal instead.
 
 ---
 
