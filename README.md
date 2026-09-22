@@ -26,8 +26,14 @@ The idea is to have it as a ***drop-in replacement of svg-sprite***, with the ex
 * Drop grunt and gulp (you can still use it with a few lines of code)
 * Replace glob with native [fs.glob](https://nodejs.org/api/fs.html#fspromisesglobpattern-options)
 * Remove SCSS, LESS and Stylus support, it was only useful for sprite generation.
+* Replace prettysize npm package with a small helper function (unmaintained)
 * Replace async npm package with native ES6 Promise API
+* Replace import-lazy npm package with native lazy imports.
+* Replace winston npm package with native logger.
+* Replace xpath with @xmldom/xmldom that is already installed (xpath uses insecure `eval`).
+* Replace cssom with css-tree because the package is not maintained anymore.
 * Replace lodash with native ES6 + utility functions
+* Replace mustache with ventojs templates.
 * Remove support for the sprite technique (CSS background position). I've found it antique and not required anymore and it simplifies the code a lot! If you want to use icons as `background-image` you can use the `stack` mode, and then: `background: url(icon.svg#ID)`. See here: https://css-tricks.com/svg-fragment-identifiers-work/#syntax-for-css
 * Improved example templates with copy id button for each icon
 * Finally all tests are fixed with over 90% coverage and use [Node.js's native test runner](https://nodejs.org/api/test.html) instead of Jest
