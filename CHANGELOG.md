@@ -9,6 +9,11 @@ Newer release notes are published on the GitHub release page: <https://github.co
 
 ## 3.0.0 — Vento templating, dependency modernization
 
+### Added
+
+* The spriter emits a `progress` event for each shape that finished processing,
+  carrying `{processed, total}` — useful for CLI progress bars.
+
 ### Changed (breaking)
 
 * The Mustache templating engine was replaced by [Vento](https://vento.js.org):
