@@ -35,6 +35,9 @@ Newer release notes are published on the GitHub release page: <https://github.co
 * Namespace-based CSS selector rewriting (`@font-face` / `@keyframes` rules)
   no longer produces corrupted output — the abandoned `cssom` parser was
   replaced by `css-tree`.
+* Errors thrown while laying out a sprite are now passed to the `compile()`
+  callback as-is instead of crashing with `Object.values(undefined)`, which
+  previously masked the underlying failure.
 
 ### Removed
 

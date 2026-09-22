@@ -72,6 +72,18 @@ spriter.compile((error, result, data) => {
 
 1. **config** `{Object}` *(default: `{}`)* — [Main configuration](configuration.md) for the spriting process. As all configuration properties are optional, you may provide an empty object here or omit the argument altogether (no output files will be created then, but the [added SVG files](#svgspriteraddfile--name-svg-) will be optimized nevertheless). The `mode` configuration properties may also be specified when calling the `.compile()` method ([see below](#svgspritercompile-config--callback-)).
 
+#### Spriter events
+
+The spriter instance is a Node.js [`EventEmitter`](https://nodejs.org/api/events.html#class-eventemitter), so you can subscribe to lifecycle events:
+
+* **`progress`** `{processed: number, total: number}` — Emitted for every shape that has finished processing (optimization & complementing). `processed` is the number of shapes completed so far, `total` the number of shapes registered via [`add()`](#svgspriteraddfile--name-svg-). The final event reports `processed === total`. Useful for progress indicators (e.g. a CLI progress bar):
+
+```js
+spriter.on('progress', ({processed, total}) => {
+  process.stderr.write(`\rProcessing ${processed}/${total}`);
+});
+```
+
 #### SVGSpriter.add(file [, name, svg ])
 
 **Registration of an SVG file** — Before compilation, you'll need to register one or more SVG files for processing. As *svgforge* doesn't read the files from the disk itself, you'll have to pass both the path and the file contents explicitly. Alternatively, you may pass a [vinyl](https://github.com/gulpjs/vinyl) file object as the first argument to `.add()`, which comes in handy when piping resources from one process to another. Please [see below](#example-using-glob-and-vinyl) for an example.
