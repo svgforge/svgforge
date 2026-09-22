@@ -1,5 +1,3 @@
-
-import winston from 'winston';
 import SVGSpriterConfig from '../../../lib/svgforge/config.js';
 import {
   afterAll,
@@ -7,20 +5,25 @@ import {
   describe,
   expect,
   it,
+  createMock,
   jest,
 } from '../../helpers/jest-compat.js';
 
 describe('testing log', () => {
-  const getLogger = () => winston.createLogger({
-    transports: [
-      new winston.transports.Console({
-        level: 'info',
-      }),
-    ],
+  const getLogger = () => ({
     level: 'info',
+    transports: [{
+      level: 'info',
+    }],
+    log: createMock(),
+    debug: createMock(),
+    info: createMock(),
+    verbose: createMock(),
+    warn: createMock(),
+    error: createMock(),
   });
 
-  it('should set winston logger if it passed as config.log', () => {
+  it('should keep a logger if it is passed as config.log', () => {
     expect.hasAssertions();
 
     const TEST_LOGGER = getLogger();
@@ -55,13 +58,13 @@ describe('testing log', () => {
     expect(TEST_LOGGER.verbose).toHaveBeenCalledWith('Initialized spriter configuration');
   });
 
-  describe('should create winston logger', () => {
+  describe('should create default logger', () => {
     const originalConsole = console;
 
     beforeAll(() => {
       // Suppressing console
       console._stdout = {
-        write: jest.fn(),
+        write: createMock(),
       };
     });
 
@@ -77,7 +80,7 @@ describe('testing log', () => {
         log: logLevel,
       });
 
-      expect(config.log).toBeDefaultWinstonLogger();
+      expect(config.log).toBeDefaultLogger();
       expect(config.log.transports[0].level).toBe(logLevel);
       expect(config.log.transports[0].silent).toBe(false);
     });
@@ -89,7 +92,7 @@ describe('testing log', () => {
         log: true,
       });
 
-      expect(config.log).toBeDefaultWinstonLogger();
+      expect(config.log).toBeDefaultLogger();
       expect(config.log.transports[0].level).toBe('info');
       expect(config.log.transports[0].silent).toBe(false);
     });
@@ -101,10 +104,9 @@ describe('testing log', () => {
         log: false,
       });
 
-      expect(config.log).toBeDefaultWinstonLogger();
+      expect(config.log).toBeDefaultLogger();
       expect(config.log.transports[0].level).toBe('info');
       expect(config.log.transports[0].silent).toBe(true);
     });
   });
 });
-

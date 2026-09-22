@@ -59,7 +59,7 @@ Property         | Type      | Default     | Description                |
 
 Property         | Type      | Default     | Description                |
 ------------------------ | --------------- | ------------- | ------------------------------------------ |
-`log`          | String\|Logger  |         | *svgforge* uses [winston](https://github.com/winstonjs/winston) for logging, but output is turned off by default. To activate and use the pre-configured console logger, you need to pass the desired log level (`'info'`, `'verbose'` or `'debug'`). Alternatively, you can pass your own custom `winston.Logger` instance (which needs to handle at least these three log levels). Falsy values like `""`, `false` or `null` will disable logging. |
+`log`          | String\|Logger  |         | *svgforge* uses a built-in console logger, but output is turned off by default. To activate it, pass the desired log level (`'info'`, `'verbose'` or `'debug'`). Alternatively, you can pass your own custom logger instance (which needs to be logger-compatible, i.e. provide `level`, `transports` and a `log()` method — a `winston.Logger` qualifies). Falsy values like `""`, `false` or `null` will disable logging. |
 
 
 ### SVG shape configuration

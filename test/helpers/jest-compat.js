@@ -851,9 +851,9 @@ expect.extend({
     return {pass: isPngEqual, message};
   },
 
-  toBeDefaultWinstonLogger(received) {
+  toBeDefaultLogger(received) {
     const options = {
-      comment: 'Object is default winson logger created by SVGSpriterConfig',
+      comment: 'Object is default logger created by SVGSpriterConfig',
       isNot: this.isNot,
       promise: this.promise,
     };
@@ -866,9 +866,9 @@ expect.extend({
     return {
       pass,
       message: pass
-        ? () => 'Is winston logger, all OK'
-        : () => `${this.utils.matcherHint('toBeDefaultWinsonLogger', undefined, undefined, options)}\n\n`
-          + `Expected: ${this.utils.printExpected('winston logger')}\n`
+        ? () => 'Is default logger, all OK'
+        : () => `${this.utils.matcherHint('toBeDefaultLogger', undefined, undefined, options)}\n\n`
+          + `Expected: ${this.utils.printExpected('default logger')}\n`
           + `Received: ${this.utils.printReceived(received)}`,
     };
   },

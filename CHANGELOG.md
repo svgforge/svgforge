@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Newer release notes are published on the GitHub release page: <https://github.com/svgforge/svgforge/releases>
 
+## Unreleased
+
+### Removed
+
+* Dropped the `prettysize`, `import-lazy` and `winston` runtime dependencies:
+  file sizes are formatted by an internal helper, lazy imports are replaced by
+  native ESM imports, and the default logger is now a small built-in console
+  logger with the same `YYYY-MM-DD HH:MM:ss.SSS - level: message` output.
+
 ---
 
 ## 2.1.0 — Public utils export
