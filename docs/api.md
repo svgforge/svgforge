@@ -134,7 +134,7 @@ spriter.compile((error, result, data) => {
 2. **callback** `{Function}` — Callback triggered when the compilation has finished, getting three arguments:
   * **error** `{Error}` — Error message in case the compilation has failed
   * **result** `{Object}` — Directory of generated resources ([see below](#compilation-example))
-  * **data** `{Object}` — Templating variables passed to Mustache for rendering the resources (see [sprite & shape variables](templating.md#sprite--shape-variables) for details)
+  * **data** `{Object}` — Templating variables passed to [Vento](https://vento.js.org) for rendering the resources (see [sprite & shape variables](templating.md#sprite--shape-variables) for details)
 
 ##### Compilation example
 

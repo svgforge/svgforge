@@ -2,7 +2,7 @@
 import path from 'node:path';
 import {readFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
-import mustache from 'mustache';
+import {renderTemplate} from '../../../../lib/svgforge/utils/template.js';
 import SVGSpriter from '../../../../lib/svgforge.js';
 import {addFixtureFiles} from '../../../helpers/add-files.js';
 import writeFiles from '../../../helpers/write-files.js';
@@ -58,8 +58,8 @@ describe.each`
 
     expect(data.svg).toMatchSnapshot();
 
-    const previewTemplate = await readFile(path.join(__dirname, '../../../tmpl/symbol.html'), 'utf8');
-    const out = mustache.render(previewTemplate, data);
+    const previewTemplate = await readFile(path.join(__dirname, '../../../tmpl/symbol.vto'), 'utf8');
+    const out = await renderTemplate(previewTemplate, data, {});
     const preview = await writeFile(path.join(temporaryPath, 'symbol/html/symbol.html'), out);
     const expected = path.join(paths.expectations, `png/symbol.html${testConfig.namespace}.png`);
 

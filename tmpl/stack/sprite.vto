@@ -1,16 +1,17 @@
 <!doctype html>
+{{ import { figcaption } from "figcaption.vto" }}{{ import { footer } from "footer.vto" }}
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <title>SVG stack preview | svg-sprite</title>
 
     <style>
-    {{> preview-css }}
+    {{ include "preview-css" }}
     </style>
 
   </head>
   <body>
-{{#inline}}
+{{ if inline }}
 <!--
 Inline SVG stack
 ====================================================================================================
@@ -23,11 +24,11 @@ for further details on how to create this embeddable sprite variant.
 -->
 
 <svg width="0" height="0" style="position:absolute">
-{{#shapes}}
-  {{{svg}}}
-{{/shapes}}
+{{ for s of shapes }}
+  {{ s.svg |> safe }}
+{{ /for }}
 </svg>
-{{/inline}}
+{{ /if }}
     <header>
       <h1>SVG stack preview</h1>
       <p>This preview features an SVG stack. Please have a look at the HTML source for further details and be aware of the following constraints:</p>
@@ -47,16 +48,16 @@ selector is used to show the very shape that is referenced by the fragment ident
 -->
 
       <ul class="grid">
-{{#shapes}}
-        <li title="{{name}}">
+{{ for s of shapes }}
+        <li title="{{ s.name }}">
           <figure>
             <div class="icon-box">
-              <img src="{{{example}}}#{{name}}" class="{{#selector.dimensions}}{{#last}}{{#classname}}{{raw}}{{/classname}}{{/last}}{{/selector.dimensions}}" alt="{{name}}">
+              <img src="{{ example |> safe }}#{{ s.name }}" class="{{ for d of s.selector.dimensions }}{{ if d.last }}{{ classname(d.raw) }}{{ /if }}{{ /for }}" alt="{{ s.name }}">
             </div>
-            {{> figcaption}}
+            {{ figcaption(s) }}
           </figure>
         </li>
-{{/shapes}}
+{{ /for }}
       </ul>
 
 <!--
@@ -65,18 +66,18 @@ selector is used to show the very shape that is referenced by the fragment ident
 
       <h3>B) Inline SVG, sized by viewBox only (stacksvg-style)</h3>
       <ul class="grid">
-{{#shapes}}
-        <li title="{{name}}">
+{{ for s of shapes }}
+        <li title="{{ s.name }}">
           <figure>
             <div class="icon-box">
-              <svg viewBox="0 0 {{width.outer}} {{height.outer}}" width="1.5em">
-                <use href="{{#inline}}#{{name}}{{/inline}}{{^inline}}{{{example}}}#{{name}}{{/inline}}"></use>
+              <svg viewBox="0 0 {{ s.width.outer }} {{ s.height.outer }}" width="1.5em">
+                <use href="{{ if inline }}#{{ s.name }}{{ /if }}{{ if !inline }}{{ example |> safe }}#{{ s.name }}{{ /if }}"></use>
               </svg>
             </div>
-            {{> figcaption}}
+            {{ figcaption(s) }}
           </figure>
         </li>
-{{/shapes}}
+{{ /for }}
       </ul>
 
 <!--
@@ -91,20 +92,20 @@ shape dimensions.
 
       <h3>C) Sprite as CSS background image (inline style)</h3>
       <ul class="grid">
-{{#shapes}}
-        <li title="{{name}}">
+{{ for s of shapes }}
+        <li title="{{ s.name }}">
           <figure>
             <div class="icon-box">
-              <div class="{{#selector.dimensions}}{{#last}}{{#classname}}{{raw}}{{/classname}}{{/last}}{{/selector.dimensions}}" style="background-image: url('{{{example}}}#{{name}}');"></div>
+              <div class="{{ for d of s.selector.dimensions }}{{ if d.last }}{{ classname(d.raw) }}{{ /if }}{{ /for }}" style="background-image: url('{{ example |> safe }}#{{ s.name }}');"></div>
             </div>
-            {{> figcaption}}
+            {{ figcaption(s) }}
           </figure>
         </li>
-{{/shapes}}
+{{ /for }}
       </ul>
 
     </section>
-    {{> footer}}
+    {{ footer() }}
 
 <!--
 Common preview behavior (shared via tmpl/common/preview.js)
@@ -112,7 +113,7 @@ Common preview behavior (shared via tmpl/common/preview.js)
 -->
 
 <script>
-{{> preview-js }}
+{{ include "preview-js" }}
 </script>
   </body>
 </html>

@@ -7,7 +7,7 @@ This file is part of the documentation of *svgforge* — a free low-level Node.j
 
 ### Sprite & shape variables
 
-For each sprite generation process, a data object is constructed that is passed to the [Mustache](https://mustache.github.io/) templating engine for rendering the different resources. You can access these templating values via the `data` argument passed to the [compile() callback](api.md#svgspritercompile-config--callback-). Example:
+For each sprite generation process, a data object is constructed that is passed to the [Vento](https://vento.js.org) templating engine for rendering the different resources. You can access these templating values via the `data` argument passed to the [compile() callback](api.md#svgspritercompile-config--callback-). Example:
 
 ```js
 {
@@ -117,30 +117,32 @@ For each sprite generation process, a data object is constructed that is passed 
 
 ### Builtin templating functions
 
-There are a couple of functions directly built into *svgforge*. You may use them in any template.
+There are a couple of functions directly built into *svgforge*. You may use them in any template, e.g. inside a custom `render:` template or the HTML example documents.
+
+The templates use [Vento](https://vento.js.org) syntax: `{{ value }}` prints a value (HTML-escaped by default), `{{ value |> safe }}` prints it unescaped, `{{ if cond }}…{{ /if }}` and `{{ for item of items }}…{{ /for }}` are the control-flow tags. See the [Vento documentation](https://vento.js.org) for the full tag reference.
 
 #### date
 
 Takes no arguments and returns the current date and time as GMT string (e.g. *Mon, 22 Dec 2014 16:18:53 GMT*).
 
-```mustache
-<p>Generated at {{date}} by svgforge</p>
+```vento
+<p>Generated at {{ date }} by svgforge</p>
 ```
 
 #### invert
 
 Returns the negative value of a floating point number.
 
-```mustache
-<div style="margin-left: {{#invert}}{{positionX}}{{/invert}}px;"></div>
+```vento
+<div style="margin-left: {{ invert(positionX) }}px;"></div>
 ```
 
 #### classname
 
 Returns the innermost part of a CSS selector as a class name (with the leading dot stripped off). For instance, if `fullselector` had the value *.svg .icon-cart*,
 
-```mustache
-<i class="{{#classname}}{{fullselector}}{{/classname}}">Cart</i>
+```vento
+<i class="{{ classname(fullselector) }}">Cart</i>
 ```
 
 would become
@@ -153,14 +155,14 @@ would become
 
 Finds all backslashes in a string and escapes each of them with another backslash.
 
-```mustache
-{{#escape}}{{selectorWithBackslash}}{{/escape}}
+```vento
+{{ escape(selectorWithBackslash) }}
 ```
 
 #### encodeHashSign
 
 Finds all hash signs in a string and encodes each of them to `%23`.
 
-```mustache
-{{#encodeHashSign}}{{{url}}}{{/encodeHashSign}}
+```vento
+{{ encodeHashSign(url) }}
 ```

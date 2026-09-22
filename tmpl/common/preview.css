@@ -136,5 +136,5 @@ they would become a huge 100% in size. You may use the following dimension class
 They might well be outsourced to an external stylesheet of course.
 */
 
-{{#shapes}} {{#selector.dimensions}}{{expression}}{{^last}}, {{/last}}{{/selector.dimensions}} { width: {{width.outer}}px; height: {{height.outer}}px; }
-{{/shapes}}
+{{ for s of it.shapes }}{{ for d of s.selector.dimensions }}{{ d.expression }}{{ if !d.last }}, {{ /if }}{{ /for }} { width: {{ s.width.outer }}px; height: {{ s.height.outer }}px; }
+{{ /for }}

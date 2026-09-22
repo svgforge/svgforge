@@ -9,16 +9,27 @@ Newer release notes are published on the GitHub release page: <https://github.co
 
 ## Unreleased
 
+### Changed
+
+* The Mustache templating engine was replaced by [Vento](https://vento.js.org):
+  the built-in templates (`tmpl/**/*.vto`) and all custom templates now use
+  Vento syntax (`{{ value }}`, `{{ value |> safe }}`, `{{ if }}…{{ /if }}`,
+  `{{ for … of }}…{{ /for }}`). The formerly Mustache-style `variables`
+  functions (`(string_, render) => …`) are now called directly as JavaScript
+  functions (e.g. `{{ classname(raw) }}`). Templates may import reusable
+  partials as Vento `export function`s.
+
 ### Removed
 
-* Dropped the `prettysize`, `import-lazy`, `winston`, `xpath` and `cssom`
+* Dropped the `mustache`, `prettysize`, `import-lazy`, `winston`, `xpath` and `cssom`
   runtime dependencies: file sizes are formatted by an internal helper, lazy
   imports are replaced by native ESM imports, the default logger is now a small
   built-in console logger with the same `YYYY-MM-DD HH:MM:ss.SSS - level:
   message` output, the XPath-based namespace rewriting uses the native
   `@xmldom/xmldom` DOM traversal, and CSS selector substitution for ID/class
   namespacing uses `css-tree` instead of the abandoned `cssom` parser
-  (fixing broken `@keyframes` handling along the way).
+  (fixing broken `@keyframes` handling along the way), and `mustache` was
+  replaced by `ventojs`.
 
 ---
 

@@ -1,4 +1,5 @@
 <!doctype html>
+{{ import { figcaption } from "figcaption.vto" }}{{ import { footer } from "footer.vto" }}
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -10,7 +11,7 @@ Common preview styles (shared via tmpl/common/preview.css)
 -->
 
     <style>
-    {{> preview-css }}
+    {{ include "preview-css" }}
     </style>
 
   </head>
@@ -34,20 +35,20 @@ pre-defined in the external sprite.
 
       <h3>External sprite with pre-defined views referenced by fragment identifiers</h3>
       <ul class="grid">
-{{#shapes}}
-        <li title="{{name}}">
+{{ for s of shapes }}
+        <li title="{{ s.name }}">
           <figure>
             <div class="icon-box">
-              <img src="{{{example}}}#{{name}}" class="{{#selector.dimensions}}{{#last}}{{#classname}}{{raw}}{{/classname}}{{/last}}{{/selector.dimensions}}" alt="{{name}}">
+              <img src="{{ example |> safe }}#{{ s.name }}" class="{{ for d of s.selector.dimensions }}{{ if d.last }}{{ classname(d.raw) }}{{ /if }}{{ /for }}" alt="{{ s.name }}">
             </div>
-            {{> figcaption}}
+            {{ figcaption(s) }}
           </figure>
         </li>
-{{/shapes}}
+{{ /for }}
       </ul>
 
     </section>
-    {{> footer}}
+    {{ footer() }}
 
 <!--
 Common preview behavior (shared via tmpl/common/preview.js)
@@ -55,7 +56,7 @@ Common preview behavior (shared via tmpl/common/preview.js)
 -->
 
 <script>
-{{> preview-js }}
+{{ include "preview-js" }}
 </script>
   </body>
 </html>

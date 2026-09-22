@@ -1,0 +1,7 @@
+{{ for s of shapes }}{{ for d of s.selector.dimensions }}{{ d.expression }}{{ if !d.last }},
+{{ /if }}{{ /for }} {
+  width: {{ s.width.outer }}px;
+  height: {{ s.height.outer }}px;
+}
+
+{{ /for }}

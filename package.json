@@ -30,8 +30,7 @@
     "html",
     "vector",
     "rwd",
-    "retina",
-    "mustache"
+    "retina"
   ],
   "type": "module",
   "engines": {
@@ -59,12 +58,12 @@
     "@resvg/resvg-js": "^2.6.2",
     "@xmldom/xmldom": "^0.9.12",
     "css-selector-parser": "^3.3.0",
+    "css-tree": "^3.2.1",
     "csso": "^5.0.5",
     "js-yaml": "^5.4.2",
-    "mustache": "^4.2.0",
     "svgo": "^4.1.0",
-    "vinyl": "^3.0.1",
-    "css-tree": "^3.2.1"
+    "ventojs": "^2.4.0",
+    "vinyl": "^3.0.1"
   },
   "devDependencies": {
     "eslint-plugin-jsdoc": "^64.5.4",
