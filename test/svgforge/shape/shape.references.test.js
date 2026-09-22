@@ -1,23 +1,12 @@
-
 import {Buffer} from 'node:buffer';
 import File from 'vinyl';
 import createShape from '../../../lib/svgforge/shape/index.js';
-import {setDependency} from '../../../lib/deps.js';
 import {
   describe,
   expect,
   it,
   createMock,
-  spyOn,
 } from '../../helpers/jest-compat.js';
-
-setDependency('cssom', {
-  parse() {
-    return {
-      cssRules: '',
-    };
-  },
-});
 
 const TEST_SPRITER = {
   config: {
@@ -35,11 +24,13 @@ const TEST_FILE = new File({
   cwd: '/',
 });
 
+const makeShape = () => createShape(TEST_FILE, TEST_SPRITER);
+
 describe('testing _replaceIdAndClassnameReferences()', () => {
   it('should replace ids if subs ids passed', () => {
     expect.hasAssertions();
 
-    const shape = createShape(TEST_FILE, TEST_SPRITER);
+    const shape = makeShape();
     const TEST_STRING = 'url(id1) url(id2)';
     const TEST_SUBS_IDS = {
       id1: 'NEW ID 1',
@@ -51,76 +42,74 @@ describe('testing _replaceIdAndClassnameReferences()', () => {
   it('should not change string if subs ids is null', () => {
     expect.hasAssertions();
 
-    const shape = createShape(TEST_FILE, TEST_SPRITER);
+    const shape = makeShape();
     const TEST_STRING = 'url(id1) url(id2)';
 
     expect(shape._replaceIdAndClassnameReferences(TEST_STRING, null, {}, false)).toBe(TEST_STRING);
   });
 
-  it('should return value of _replaceIdAndClassnameReferencesInCssSelectors() if selectors passed', () => {
+  it('should substitute ids and class names in CSS selectors if selectors passed', () => {
     expect.hasAssertions();
 
-    const shape = createShape(TEST_FILE, TEST_SPRITER);
-    const TEST_RESULT = 'test result';
-    const TEST_STR = 'test str';
-    const TEST_SUBS_IDS = {a: '1'};
-    const TEST_SUBST_CLASSNAMES = {b: 2};
-    spyOn(shape, '_replaceIdAndClassnameReferencesInCssSelectors').mockReturnValueOnce(TEST_RESULT);
+    const shape = makeShape();
+    const TEST_STRING = '.cls a#id { color: blue }';
+    const TEST_SUBS_IDS = {'#id': 'NEW-ID'};
+    const TEST_SUBS_CLASSNAMES = {'.cls': 'new-cls'};
 
-    expect(shape._replaceIdAndClassnameReferences(TEST_STR, TEST_SUBS_IDS, TEST_SUBST_CLASSNAMES, true)).toBe(TEST_RESULT);
-    expect(shape._replaceIdAndClassnameReferencesInCssSelectors).toHaveBeenCalledWith(TEST_STR, '', TEST_SUBS_IDS, TEST_SUBST_CLASSNAMES);
+    expect(shape._replaceIdAndClassnameReferences(TEST_STRING, TEST_SUBS_IDS, TEST_SUBS_CLASSNAMES, true)).toBe('.new-cls a#NEW-ID { color: blue }');
   });
 });
 
 describe('testing _replaceIdAndClassnameReferencesInCssSelectors()', () => {
-  it('should follow keyText or cssRules if selectorText of passed rule is undefined', () => {
+  it('should substitute ids in CSS selectors', () => {
     expect.hasAssertions();
 
-    const shape = createShape(TEST_FILE, TEST_SPRITER);
-    const TEST_RULES = [{
-      keyText: '2',
-      __starts: 0,
-      __ends: 2,
-    }, {
-      cssRules: [{
-        __starts: 0,
-        __ends: 3,
-      }, {
-        __starts: 4,
-        __ends: 7,
-      }],
-    }];
-    const TEST_STRING = '0123456789';
+    const shape = makeShape();
+    const TEST_STRING = 'a#id, #id:hover { color: blue }';
+    const TEST_SUBS_IDS = {'#id': 'new-id'};
 
-    const expected = shape._replaceIdAndClassnameReferencesInCssSelectors(TEST_STRING, TEST_RULES, {}, {});
-
-    expect(expected).toBe('01789');
+    expect(shape._replaceIdAndClassnameReferencesInCssSelectors(TEST_STRING, TEST_SUBS_IDS, {})).toBe('a#new-id, #new-id:hover { color: blue }');
   });
 
-  it('should follow selectors', () => {
+  it('should substitute class names in CSS selectors, longest first', () => {
     expect.hasAssertions();
 
-    const shape = createShape(TEST_FILE, TEST_SPRITER);
-    const TEST_ID = 'test-id';
-    const TEST_RULES = [{
-      selectorText: `div.cls1:has(div),#${TEST_ID}`,
-    }, {
-      selectorText: '.cls2,.x,.xx',
-    }, {
-      selectorText: 'a#a[href="test"]',
-    }];
-    const TEST_SUBS_IDS = {
-      [`#${TEST_ID}`]: 'NO',
-      '#a': 'b',
-    };
-    const TEST_CLASS_SUBS = {
-      '.cls2': 'NOCLS',
-      '.x': 'y',
-      '.xx': 'yy',
-    };
-    const TEST_STRING = 'str';
-    const expected = shape._replaceIdAndClassnameReferencesInCssSelectors(TEST_STRING, TEST_RULES, TEST_SUBS_IDS, TEST_CLASS_SUBS);
+    const shape = makeShape();
+    const TEST_STRING = '.icon, .icon-large { color: blue }';
+    const TEST_SUBS_CLASSNAMES = {'.icon': 'i', '.icon-large': 'i-lg'};
 
-    expect(expected).toBe(`div.cls1:has(div),#NO${TEST_STRING}.NOCLS,.y,.yy${TEST_STRING}a#b[href="test"]str`);
+    expect(shape._replaceIdAndClassnameReferencesInCssSelectors(TEST_STRING, {}, TEST_SUBS_CLASSNAMES)).toBe('.i, .i-lg { color: blue }');
+  });
+
+  it('should substitute ids and class names in @media selector lists', () => {
+    expect.hasAssertions();
+
+    const shape = makeShape();
+    const TEST_STRING = '@media screen { a#id.cls { color: blue } }';
+    const TEST_SUBS_IDS = {'#id': 'new-id'};
+    const TEST_SUBS_CLASSNAMES = {'.cls': 'new-cls'};
+
+    expect(shape._replaceIdAndClassnameReferencesInCssSelectors(TEST_STRING, TEST_SUBS_IDS, TEST_SUBS_CLASSNAMES)).toBe('@media screen { a#new-id.new-cls { color: blue } }');
+  });
+
+  it('should leave @font-face and @keyframes selectors untouched', () => {
+    expect.hasAssertions();
+
+    const shape = makeShape();
+    const TEST_STRING = '@font-face{font-family:x;src:url(a.woff)}@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}';
+    const TEST_SUBS_IDS = {'#id': 'new-id'};
+    const TEST_SUBS_CLASSNAMES = {'.cls': 'new-cls'};
+
+    expect(shape._replaceIdAndClassnameReferencesInCssSelectors(TEST_STRING, TEST_SUBS_IDS, TEST_SUBS_CLASSNAMES)).toBe(TEST_STRING);
+  });
+
+  it('should leave attribute selectors untouched', () => {
+    expect.hasAssertions();
+
+    const shape = makeShape();
+    const TEST_STRING = 'a[href="#anchor"] { color: blue }';
+    const TEST_SUBS_IDS = {'#anchor': 'new-anchor'};
+
+    expect(shape._replaceIdAndClassnameReferencesInCssSelectors(TEST_STRING, TEST_SUBS_IDS, {})).toBe(TEST_STRING);
   });
 });

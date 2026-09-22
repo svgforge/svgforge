@@ -59,7 +59,7 @@ Property         | Type      | Default     | Description                |
 
 Property         | Type      | Default     | Description                |
 ------------------------ | --------------- | ------------- | ------------------------------------------ |
-`log`          | String\|Logger  |         | *svgforge* uses [winston](https://github.com/winstonjs/winston) for logging, but output is turned off by default. To activate and use the pre-configured console logger, you need to pass the desired log level (`'info'`, `'verbose'` or `'debug'`). Alternatively, you can pass your own custom `winston.Logger` instance (which needs to handle at least these three log levels). Falsy values like `""`, `false` or `null` will disable logging. |
+`log`          | String\|Logger  |         | *svgforge* uses a built-in console logger, but output is turned off by default. To activate it, pass the desired log level (`'info'`, `'verbose'` or `'debug'`). Alternatively, you can pass your own custom logger instance (which needs to be logger-compatible, i.e. provide `level`, `transports` and a `log()` method — a `winston.Logger` qualifies). Falsy values like `""`, `false` or `null` will disable logging. |
 
 
 ### SVG shape configuration
@@ -280,14 +280,14 @@ The callbacks are processed synchronously and in the given order. Each one is pa
 
 ### Custom templating variables
 
-The top-level `variables` object lets you define global variables that are passed to all [Mustache](https://mustache.github.io/) templating processes across all [output modes](#output-modes). You may either use scalar values or callbacks (see [here](https://github.com/janl/mustache.js/#functions) for details on Mustache callbacks). Example:
+The top-level `variables` object lets you define global variables that are passed to all [Vento](https://vento.js.org) templating processes across all [output modes](#output-modes). You may either use scalar values or functions (called directly, e.g. `{{ variables() }}`). Example:
 
 ```js
 {
   variables: {
     now: Number(new Date()),
-    png() {
-      return (sprite, render) => render(sprite).split('.svg').join('.png');
+    png(sprite) {
+      return String(sprite).split('.svg').join('.png');
     }
   }
 }
@@ -371,7 +371,7 @@ Property     | Type      | Default     | Description                |
 `mode.<mode>.bust`       | Boolean     | `true\|false`    | Add a content based hash to the name of the sprite file so that clients reliably reload the sprite when its content changes («cache busting»). Defaults to `false` except for «view» sprites. |
 `mode.<mode>.render`     | Object of [Rendering configs](#rendering-configurations)      | `{}`   | Collection of [stylesheet rendering configurations](#rendering-configurations). The keys are used as file extensions as well as file return keys. At present, there is a default template for the file extension `css` ([CSS](https://www.w3.org/Style/CSS/)), which resides in the directory `tmpl/common`. Example: `{css: true}` |
 `mode.<mode>.example`    | [Rendering config](#rendering-configurations) | `false`     | Enabling this will trigger the creation of an HTML document demoing the usage of the sprite. Please see below for details on [rendering configurations](#rendering-configurations). |
-`mode.<mode>.example.template` | String    | `"tmpl/<mode>/sprite.html"`   | HTML document Mustache template |
+`mode.<mode>.example.template` | String    | `"tmpl/<mode>/sprite.vto"`   | HTML document [Vento](https://vento.js.org) template |
 `mode.<mode>.example.dest`   | String      | `"sprite.<mode>.html"`    | HTML document destination |
 
 
@@ -487,7 +487,7 @@ Property     | Type      | Default     | Description                |
 
 #### Rendering configurations
 
-*svgforge* uses [Mustache](https://mustache.github.io/) templates for creating certain output formats. Typically, the generation of these files is optional and you have to switch on the rendering process:
+*svgforge* uses [Vento](https://vento.js.org) templates for creating certain output formats. Typically, the generation of these files is optional and you have to switch on the rendering process:
 
 * For creating a **CSS resource** alongside your sprite, you will have to enable/configure at least one output format via the `mode.<mode>.render` option.
 * For creating an **example HTML document** demoing the use of your sprite, you will have to enable/configure it using `mode.<mode>.example`.
@@ -516,17 +516,15 @@ This is equivalent to:
 }
 ```
 
-Use the subkey `template` for configuring the **rendering template** and `dest` for specifying the **output file destination**:
+Use the subkey `template` for configuring the **example template** and `dest` for specifying the **output file destination**:
 
 ```js
 {
   mode: {
     defs: {
-      render: {
-        css: {
-          template: 'path/to/template.html', // relative to current working directory
-          dest: 'path/to/demo.html' // relative to current output directory
-        }
+      example: {
+        template: 'path/to/template.vto', // relative to current working directory
+        dest: 'path/to/demo.html' // relative to current output directory
       }
     }
   }

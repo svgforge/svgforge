@@ -26,14 +26,20 @@ The idea is to have it as a ***drop-in replacement of svg-sprite***, with the ex
 * Drop grunt and gulp (you can still use it with a few lines of code)
 * Replace glob with native [fs.glob](https://nodejs.org/api/fs.html#fspromisesglobpattern-options)
 * Remove SCSS, LESS and Stylus support, it was only useful for sprite generation.
+* Replace prettysize npm package with a small helper function (unmaintained)
 * Replace async npm package with native ES6 Promise API
+* Replace import-lazy npm package with native lazy imports.
+* Replace winston npm package with native logger.
+* Replace xpath with @xmldom/xmldom that is already installed (xpath uses insecure `eval`).
+* Replace cssom with css-tree because the package is not maintained anymore.
 * Replace lodash with native ES6 + utility functions
+* Replace mustache with ventojs templates.
 * Remove support for the sprite technique (CSS background position). I've found it antique and not required anymore and it simplifies the code a lot! If you want to use icons as `background-image` you can use the `stack` mode, and then: `background: url(icon.svg#ID)`. See here: https://css-tricks.com/svg-fragment-identifiers-work/#syntax-for-css
 * Improved example templates with copy id button for each icon
 * Finally all tests are fixed with over 90% coverage and use [Node.js's native test runner](https://nodejs.org/api/test.html) instead of Jest
 * The CLI now has tests.
 
-It comes with a set of [Mustache](https://mustache.github.io/) templates for creating stylesheets in good ol' [CSS](https://www.w3.org/Style/CSS/). Tweaking the templates or even adding your own **custom output format** is really easy, just as switching on the generation of an **HTML example document** along with your sprite.
+It comes with a set of [Vento](https://vento.js.org) templates for creating stylesheets in good ol' [CSS](https://www.w3.org/Style/CSS/). Tweaking the templates or even adding your own **custom output format** is really easy, just as switching on the generation of an **HTML example document** along with your sprite.
 
 For an up-to-date list of browsers supporting [SVG fragment identifiers](https://caniuse.com/svg-fragment) in particular (required for `<defs>` and `<symbol>` sprites as well as SVG stacks) please refer to [caniuse.com](https://caniuse.com/).
 
@@ -182,7 +188,7 @@ const config = {
     namespaceClassnames: true, // Add namespace token to all CSS class names in SVG shapes
     dimensionAttributes: true // Width and height attributes on the sprite
   },
-  variables: {} // Custom Mustache templating variables and functions
+  variables: {} // Custom Vento templating variables and functions
 }
 ```
 
@@ -364,7 +370,7 @@ In order to improve accessibility, *svgforge* can read meta data from a YAML fil
 
 ### Tweaking and adding output formats
 
-*svgforge* uses [Mustache](https://mustache.github.io/) templates for rendering the various CSS resources. This makes it very easy to tailor the generated CSS resources to your needs or add completely new output formats. Please refer to the [templating guide](docs/templating.md) to learn about the details.
+*svgforge* uses [Vento](https://vento.js.org) templates for rendering the various CSS resources. This makes it very easy to tailor the generated CSS resources to your needs or add completely new output formats. Please refer to the [templating guide](docs/templating.md) to learn about the details.
 
 
 ## Command line usage

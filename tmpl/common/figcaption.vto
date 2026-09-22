@@ -1,0 +1,9 @@
+{{ export function figcaption(s) }}<figcaption title="{{ s.name }}{{ if s.fileSize }}, {{ s.fileSize }}{{ /if }}">
+  <span class="name">{{ s.name }}</span>
+  <span class="meta">
+    {{ if s.fileSize }}
+    <span class="file-size">{{ s.fileSize }}</span>
+    {{ /if }}
+    <button type="button" class="copy" data-copy="{{ s.name }}" data-copy-label="Copy ID">Copy ID</button>
+  </span>
+</figcaption>{{ /export }}

@@ -95,7 +95,7 @@
     },
     {
       "title": "Namespacing & Reference Rewriting",
-      "purpose": "setNamespace/resetNamespace, ID and class substitution, xlink/href and reference property rewriting, embedded CSS rewriting via cssom/csso.",
+      "purpose": "setNamespace/resetNamespace, ID and class substitution, xlink/href and reference property rewriting, embedded CSS rewriting via css-tree/csso.",
       "parent": "Core Engine",
       "page_notes": [
         {
@@ -164,7 +164,7 @@
     },
     {
       "title": "Templating (tmpl/)",
-      "purpose": "Mustache templates in tmpl/common, defs, stack, symbol, view; render data model and custom templates (docs/templating.md).",
+      "purpose": "Vento templates in tmpl/common, defs, stack, symbol, view; render data model and custom templates (docs/templating.md).",
       "parent": "Sprite Modes",
       "page_notes": [
         {

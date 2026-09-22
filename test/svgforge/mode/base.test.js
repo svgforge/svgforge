@@ -127,7 +127,7 @@ describe('testings SVGSpriteBase', () => {
 
         expect(base.config.render).toStrictEqual(expect.objectContaining({
           png: {
-            template: path.resolve(path.dirname(path.dirname(path.dirname(__dirname))), 'tmpl/common/sprite.png'),
+            template: path.resolve(path.dirname(path.dirname(path.dirname(__dirname))), 'tmpl/common/sprite.png.vto'),
             dest: path.join(TEST_CONFIG.dest, 'sprite.png'),
           },
           jpg: {
@@ -136,11 +136,11 @@ describe('testings SVGSpriteBase', () => {
           },
           bmp: {
             dest: path.resolve(TEST_CONFIG.dest, 'dest.bmp'),
-            template: path.resolve(path.dirname(path.dirname(path.dirname(__dirname))), 'tmpl/common/sprite.bmp'),
+            template: path.resolve(path.dirname(path.dirname(path.dirname(__dirname))), 'tmpl/common/sprite.bmp.vto'),
           },
           webp: {
             dest: path.resolve(TEST_CONFIG.dest, 'here.webp'),
-            template: path.resolve(path.dirname(path.dirname(path.dirname(__dirname))), 'tmpl/common/sprite.webp'),
+            template: path.resolve(path.dirname(path.dirname(path.dirname(__dirname))), 'tmpl/common/sprite.webp.vto'),
           },
 
         }));
@@ -202,7 +202,7 @@ describe('testings SVGSpriteBase', () => {
         const base = new cls(TEST_SPRITER, TEST_CONFIG, TEST_DATA, '');
 
         expect(base.config.example).toStrictEqual({
-          template: path.resolve(path.dirname(path.dirname(path.dirname(__dirname))), path.join('tmpl', TEST_MODE_NAME, 'sprite.html')),
+          template: path.resolve(path.dirname(path.dirname(path.dirname(__dirname))), path.join('tmpl', TEST_MODE_NAME, 'sprite.vto')),
           dest: path.join(TEST_CONFIG.dest, `sprite.${TEST_MODE_NAME}.html`),
         });
         expect(base.data.example).toBe('sprite.svg');
@@ -271,7 +271,7 @@ describe('testings SVGSpriteBase', () => {
       const TEST_FILES = {};
       const testFn = jest.fn();
       setDependency('node:fs:readFileSync', () => '');
-      setDependency('mustache:render', jest.fn().mockReturnValueOnce('first').mockReturnValueOnce('second').mockReturnValueOnce(''));
+      setDependency('template:render', jest.fn().mockResolvedValueOnce('first').mockResolvedValueOnce('second').mockResolvedValueOnce(''));
 
       base._buildCSSResources(TEST_FILES, testFn);
 
@@ -297,7 +297,7 @@ describe('testings SVGSpriteBase', () => {
   });
 
   describe('testing _buildHTMLExample()', () => {
-    it('should add example in files', () => {
+    it('should add example in files', async () => {
       expect.hasAssertions();
 
       const TEST_SPRITER = {
@@ -325,8 +325,10 @@ describe('testings SVGSpriteBase', () => {
       const TEST_FILES = {};
 
       setDependency('node:fs:readFileSync', () => '');
-      setDependency('mustache:render', jest.fn().mockReturnValueOnce('test example'));
+      setDependency('template:render', jest.fn().mockResolvedValueOnce('test example'));
       base._buildHTMLExample(TEST_FILES, testFn);
+
+      await new Promise(setImmediate);
 
       expect(testFn).toHaveBeenCalledWith(null, base.data);
       expect(TEST_FILES).toStrictEqual({

@@ -1,6 +1,5 @@
-
 import {Buffer} from 'node:buffer';
-import xpath from 'xpath';
+import {DOMParser} from '@xmldom/xmldom';
 import File from 'vinyl';
 import createShape from '../../../lib/svgforge/shape/index.js';
 import NotPermittedError from '../../../lib/svgforge/errors/not-permitted-error.js';
@@ -35,6 +34,11 @@ const TEST_FILE = new File({
   cwd: '/',
 });
 
+const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
+const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink';
+
+const parse = svg => new DOMParser().parseFromString(svg, 'image/svg+xml');
+
 describe('testing setNamespace()', () => {
   /**
    Creates a configured SVGShape for namespace testing.
@@ -65,166 +69,81 @@ describe('testing setNamespace()', () => {
   });
 
   describe('if namespaceIds', () => {
-    it('should call multiple xpath.select and set attributes', () => {
+    it('should namespace all IDs and substitute ID references', () => {
       expect.hasAssertions();
 
       const shape = makeShape(true, false, false);
-      spyOn(shape, '_replaceIdAndClassnameReferences').mockImplementation().mockReturnValue('');
+      spyOn(shape, '_replaceIdAndClassnameReferences').mockImplementation(value => value);
       const TEST_NAMESPACE = 'test-namespace';
-      const TEST_ATTR_VALUE = 'id';
-
-      const FIRST_ELEMENTS = [{
-        getAttribute: createMock().mockReturnValueOnce(TEST_ATTR_VALUE),
-        setAttribute: createMock(),
-      }];
-      const SECOND_ELEMENTS = [{
-        nodeValue: 'data:',
-      }, {
-        nodeValue: `#${TEST_ATTR_VALUE}`,
-        ownerElement: {
-          setAttribute: createMock(),
-          removeAttributeNS: createMock(),
-        },
-      }];
-      const THIRD_ELEMENTS = [{
-        nodeValue: 'data:',
-      }, {
-        nodeValue: `#${TEST_ATTR_VALUE}`,
-        ownerElement: {
-          setAttribute: createMock(),
-        },
-      }];
-      const FOURTH_ELEMENTS = [{
-        localName: 'TEST local name',
-        ownerElement: {
-          setAttribute: createMock(),
-        },
-      }];
-
-      const mockSelect = createMock()
-        .mockReturnValueOnce(FIRST_ELEMENTS)
-        .mockReturnValueOnce(THIRD_ELEMENTS)
-        .mockReturnValueOnce(FOURTH_ELEMENTS)
-        .mockReturnValueOnce([])
-        .mockReturnValueOnce([])
-        .mockReturnValueOnce([])
-        .mockReturnValueOnce([])
-        .mockReturnValueOnce([])
-        .mockReturnValueOnce([])
-        .mockReturnValueOnce([])
-        .mockReturnValueOnce([])
-        .mockReturnValueOnce(SECOND_ELEMENTS)
-        .mockReturnValueOnce([{}])
-        .mockReturnValueOnce([{}]);
-
-      spyOn(xpath, 'useNamespaces').mockReturnValueOnce(mockSelect);
+      shape.dom = parse(`<svg xmlns="${SVG_NAMESPACE}" xmlns:xlink="${XLINK_NAMESPACE}" aria-labelledby="a test">
+        <g id="a"><use href="#a"/><use href="data:keep"/><path fill="#a"/><use xlink:href="#a"/><use xlink:href="data:also-keep"/></g>
+        <style>x{}</style>
+      </svg>`);
 
       shape.setNamespace(TEST_NAMESPACE);
 
-      expect(mockSelect).toHaveBeenCalledTimes(14);
-      expect(mockSelect.mock.calls[0][0]).toBe('//*[@id]');
-      expect(mockSelect.mock.calls[1][0]).toBe('//@href');
-      expect(mockSelect.mock.calls[11][0]).toBe('//@xlink:href');
+      // eslint-disable-next-line unicorn/prefer-query-selector -- `@xmldom/xmldom` provides no `querySelector` API.
+      const g = shape.dom.getElementsByTagName('g')[0];
+      // eslint-disable-next-line unicorn/prefer-query-selector -- `@xmldom/xmldom` provides no `querySelectorAll` API.
+      const uses = shape.dom.getElementsByTagName('use');
+      // eslint-disable-next-line unicorn/prefer-query-selector -- `@xmldom/xmldom` provides no `querySelector` API.
+      const path = shape.dom.getElementsByTagName('path')[0];
 
-      const attributes = ['style', 'fill', 'stroke', 'filter', 'clip-path', 'mask', 'marker-start', 'marker-end', 'marker-mid'];
-
-      for (const [i, ref] of attributes.entries()) {
-        expect(mockSelect.mock.calls[2 + i][0]).toBe(`//@${ref}`);
-      }
-
-      expect(mockSelect.mock.calls[12][0]).toBe('//svg:style');
-      expect(mockSelect.mock.calls[13][0]).toBe('//svg:style');
-
-      expect(FIRST_ELEMENTS[0].setAttribute).toHaveBeenCalledWith('id', `${TEST_NAMESPACE}${TEST_ATTR_VALUE}`);
-      expect(SECOND_ELEMENTS[1].ownerElement.setAttribute).toHaveBeenCalledWith('href', `#${TEST_NAMESPACE}${TEST_ATTR_VALUE}`);
-      expect(SECOND_ELEMENTS[1].ownerElement.removeAttributeNS).toHaveBeenCalledWith(shape.XLINK_NAMESPACE, 'href');
-      expect(THIRD_ELEMENTS[1].ownerElement.setAttribute).toHaveBeenCalledWith('href', `#${TEST_NAMESPACE}${TEST_ATTR_VALUE}`);
-      expect(FOURTH_ELEMENTS[0].ownerElement.setAttribute).toHaveBeenCalledWith(FOURTH_ELEMENTS[0].localName, '');
+      expect(g.getAttribute('id')).toBe(`${TEST_NAMESPACE}a`);
+      expect(uses[0].getAttribute('href')).toBe(`#${TEST_NAMESPACE}a`);
+      expect(uses[1].getAttribute('href')).toBe('data:keep');
+      expect(path.getAttribute('fill')).toBe('#a');
+      expect(uses[2].getAttribute('href')).toBe(`#${TEST_NAMESPACE}a`);
+      expect(uses[2].getAttributeNS(XLINK_NAMESPACE, 'href')).toBeNull();
+      expect(uses[3].getAttribute('href')).toBeNull();
+      expect(uses[3].getAttributeNS(XLINK_NAMESPACE, 'href')).toBe('data:also-keep');
+      expect(shape.dom.documentElement.getAttribute('aria-labelledby')).toBe(`${TEST_NAMESPACE}a test`);
       expect(shape._namespaced).toBe(true);
 
-      expect(mockMinifyBlock).toHaveBeenCalledWith('', {restructure: false});
-    });
-
-    it('should set aria-labelledby', () => {
-      expect.hasAssertions();
-
-      const shape = makeShape(true, false, false);
-      spyOn(shape, '_replaceIdAndClassnameReferences').mockImplementation();
-      const TEST_ATTR_VALUE = 'id';
-      const TEST_NAMESPACE = 'test-namespace';
-
-      const FIRST_ELEMENTS = [{
-        getAttribute: createMock().mockReturnValueOnce(TEST_ATTR_VALUE),
-        setAttribute: createMock(),
-      }];
-
-      spyOn(shape.dom.documentElement, 'hasAttribute').mockImplementation().mockReturnValueOnce(true);
-      spyOn(shape.dom.documentElement, 'getAttribute').mockImplementation().mockReturnValueOnce(`${TEST_ATTR_VALUE} test`);
-      spyOn(shape.dom.documentElement, 'setAttribute').mockImplementation();
-      spyOn(xpath, 'useNamespaces').mockReturnValueOnce(createMock().mockReturnValueOnce(FIRST_ELEMENTS).mockReturnValue([]));
-
-      shape.setNamespace(TEST_NAMESPACE);
-
-      expect(shape.dom.documentElement.setAttribute).toHaveBeenCalledWith('aria-labelledby', `${TEST_NAMESPACE}${TEST_ATTR_VALUE} test`);
+      expect(mockMinifyBlock).toHaveBeenCalledWith('x{}', {restructure: false});
     });
   });
 
   describe('with namespaceClassnames', () => {
-    it('should call xpath.select with //*[@class]', () => {
+    it('should namespace all class names', () => {
       expect.hasAssertions();
 
       const shape = makeShape(false, false, true);
       spyOn(shape, '_replaceIdAndClassnameReferences').mockImplementation();
-      const TEST_ELEMENTS = [{
-        getAttribute: createMock().mockReturnValueOnce('1 2 3 4 5  6 '),
-        setAttribute: createMock(),
-      }];
       const TEST_NAMESPACE = 'ns';
-
-      const mockSelect = createMock().mockReturnValueOnce([]).mockReturnValueOnce(TEST_ELEMENTS).mockReturnValue([]);
-
-      spyOn(xpath, 'useNamespaces').mockReturnValueOnce(mockSelect);
+      shape.dom = parse(`<svg xmlns="${SVG_NAMESPACE}"><g class="1 2 3 4 5  6 "/></svg>`);
 
       shape.setNamespace(TEST_NAMESPACE);
 
-      expect(mockSelect).toHaveBeenCalledWith('//*[@class]', shape.dom);
-      expect(TEST_ELEMENTS[0].setAttribute).toHaveBeenCalledWith('class', `${TEST_NAMESPACE}1 ${TEST_NAMESPACE}2 ${TEST_NAMESPACE}3 ${TEST_NAMESPACE}4 ${TEST_NAMESPACE}5 ${TEST_NAMESPACE}6`);
+      // eslint-disable-next-line unicorn/prefer-query-selector -- `@xmldom/xmldom` provides no `querySelector` API.
+      const g = shape.dom.getElementsByTagName('g')[0];
+      expect(g.getAttribute('class')).toBe(`${TEST_NAMESPACE}1 ${TEST_NAMESPACE}2 ${TEST_NAMESPACE}3 ${TEST_NAMESPACE}4 ${TEST_NAMESPACE}5 ${TEST_NAMESPACE}6`);
       expect(shape._namespaced).toBe(true);
     });
   });
 
-  it('should not call anything if already namespaced', () => {
+  it('should return early if already namespaced', () => {
     expect.hasAssertions();
 
     const shape = makeShape(true, true, true);
-    spyOn(xpath, 'useNamespaces');
 
     shape.setNamespace('123');
 
-    expect(xpath.useNamespaces).not.toHaveBeenCalled();
+    expect(shape._namespaced).toBe(true);
   });
 
   it('should convert xlink:href attributes even without namespaceIds and namespaceClassnames', () => {
     expect.hasAssertions();
 
     const shape = makeShape(false, false, false);
-    const TEST_ELEMENTS = [{
-      nodeValue: '#id',
-      ownerElement: {
-        setAttribute: createMock(),
-        removeAttributeNS: createMock(),
-      },
-    }];
-
-    const mockSelect = createMock().mockReturnValueOnce(TEST_ELEMENTS).mockReturnValue([]);
-
-    spyOn(xpath, 'useNamespaces').mockReturnValueOnce(mockSelect);
+    shape.dom = parse(`<svg xmlns="${SVG_NAMESPACE}" xmlns:xlink="${XLINK_NAMESPACE}"><use xlink:href="#id"/></svg>`);
 
     shape.setNamespace('123');
 
-    expect(mockSelect.mock.calls[0][0]).toBe('//@xlink:href');
-    expect(TEST_ELEMENTS[0].ownerElement.setAttribute).toHaveBeenCalledWith('href', '#id');
-    expect(TEST_ELEMENTS[0].ownerElement.removeAttributeNS).toHaveBeenCalledWith(shape.XLINK_NAMESPACE, 'href');
+    // eslint-disable-next-line unicorn/prefer-query-selector -- `@xmldom/xmldom` provides no `querySelector` API.
+    const use = shape.dom.getElementsByTagName('use')[0];
+    expect(use.getAttribute('href')).toBe('#id');
+    expect(use.getAttributeNS(XLINK_NAMESPACE, 'href')).toBeNull();
     expect(shape._namespaced).toBe(true);
   });
 });

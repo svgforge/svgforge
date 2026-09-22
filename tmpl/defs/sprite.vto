@@ -1,17 +1,18 @@
 <!doctype html>
+{{ import { figcaption } from "figcaption.vto" }}{{ import { footer } from "footer.vto" }}
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <title>SVG &lt;defs&gt; sprite preview | svg-sprite</title>
 
     <style>
-    {{> preview-css }}
+    {{ include "preview-css" }}
     </style>
 
   </head>
   <body>
 
-{{#inline}}
+{{ if inline }}
 <!--
 Inline <defs> SVG sprite
 ====================================================================================================
@@ -25,31 +26,31 @@ for further details on how to create this embeddable sprite variant.
 
 <svg width="0" height="0" style="position:absolute">
   <defs>
-{{#shapes}}
-    {{{svg}}}
-{{/shapes}}
+{{ for s of shapes }}
+    {{ s.svg |> safe }}
+{{ /for }}
   </defs>
 </svg>
-{{/inline}}
+{{ /if }}
 
     <header>
       <h1>SVG <code>&lt;defs&gt;</code> sprite preview</h1>
-{{#inline}}
+{{ if inline }}
       <p>This preview features the use of the generated sprite as inline SVG based on the embedded sprite below. Please have a look at the HTML source for further details and be aware of the following constraints:</p>
       <ul class="grid">
         <li>Your browser has to <a href="https://caniuse.com/svg-html5" target="_blank" rel="noopener noreferrer">support inline SVG</a> for these techniques to work.</li>
         <li>The embedded sprite (A) slightly differs from the generated external one. Please <a href="https://github.com/svgforge/svgforge/blob/main/docs/configuration.md#defs--symbol-mode" target="_blank" rel="noopener noreferrer">see the documentation</a> for details on how to create such an embeddable sprite.</li>
       </ul>
-{{/inline}}
-{{^inline}}
+{{ /if }}
+{{ if !inline }}
       <p>This preview features the use of the generated sprite as an external SVG spritemap. Please have a look at the HTML source for further details and be aware of the following constraints:</p>
       <ul class="grid">
         <li>Your browser has to <a href="https://caniuse.com/svg-html5" target="_blank" rel="noopener noreferrer">support inline SVG</a> for these techniques to work.</li>
       </ul>
-{{/inline}}
+{{ /if }}
     </header>
     <section>
-{{#inline}}
+{{ if inline }}
 
 <!--
 A) Inline SVG with embedded sprite
@@ -60,23 +61,23 @@ embedded above. They may be styled via CSS.
 
       <h3>A) Inline SVG with embedded sprite</h3>
       <ul class="grid">
-{{#shapes}}
-        <li title="{{name}}">
+{{ for s of shapes }}
+        <li title="{{ s.name }}">
           <figure>
             <div class="icon-box">
-              <svg viewBox="0 0 {{width.outer}} {{height.outer}}" class="{{#selector.dimensions}}{{#last}}{{#classname}}{{raw}}{{/classname}}{{/last}}{{/selector.dimensions}}">
-                <use href="#{{name}}"></use>
+              <svg viewBox="0 0 {{ s.width.outer }} {{ s.height.outer }}" class="{{ for d of s.selector.dimensions }}{{ if d.last }}{{ classname(d.raw) }}{{ /if }}{{ /for }}">
+                <use href="#{{ s.name }}"></use>
               </svg>
             </div>
-            {{> figcaption}}
+            {{ figcaption(s) }}
           </figure>
         </li>
-{{/shapes}}
+{{ /for }}
       </ul>
-{{/inline}}
+{{ /if }}
     </section>
     <section>
-{{^inline}}
+{{ if !inline }}
 
 <!--
 B) Inline SVG with external sprite
@@ -87,20 +88,20 @@ SVG sprite. They may be styled via CSS.
 
       <h3>B) Inline SVG with external sprite</h3>
       <ul class="grid">
-{{#shapes}}
-        <li title="{{name}}">
+{{ for s of shapes }}
+        <li title="{{ s.name }}">
           <figure>
             <div class="icon-box">
-              <svg viewBox="0 0 {{width.outer}} {{height.outer}}" class="{{#selector.dimensions}}{{#last}}{{#classname}}{{raw}}{{/classname}}{{/last}}{{/selector.dimensions}}">
-                <use href="{{{example}}}#{{name}}"></use>
+              <svg viewBox="0 0 {{ s.width.outer }} {{ s.height.outer }}" class="{{ for d of s.selector.dimensions }}{{ if d.last }}{{ classname(d.raw) }}{{ /if }}{{ /for }}">
+                <use href="{{ example |> safe }}#{{ s.name }}"></use>
               </svg>
             </div>
-            {{> figcaption}}
+            {{ figcaption(s) }}
           </figure>
         </li>
-{{/shapes}}
+{{ /for }}
       </ul>
-{{/inline}}
+{{ /if }}
     </section>
     <section>
 
@@ -114,22 +115,22 @@ missing other dimension is derived from the shape's viewBox — the same techniq
 
       <h3>C) Inline SVG, sized by viewBox only (stacksvg-style)</h3>
       <ul class="grid">
-{{#shapes}}
-        <li title="{{name}}">
+{{ for s of shapes }}
+        <li title="{{ s.name }}">
           <figure>
             <div class="icon-box">
-              <svg viewBox="0 0 {{width.outer}} {{height.outer}}" width="1.5em">
-                <use href="{{#inline}}#{{name}}{{/inline}}{{^inline}}{{{example}}}#{{name}}{{/inline}}"></use>
+              <svg viewBox="0 0 {{ s.width.outer }} {{ s.height.outer }}" width="1.5em">
+                <use href="{{ if inline }}#{{ s.name }}{{ /if }}{{ if !inline }}{{ example |> safe }}#{{ s.name }}{{ /if }}"></use>
               </svg>
             </div>
-            {{> figcaption}}
+            {{ figcaption(s) }}
           </figure>
         </li>
-{{/shapes}}
+{{ /for }}
       </ul>
 
     </section>
-    {{> footer}}
+    {{ footer() }}
 
 <!--
 Common preview behavior (shared via tmpl/common/preview.js)
@@ -137,7 +138,7 @@ Common preview behavior (shared via tmpl/common/preview.js)
 -->
 
 <script>
-{{> preview-js }}
+{{ include "preview-js" }}
 </script>
   </body>
 </html>

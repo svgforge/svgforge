@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Newer release notes are published on the GitHub release page: <https://github.com/svgforge/svgforge/releases>
 
+## 3.0.0 — Vento templating, dependency modernization
+
+### Added
+
+* The spriter emits a `progress` event for each shape that finished processing,
+  carrying `{processed, total}` — useful for CLI progress bars.
+
+### Changed (breaking)
+
+* The Mustache templating engine was replaced by [Vento](https://vento.js.org):
+  all built-in templates (`tmpl/**/*.vto`) and any custom template now use
+  Vento syntax (`{{ value }}`, `{{ value |> safe }}`, `{{ if }}…{{ /if }}`,
+  `{{ for … of }}…{{ /for }}`). The default HTML example template path
+  changed from `tmpl/<mode>/sprite.html` to `tmpl/<mode>/sprite.vto`, and the
+  default stylesheet resource template is now `tmpl/common/sprite.<ext>.vto`.
+* The formerly Mustache-style `variables` functions (`(string_, render) => …`)
+  are now called directly as JavaScript functions from the templates
+  (e.g. `{{ classname(raw) }}` instead of `{{#classname}}{{raw}}{{/classname}}`).
+* The default console logger is now a small built-in logger (no longer
+  `winston`), producing the same `YYYY-MM-DD HH:MM:ss.SSS - level: message`
+  output. A custom logger (e.g. a `winston.Logger`) can still be passed via the
+  `log` config option.
+
+### Fixed
+
+* Namespace-based CSS selector rewriting (`@font-face` / `@keyframes` rules)
+  no longer produces corrupted output — the abandoned `cssom` parser was
+  replaced by `css-tree`.
+* Errors thrown while laying out a sprite are now passed to the `compile()`
+  callback as-is instead of crashing with `Object.values(undefined)`, which
+  previously masked the underlying failure.
+
+### Removed
+
+* Dropped the `mustache`, `prettysize`, `import-lazy`, `winston`, `xpath` and `cssom`
+  runtime dependencies: file sizes are formatted by an internal helper, lazy
+  imports are replaced by native ESM imports, the XPath-based namespace
+  rewriting uses the native `@xmldom/xmldom` DOM traversal, and CSS selector
+  substitution uses `css-tree`. New dependencies: `ventojs` (templating) and
+  `css-tree` (CSS parsing).
+
 ---
 
 ## 2.1.0 — Public utils export

@@ -47,7 +47,6 @@ const xoConfig = [
       '**/*.yaml',
       '**/*.yml',
       '**/*.css',
-      '**/*.mustache',
       '**/coverage/**',
       '**/docs/**',
       '**/tmpl/**',

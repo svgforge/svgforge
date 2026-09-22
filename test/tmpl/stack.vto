@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>SVG &lt;symbol&gt; sprite preview | svg-sprite</title>
-    <link href="{{{css}}}" rel="stylesheet">
+    <title>SVG stack preview | svg-sprite</title>
+    <link href="{{ css |> safe }}" rel="stylesheet">
     <style>
       body {
         padding: 0;
@@ -44,17 +44,21 @@
       figcaption {
         display: none;
       }
+      img {
+        display: inline-block;
+      }
     </style>
   </head>
   <body>
-    {{{svg}}}
     <ol>
-      {{#shapes}}<li>
+      {{ for s of shapes }}
+      <li>
         <figure>
-          <svg class="{{#selector.dimensions}}{{#last}}{{#classname}}{{raw}}{{/classname}}{{/last}}{{/selector.dimensions}}"><use href="#{{name}}" /></svg>
-          <figcaption>{{name}}</figcaption>
+          <img src="../{{ sprite |> safe }}#{{ s.name }}" class="{{ for d of s.selector.dimensions }}{{ if d.last }}{{ classname(d.raw) }}{{ /if }}{{ /for }}" alt="{{ s.name }}">
+          <figcaption>{{ s.name }}</figcaption>
         </figure>
-      </li>{{/shapes}}
+      </li>
+    {{ /for }}
     </ol>
   </body>
 </html>
