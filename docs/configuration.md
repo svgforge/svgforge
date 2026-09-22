@@ -516,17 +516,15 @@ This is equivalent to:
 }
 ```
 
-Use the subkey `template` for configuring the **rendering template** and `dest` for specifying the **output file destination**:
+Use the subkey `template` for configuring the **example template** and `dest` for specifying the **output file destination**:
 
 ```js
 {
   mode: {
     defs: {
-      render: {
-        css: {
-          template: 'path/to/template.vto', // relative to current working directory
-          dest: 'path/to/demo.html' // relative to current output directory
-        }
+      example: {
+        template: 'path/to/template.vto', // relative to current working directory
+        dest: 'path/to/demo.html' // relative to current output directory
       }
     }
   }

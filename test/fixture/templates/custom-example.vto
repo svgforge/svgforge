@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{{ key }} custom example</title>
+  </head>
+  <body>
+    <ul>
+{{ for s of shapes }}
+      <li title="{{ s.name }}"><svg viewBox="0 0 {{ s.width.outer }} {{ s.height.outer }}"><use href="{{ example |> safe }}#{{ s.name }}"/></svg></li>
+{{ /for }}
+    </ul>
+  </body>
+</html>
