@@ -17,12 +17,12 @@ importers:
       css-selector-parser:
         specifier: ^3.3.0
         version: 3.3.0
+      css-tree:
+        specifier: ^3.2.1
+        version: 3.2.1
       csso:
         specifier: ^5.0.5
         version: 5.0.5
-      cssom:
-        specifier: ^0.5.0
-        version: 0.5.0
       js-yaml:
         specifier: ^5.4.2
         version: 5.4.2
@@ -712,9 +712,6 @@ packages:
   csso@5.0.5:
     resolution: {integrity: sha512-0LrrStPOdJj+SPCCrGhzryycLjwcgUSHBtxNA8aIDxf0GLsRh1cKYhB00Gd1lDOS4yGH69+SNn13+TWbVHETFQ==}
     engines: {node: ^10 || ^12.20.0 || ^14.13.0 || >=15.0.0, npm: '>=7.0.0'}
-
-  cssom@0.5.0:
-    resolution: {integrity: sha512-iKuQcq+NdHqlAcwUY0o/HL69XQrUaQdMjmStJ8JFmUaiiQErlhrmuigkg/CU4E2J0IyUKUrMAgl36TvN67MqTw==}
 
   debug@4.4.3:
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
@@ -2503,8 +2500,6 @@ snapshots:
   csso@5.0.5:
     dependencies:
       css-tree: 2.2.1
-
-  cssom@0.5.0: {}
 
   debug@4.4.3(supports-color@10.2.2):
     dependencies:
