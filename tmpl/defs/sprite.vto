@@ -46,6 +46,7 @@ for further details on how to create this embeddable sprite variant.
       <p>This preview features the use of the generated sprite as an external SVG spritemap. Please have a look at the HTML source for further details and be aware of the following constraints:</p>
       <ul class="grid">
         <li>Your browser has to <a href="https://caniuse.com/svg-html5" target="_blank" rel="noopener noreferrer">support inline SVG</a> for these techniques to work.</li>
+        <li><strong>Open this page from a directory URL ending in a slash</strong> (e.g. <code>…/icons/</code>). Without the trailing slash the relative <code>&lt;use href="sprite.svg#…"&gt;</code> reference resolves against the parent directory, so no icons will show.</li>
       </ul>
 {{ /if }}
     </header>
