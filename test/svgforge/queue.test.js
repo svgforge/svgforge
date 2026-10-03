@@ -91,6 +91,14 @@ describe('testing Queue', () => {
       expect(spriter._shapes).toStrictEqual([TEST_SHAPE]);
     });
 
+    it('should not add shape to spriter if there is an error', () => {
+      expect.hasAssertions();
+
+      queue.remove(new Error('test'), undefined);
+
+      expect(spriter._shapes).toStrictEqual([]);
+    });
+
     it('should emit "remove" if active count is more than 1', () => {
       expect.hasAssertions();
 

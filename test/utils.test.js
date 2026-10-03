@@ -229,6 +229,10 @@ describe('utils', () => {
 
       expect(trimStart(string, '')).toBe(string);
     });
+
+    it('handles string fully composed of characters to trim', () => {
+      expect(trimStart('---', '-')).toBe('');
+    });
   });
 
   describe('zipObject', () => {
@@ -248,6 +252,10 @@ describe('utils', () => {
     it('should throw error if non-array value passed', () => {
       expect(() => {
         zipObject(1, false);
+      }).toThrow(new TypeError('Both parameters must be an array'));
+
+      expect(() => {
+        zipObject([1], false);
       }).toThrow(new TypeError('Both parameters must be an array'));
     });
   });
