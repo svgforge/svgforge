@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Newer release notes are published on the GitHub release page: <https://github.com/svgforge/svgforge/releases>
 
+## Unreleased
+
+### Added
+
+* The «symbol» mode now preserves the `aria-hidden`, `aria-label` and `role`
+  attributes on generated `<symbol>` elements, so that accessibility metadata
+  from the source icons survives into the sprite.
+
 ## 3.0.0 — Vento templating, dependency modernization
 
 ### Added

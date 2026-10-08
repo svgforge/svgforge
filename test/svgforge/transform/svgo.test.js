@@ -49,7 +49,16 @@ describe('testing transforms.svgo', () => {
     svgoTransform(shape, {}, spriter, noop);
 
     expect(mockOptimize).toHaveBeenCalledWith(TEST_SVG, {
-      plugins: ['preset-default', {
+      plugins: [{
+        name: 'preset-default',
+        params: {
+          overrides: {
+            removeUnknownsAndDefaults: {
+              keepRoleAttr: true,
+            },
+          },
+        },
+      }, {
         name: 'removeViewBox',
       }, {
         name: 'removeTitle',
@@ -83,7 +92,16 @@ describe('testing transforms.svgo', () => {
     svgoTransform(shape, {}, spriter, noop);
 
     expect(mockOptimize).toHaveBeenCalledWith(TEST_SVG, {
-      plugins: ['preset-default', {
+      plugins: [{
+        name: 'preset-default',
+        params: {
+          overrides: {
+            removeUnknownsAndDefaults: {
+              keepRoleAttr: true,
+            },
+          },
+        },
+      }, {
         name: 'removeViewBox',
       }, {
         name: 'removeTitle',
