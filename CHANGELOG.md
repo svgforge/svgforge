@@ -21,6 +21,11 @@ Newer release notes are published on the GitHub release page: <https://github.co
   task concurrency limit, not OS threads. It now reads
   `Processing up to N shapes concurrently`.
 
+* The «defs» and «symbol» preview documents now hint that they have to be
+  opened from a directory URL with a trailing slash (e.g. `…/icons/`). Without
+  it the relative `<use href="sprite.svg#…">` reference resolves against the
+  parent directory and no icons are shown.
+
 ## 3.0.0 — Vento templating, dependency modernization
 
 ### Added
