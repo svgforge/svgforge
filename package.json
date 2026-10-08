@@ -60,9 +60,9 @@
     "css-selector-parser": "^3.3.0",
     "css-tree": "^3.2.1",
     "csso": "^5.0.5",
-    "js-yaml": "^5.4.2",
+    "js-yaml": "^5.4.3",
     "svgo": "^4.1.0",
-    "ventojs": "^2.4.0",
+    "ventojs": "^2.4.1",
     "vinyl": "^3.0.1"
   },
   "devDependencies": {
