@@ -15,6 +15,12 @@ Newer release notes are published on the GitHub release page: <https://github.co
   attributes on generated `<symbol>` elements, so that accessibility metadata
   from the source icons survives into the sprite.
 
+### Changed
+
+* The startup log message no longer claims to use "threads" — the value is a
+  task concurrency limit, not OS threads. It now reads
+  `Processing up to N shapes concurrently`.
+
 ## 3.0.0 — Vento templating, dependency modernization
 
 ### Added
