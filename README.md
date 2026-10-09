@@ -46,7 +46,6 @@ For an up-to-date list of browsers supporting [SVG fragment identifiers](https:/
 ## Table of contents
 
 * [Installation](#installation)
-  * [Help us test the upcoming v3](#help-us-test-the-upcoming-v3)
 * [Getting started](#getting-started)
   * [Usage pattern](#usage-pattern)
   * [Standard API](docs/api.md)
@@ -74,16 +73,6 @@ To install *svgforge* in your project, run:
 ```bash
 npm install @svgforge/svgforge
 ```
-
-### Help us test the upcoming v3
-
-The upcoming **v3** release (rebuilt on modern dependencies, see [Changes compared to svg-sprite](#changes-compared-to-svg-sprite)) is available as a beta and is looking for real-world testing:
-
-```bash
-npm install @svgforge/svgforge@beta
-```
-
-Found a bug, a regression or a rough edge? Please [open an issue](https://github.com/svgforge/svgforge/issues) — every report makes the stable release better.
 
 
 ## Getting started
