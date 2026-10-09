@@ -58,8 +58,7 @@ describe.each`
 
     expect(data.svg).toMatchSnapshot();
 
-    const previewTemplate = await readFile(path.join(__dirname, '../../../tmpl/stack.vto'), 'utf8');
-    const out = await renderTemplate(previewTemplate, data, {});
+    const out = await renderTemplate(path.join(__dirname, '../../../tmpl/stack.vto'), data);
     const preview = await writeFile(path.join(temporaryPath, `stack/html/stack${testConfig.namespace}.html`), out);
     const expected = path.join(paths.expectations, `png/stack${testConfig.namespace}.html.png`);
 
@@ -101,8 +100,7 @@ describe('without viewbox', () => {
 
     expect(data.svg).toMatchSnapshot();
 
-    const previewTemplate = await readFile(path.join(__dirname, '../../../tmpl/stack.vto'), 'utf8');
-    const out = await renderTemplate(previewTemplate, data, {});
+    const out = await renderTemplate(path.join(__dirname, '../../../tmpl/stack.vto'), data);
     const preview = await writeFile(path.join(temporaryPath, 'stack/html/stack-without-viewbox.html'), out);
     const expected = path.join(paths.expectations, 'png/stack-without-viewbox.html.png');
 

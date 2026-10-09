@@ -7,31 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Newer release notes are published on the GitHub release page: <https://github.com/svgforge/svgforge/releases>
 
-## Unreleased
-
-### Added
-
-* The «symbol» mode now preserves the `aria-hidden`, `aria-label` and `role`
-  attributes on generated `<symbol>` elements, so that accessibility metadata
-  from the source icons survives into the sprite.
-
-### Changed
-
-* The startup log message no longer claims to use "threads" — the value is a
-  task concurrency limit, not OS threads. It now reads
-  `Processing up to N shapes concurrently`.
-
-* The «defs» and «symbol» preview documents now hint that they have to be
-  opened from a directory URL with a trailing slash (e.g. `…/icons/`). Without
-  it the relative `<use href="sprite.svg#…">` reference resolves against the
-  parent directory and no icons are shown.
-
 ## 3.0.0 — Vento templating, dependency modernization
 
 ### Added
 
 * The spriter emits a `progress` event for each shape that finished processing,
   carrying `{processed, total}` — useful for CLI progress bars.
+
+* The «symbol» mode now preserves the `aria-hidden`, `aria-label` and `role`
+  attributes on generated `<symbol>` elements, so that accessibility metadata
+  from the source icons survives into the sprite.
 
 ### Changed (breaking)
 
@@ -49,6 +34,22 @@ Newer release notes are published on the GitHub release page: <https://github.co
   output. A custom logger (e.g. a `winston.Logger`) can still be passed via the
   `log` config option.
 
+### Changed
+
+* The startup log message no longer claims to use "threads" — the value is a
+  task concurrency limit, not OS threads. It now reads
+  `Processing up to N shapes concurrently`.
+
+* The preview documents now hint that they have to be opened from a directory
+  URL with a trailing slash (e.g. `…/icons/`). Without it the relative
+  reference to the sprite file resolves against the parent directory and no
+  icons are shown.
+
+* The HTML previews are now built from a shared Vento layout
+  (`tmpl/common/layout.vto`): the per-mode templates provide their sections via
+  slots, the `inline` option of the «defs» and «symbol» modes selects the
+  embedded or external variant (named in the page heading).
+
 ### Fixed
 
 * Namespace-based CSS selector rewriting (`@font-face` / `@keyframes` rules)
@@ -57,6 +58,13 @@ Newer release notes are published on the GitHub release page: <https://github.co
 * Errors thrown while laying out a sprite are now passed to the `compile()`
   callback as-is instead of crashing with `Object.values(undefined)`, which
   previously masked the underlying failure.
+* Shape transformations that throw an error no longer crash the build with a
+  `TypeError` during `compile()`: erroring shapes are skipped instead of being
+  queued as `undefined`.
+* `trimStart()` now returns an empty string when all characters are to be
+  trimmed (it previously returned the last character), and `zipObject()` now
+  throws a `TypeError` when either argument is not an array (previously only
+  when both were not).
 
 ### Removed
 

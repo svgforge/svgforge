@@ -435,7 +435,7 @@ In addition to the [common mode properties](#common-mode-properties), «defs» a
 
 Property     | Type      | Default     | Description                |
 ---------------- | --------------- | ------------- | ------------------------------------------ |
-`mode.<mode>.inline` | Boolean   | `false`     | If you want to embed the sprite into your HTML source, you will want to set this to `true` in order to prevent the creation of SVG namespace declarations and to set some other attributes for effectively hiding the library sprite. |
+`mode.<mode>.inline` | Boolean   | `false`     | If you want to embed the sprite into your HTML source, you will want to set this to `true` in order to prevent the creation of SVG namespace declarations and to set some other attributes for effectively hiding the library sprite. It also switches the shared preview layout (`tmpl/common/layout.vto`) to render the embedded sprite and the inline hints instead of the external references (see [templating.md](templating.md#preview-html-layouts)). |
 
 ##### Sizing defs/symbol icons without CSS (stacksvg-style)
 

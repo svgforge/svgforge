@@ -58,8 +58,7 @@ describe.each`
 
     expect(data.svg).toMatchSnapshot();
 
-    const previewTemplate = await readFile(path.join(__dirname, '../../../tmpl/defs.vto'), 'utf8');
-    const out = await renderTemplate(previewTemplate, data, {});
+    const out = await renderTemplate(path.join(__dirname, '../../../tmpl/defs.vto'), data);
     const preview = await writeFile(path.join(temporaryPath, `defs/html/defs${testConfig.namespace}.html`), out);
     const expected = path.join(paths.expectations, `png/defs${testConfig.namespace}.html.png`);
 

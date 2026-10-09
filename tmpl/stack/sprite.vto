@@ -1,17 +1,9 @@
-<!doctype html>
-{{ import { figcaption } from "figcaption.vto" }}{{ import { footer } from "footer.vto" }}
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>SVG stack preview | svg-sprite</title>
-
-    <style>
-    {{ include "preview-css" }}
-    </style>
-
-  </head>
-  <body>
-{{ if inline }}
+{{ import { figcaption } from "figcaption.vto" }}{{ layout "layout.vto" }}
+{{ slot docTitle }}SVG stack preview | svgforge{{ /slot }}
+{{ slot header }}<h1>SVG stack preview ({{ if it.inline }}inline{{ else }}external{{ /if }})</h1>
+      <p>This preview features an SVG stack. Please have a look at the HTML source for further details and be aware of the following constraints:</p>{{ /slot }}
+{{ slot hints }}<li>Your browser has to <a href="https://caniuse.com/svg-fragment" target="_blank" rel="noopener noreferrer">support SVG fragment identifiers</a> for SVG stacks to work.</li>{{ /slot }}
+{{ slot embedded }}
 <!--
 Inline SVG stack
 ====================================================================================================
@@ -28,15 +20,7 @@ for further details on how to create this embeddable sprite variant.
   {{ s.svg |> safe }}
 {{ /for }}
 </svg>
-{{ /if }}
-    <header>
-      <h1>SVG stack preview</h1>
-      <p>This preview features an SVG stack. Please have a look at the HTML source for further details and be aware of the following constraints:</p>
-      <ul class="grid">
-        <li>Your browser has to <a href="https://caniuse.com/svg-fragment" target="_blank" rel="noopener noreferrer">support SVG fragment identifiers</a> for SVG stacks to work.</li>
-        <li></li>
-      </ul>
-    </header>
+{{ /slot }}
     <section>
 
 <!--
@@ -47,6 +31,7 @@ external sprite. By default, all shapes inside the sprite are hidden by CSS. The
 selector is used to show the very shape that is referenced by the fragment identifier.
 -->
 
+      <h3>SVG stack</h3>
       <ul class="grid">
 {{ for s of shapes }}
         <li title="{{ s.name }}">
@@ -61,17 +46,21 @@ selector is used to show the very shape that is referenced by the fragment ident
       </ul>
 
 <!--
+{{ if it.inline }}Inline {{ /if }}SVG, sized by viewBox only (stacksvg-style)
 ====================================================================================================
+This method needs no CSS at all: the SVG is sized by a single `width` (or `height`) attribute and the
+missing other dimension is derived from the shape's viewBox — the same technique the
+[stacksvg](https://github.com/stacksvg/stacksvg) project relies on.
 -->
 
-      <h3>B) Inline SVG, sized by viewBox only (stacksvg-style)</h3>
+      <h3>{{ if it.inline }}Inline {{ /if }}SVG, sized by viewBox only (stacksvg-style)</h3>
       <ul class="grid">
 {{ for s of shapes }}
         <li title="{{ s.name }}">
           <figure>
             <div class="icon-box">
               <svg viewBox="0 0 {{ s.width.outer }} {{ s.height.outer }}" width="1.5em">
-                <use href="{{ if inline }}#{{ s.name }}{{ /if }}{{ if !inline }}{{ example |> safe }}#{{ s.name }}{{ /if }}"></use>
+                <use href="{{ it.useRef }}{{ s.name }}"></use>
               </svg>
             </div>
             {{ figcaption(s) }}
@@ -81,7 +70,7 @@ selector is used to show the very shape that is referenced by the fragment ident
       </ul>
 
 <!--
-C) Sprite as CSS background image (inline style)
+Sprite as CSS background image (inline style)
 ====================================================================================================
 The stack sprite may also be used as a CSS background image. The fragment identifier (`#id`) selects
 the section to show, just like with `<img>` before. The `:target` pseudo selector reveals the
@@ -90,7 +79,7 @@ shapes this way. Note the `background-repeat: no-repeat` and the `-dims` class t
 shape dimensions.
 -->
 
-      <h3>C) Sprite as CSS background image (inline style)</h3>
+      <h3>Sprite as CSS background image (inline style)</h3>
       <ul class="grid">
 {{ for s of shapes }}
         <li title="{{ s.name }}">
@@ -105,15 +94,3 @@ shape dimensions.
       </ul>
 
     </section>
-    {{ footer() }}
-
-<!--
-Common preview behavior (shared via tmpl/common/preview.js)
-====================================================================================================
--->
-
-<script>
-{{ include "preview-js" }}
-</script>
-  </body>
-</html>
