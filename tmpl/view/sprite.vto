@@ -1,29 +1,8 @@
-<!doctype html>
-{{ import { figcaption } from "figcaption.vto" }}{{ import { footer } from "footer.vto" }}
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>SVG &lt;view&gt; sprite preview | svgforge</title>
-
-<!--
-Common preview styles (shared via tmpl/common/preview.css)
-====================================================================================================
--->
-
-    <style>
-    {{ include "preview-css" }}
-    </style>
-
-  </head>
-  <body>
-    <header>
-      <h1>SVG <code>&lt;view&gt;</code> sprite preview</h1>
-      <p>This preview features the use of the generated sprite by referencing the pre-defined <code>&lt;view&gt;</code> elements (fragment identifiers). Please have a look at the HTML source for further details and be aware of the following constraints:</p>
-      <ul class="grid">
-        <li>Your browser has to <a href="https://caniuse.com/svg-fragment" target="_blank" rel="noopener noreferrer">support SVG fragment identifiers</a> for SVG stacks to work.</li>
-        <li></li>
-      </ul>
-    </header>
+{{ import { figcaption } from "figcaption.vto" }}{{ layout "layout.vto" }}
+{{ slot docTitle }}SVG &lt;view&gt; sprite preview | svgforge{{ /slot }}
+{{ slot header }}<h1>SVG <code>&lt;view&gt;</code> sprite preview</h1>
+      <p>This preview features the use of the generated sprite by referencing the pre-defined <code>&lt;view&gt;</code> elements (fragment identifiers). Please have a look at the HTML source for further details and be aware of the following constraints:</p>{{ /slot }}
+{{ slot hints }}<li>Your browser has to <a href="https://caniuse.com/svg-fragment" target="_blank" rel="noopener noreferrer">support SVG fragment identifiers</a> for this technique to work.</li>{{ /slot }}
     <section>
 
 <!--
@@ -48,15 +27,3 @@ pre-defined in the external sprite.
       </ul>
 
     </section>
-    {{ footer() }}
-
-<!--
-Common preview behavior (shared via tmpl/common/preview.js)
-====================================================================================================
--->
-
-<script>
-{{ include "preview-js" }}
-</script>
-  </body>
-</html>

@@ -40,10 +40,15 @@ Newer release notes are published on the GitHub release page: <https://github.co
   task concurrency limit, not OS threads. It now reads
   `Processing up to N shapes concurrently`.
 
-* The «defs» and «symbol» preview documents now hint that they have to be
-  opened from a directory URL with a trailing slash (e.g. `…/icons/`). Without
-  it the relative `<use href="sprite.svg#…">` reference resolves against the
-  parent directory and no icons are shown.
+* The preview documents now hint that they have to be opened from a directory
+  URL with a trailing slash (e.g. `…/icons/`). Without it the relative
+  reference to the sprite file resolves against the parent directory and no
+  icons are shown.
+
+* The HTML previews are now built from a shared Vento layout
+  (`tmpl/common/layout.vto`): the per-mode templates provide their sections via
+  slots, the `inline` option of the «defs» and «symbol» modes selects the
+  embedded or external variant (named in the page heading).
 
 ### Fixed
 

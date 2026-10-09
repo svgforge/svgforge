@@ -268,7 +268,7 @@ const config = {
 #### Basic examples
 
 
-##### A) Standalone sprite
+##### Standalone sprite
 
 Foreground image **sprite with `<symbol>` elements** (for being `<use>`d in your HTML source):
 
@@ -284,7 +284,7 @@ const config = {
 ```
 
 
-##### B) Sprite with CSS resource
+##### Sprite with CSS resource
 
 **«symbol» sprite** with a **CSS stylesheet**:
 
@@ -302,7 +302,7 @@ const config = {
 ```
 
 
-##### C) Multiple sprites
+##### Multiple sprites
 
 **`<symbol>` sprite** and an **SVG stack** all at once:
 
@@ -317,7 +317,7 @@ const config = {
 ```
 
 
-##### D) No sprite at all
+##### No sprite at all
 
 `mode`-less run, returning the **optimized SVG shapes only**:
 

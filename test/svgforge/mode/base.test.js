@@ -270,7 +270,6 @@ describe('testings SVGSpriteBase', () => {
 
       const TEST_FILES = {};
       const testFn = jest.fn();
-      setDependency('node:fs:readFileSync', () => '');
       setDependency('template:render', jest.fn().mockResolvedValueOnce('first').mockResolvedValueOnce('second').mockResolvedValueOnce(''));
 
       base._buildCSSResources(TEST_FILES, testFn);
@@ -324,7 +323,6 @@ describe('testings SVGSpriteBase', () => {
       const testFn = jest.fn();
       const TEST_FILES = {};
 
-      setDependency('node:fs:readFileSync', () => '');
       setDependency('template:render', jest.fn().mockResolvedValueOnce('test example'));
       base._buildHTMLExample(TEST_FILES, testFn);
 

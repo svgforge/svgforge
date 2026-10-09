@@ -29,6 +29,10 @@ For each sprite generation process, a data object is constructed that is passed 
     sprite: 'svg/sprite.view.svg',
     // Relative path from the example resource to the SVG sprite (if configured)
     example: 'svg/sprite.view.svg',
+    // Whether the sprite is meant for inline embedding (mode.<mode>.inline)
+    inline: false,
+    // Fragment prefix for <use href> references in previews (if the example is configured)
+    useRef: 'svg/sprite.view.svg#',
     // List of all shapes in the sprite
     shapes: [
       // Single shape properties
@@ -166,3 +170,19 @@ Finds all hash signs in a string and encodes each of them to `%23`.
 ```vento
 {{ encodeHashSign(url) }}
 ```
+
+### Preview HTML layouts
+
+The HTML example documents (previews) are rendered from a shared layout template (`tmpl/common/layout.vto`):
+
+The layout provides the page chrome — document head with the shared preview styles, the header constraint list (including the directory-URL hint for external references), the footer and the behavior script. Whether the sprite is embedded or referenced externally is controlled by the mode's `inline` option. The per-mode template (`tmpl/<mode>/sprite.vto`) contributes everything mode-specific through Vento slots:
+
+| Slot | Content |
+| --- | --- |
+| `docTitle` | Document `<title>` |
+| `header` | `<h1>` and introductory paragraph |
+| `hints` | `<li>` items for the header constraint list |
+| `inlineHints` | Additional `<li>` items, rendered only for embedded sprites |
+| `embedded` | The embedded sprite block, rendered only for embedded sprites |
+
+Custom `example.template` documents are not affected — they receive the same data values (`inline`, `useRef`, `example`, …) but render without a layout unless the template uses the `{{ layout }}` tag itself.

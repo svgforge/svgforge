@@ -1,0 +1,48 @@
+<!doctype html>
+{{ import { footer } from "footer.vto" }}
+<!--
+Sprite preview layout (shared)
+====================================================================================================
+Hosts the mode-specific preview content (title, header, hints, sections) that the per-mode templates
+provide via slots. When the sprite is embedded (the mode's `inline` option), it is rendered into the
+document above the header and referenced by an internal fragment identifier (`href="#<id>"`);
+otherwise the external sprite file is referenced by URL + fragment identifier
+(`href="<sprite>#<id>"`).
+-->
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{{ it.docTitle }}</title>
+
+    <style>
+    {{ include "preview.css" }}
+    </style>
+
+  </head>
+  <body>
+{{ if it.inline }}
+{{ it.embedded }}
+{{ /if }}
+    <header>
+      {{ it.header }}
+      <ul class="grid">
+        {{ it.hints }}
+        {{ if it.inline }}{{ it.inlineHints }}{{ else }}<li><strong>Open this page from a directory URL ending in a slash</strong> (e.g. <code>…/icons/</code>). Without the trailing slash the relative reference to the sprite file resolves against the parent directory, so no icons will show.</li>{{ /if }}
+      </ul>
+    </header>
+
+    {{ it.content }}
+
+    {{ footer() }}
+
+<!--
+Common preview behavior (shared via tmpl/common/preview.js)
+====================================================================================================
+-->
+
+<script>
+{{ include "preview.js" }}
+</script>
+  </body>
+</html>

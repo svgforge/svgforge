@@ -65,7 +65,7 @@ describe('custom templates', () => {
 
     const exampleOutput = result.defs.example.contents.toString();
 
-    expect(exampleOutput).toContain('<h1>SVG <code>&lt;defs&gt;</code> sprite preview</h1>');
+    expect(exampleOutput).toContain('<h1>SVG <code>&lt;defs&gt;</code> sprite preview (external)</h1>');
     expect(exampleOutput).toContain('<figcaption');
     expect(exampleOutput).toContain('Copy ID');
   });
