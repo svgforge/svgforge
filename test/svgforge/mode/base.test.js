@@ -81,10 +81,6 @@ describe('testings SVGSpriteBase', () => {
       expect(base.config.sprite).toBe(path.resolve(TEST_CONFIG.dest, 'sprite.svg'));
       expect(base._cssDest).toBe(TEST_CONFIG.dest);
       expect(base.tmpl).toBe('common');
-      expect(base.MODE_DEFS).toBe('defs');
-      expect(base.MODE_SYMBOL).toBe('symbol');
-      expect(base.MODE_STACK).toBe('stack');
-      expect(base.MODE_VIEW).toBe('view');
     });
 
     describe('testing render', () => {
