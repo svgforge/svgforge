@@ -30,8 +30,6 @@ describe('testings SVGSpriteBase', () => {
     const initFn = createMock();
     return {
       cls: class TestMode extends SVGSpriteBase {
-        // Polymorphic hook (overridden or dispatched cross-class); `#private` would break dispatch.
-        // eslint-disable-next-line unicorn/prefer-private-class-fields
         _init() {
           initFn();
         }
