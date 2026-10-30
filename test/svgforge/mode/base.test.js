@@ -7,7 +7,7 @@ import process from 'node:process';
 import {fileURLToPath} from 'node:url';
 import File from 'vinyl';
 import SVGSpriteBase from '../../../lib/svgforge/mode/base.js';
-import {setDependency, resetDependencies} from '../../../lib/deps.js';
+import {dependencyKeys, setDependency, resetDependencies} from '../../../lib/deps.js';
 import {
   afterEach,
   createMock,
@@ -265,7 +265,7 @@ describe('testings SVGSpriteBase', () => {
 
       const TEST_FILES = {};
       const testFn = createMock();
-      setDependency('template:render', createMock().mockResolvedValueOnce('first').mockResolvedValueOnce('second').mockResolvedValueOnce(''));
+      setDependency(dependencyKeys.templateRender, createMock().mockResolvedValueOnce('first').mockResolvedValueOnce('second').mockResolvedValueOnce(''));
 
       base._buildCSSResources(TEST_FILES, testFn);
 
@@ -318,7 +318,7 @@ describe('testings SVGSpriteBase', () => {
       const testFn = createMock();
       const TEST_FILES = {};
 
-      setDependency('template:render', createMock().mockResolvedValueOnce('test example'));
+      setDependency(dependencyKeys.templateRender, createMock().mockResolvedValueOnce('test example'));
       base._buildHTMLExample(TEST_FILES, testFn);
 
       await new Promise(setImmediate);

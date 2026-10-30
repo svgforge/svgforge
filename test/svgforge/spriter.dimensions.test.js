@@ -4,7 +4,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {DOMParser} from '@xmldom/xmldom';
 import SVGSpriter from '../../lib/svgforge.js';
-import {setDependency} from '../../lib/deps.js';
+import {dependencyKeys, setDependency} from '../../lib/deps.js';
 import {
   createMock,
   describe,
@@ -15,7 +15,7 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const mockCalc = createMock();
-setDependency('calculate-svg-dimensions', mockCalc);
+setDependency(dependencyKeys.svgDimensions, mockCalc);
 
 const expectations = [{
   svg: '46x46.svg',

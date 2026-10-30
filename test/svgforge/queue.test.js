@@ -4,7 +4,7 @@ import path from 'node:path';
 import File from 'vinyl';
 import SVGSpriterQueue from '../../lib/svgforge/queue.js';
 import DimensionsCalculationError from '../../lib/svgforge/errors/dimensions-calculation-error.js';
-import {setDependency} from '../../lib/deps.js';
+import {dependencyKeys, setDependency} from '../../lib/deps.js';
 import {
   beforeEach,
   createMock,
@@ -17,7 +17,7 @@ import {
 /* eslint-disable max-nested-callbacks -- Mock implementations of the queued shape/process callbacks are intentionally nested to model the async event flow under test. */
 
 const mockShape = createMock();
-setDependency('queue:Shape', mockShape);
+setDependency(dependencyKeys.queueShape, mockShape);
 
 describe('testing Queue', () => {
   describe('testing constructor()', () => {

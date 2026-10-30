@@ -3,7 +3,7 @@ import {DOMParser} from '@xmldom/xmldom';
 import File from 'vinyl';
 import createShape from '../../../lib/svgforge/shape/index.js';
 import NotPermittedError from '../../../lib/svgforge/errors/not-permitted-error.js';
-import {setDependency} from '../../../lib/deps.js';
+import {dependencyKeys, setDependency} from '../../../lib/deps.js';
 import {
   createMock,
   describe,
@@ -13,7 +13,7 @@ import {
 } from '../../helpers/harness.js';
 
 const mockMinifyBlock = createMock().mockReturnValue({css: ''});
-setDependency('csso', {minifyBlock: mockMinifyBlock});
+setDependency(dependencyKeys.csso, {minifyBlock: mockMinifyBlock});
 
 const TEST_SPRITER = {
   config: {

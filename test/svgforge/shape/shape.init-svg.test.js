@@ -2,7 +2,7 @@
 import {Buffer} from 'node:buffer';
 import File from 'vinyl';
 import createShape from '../../../lib/svgforge/shape/index.js';
-import {setDependency} from '../../../lib/deps.js';
+import {dependencyKeys, setDependency} from '../../../lib/deps.js';
 import {
   afterEach,
   createMock,
@@ -22,7 +22,7 @@ const TEST_SPRITER = {
 };
 
 const mockFixXMLString = createMock();
-setDependency('fixXMLString', mockFixXMLString);
+setDependency(dependencyKeys.fixXmlString, mockFixXMLString);
 
 afterEach(() => {
   mockFixXMLString.mockReset();

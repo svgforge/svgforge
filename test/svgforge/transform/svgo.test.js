@@ -1,6 +1,6 @@
 
 import svgoTransform from '../../../lib/svgforge/transform/svgo.js';
-import {setDependency, resetDependencies} from '../../../lib/deps.js';
+import {dependencyKeys, setDependency, resetDependencies} from '../../../lib/deps.js';
 import {
   afterEach,
   beforeEach,
@@ -20,7 +20,7 @@ describe('testing transforms.svgo', () => {
   beforeEach(() => {
     noop = createMock();
     mockOptimize = createMock().mockReturnValue({data: ''});
-    setDependency('svgo:optimize', mockOptimize);
+    setDependency(dependencyKeys.svgoOptimize, mockOptimize);
   });
 
   afterEach(() => {
