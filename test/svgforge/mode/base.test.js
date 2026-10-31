@@ -7,6 +7,7 @@ import process from 'node:process';
 import {fileURLToPath} from 'node:url';
 import File from 'vinyl';
 import SVGSpriteBase from '../../../lib/svgforge/mode/base.js';
+import ArgumentError from '../../../lib/svgforge/errors/argument-error.js';
 import {dependencyKeys, setDependency, resetDependencies} from '../../../lib/deps.js';
 import {
   afterEach,
@@ -236,6 +237,30 @@ describe('testings SVGSpriteBase', () => {
 
         expect(base.data.example).toBe('sprite.svg');
       });
+    });
+
+    it('should reject an example value that is neither true nor an object', () => {
+      expect.hasAssertions();
+
+      const TEST_SPRITER = {
+        config: {
+          dest: '.',
+          shape: {
+            spacing: [],
+          },
+        },
+        debug: createMock(),
+      };
+      const TEST_CONFIG = {
+        dest: '.',
+        prefix: '1',
+        sprite: '',
+        example: 'yes',
+      };
+
+      const {cls} = getClassAndInitFn();
+
+      expect(() => new cls(TEST_SPRITER, TEST_CONFIG, {}, '')).toThrow(ArgumentError);
     });
   });
 
