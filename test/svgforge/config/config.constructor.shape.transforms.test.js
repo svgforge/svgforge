@@ -5,7 +5,7 @@ import {
   describe,
   expect,
   it,
-} from '../../helpers/harness.js';
+} from '../../../test-utils/harness.js';
 
 describe('testing SVGSpriterConfig shape.transforms', () => {
   const DEFAULT_TRANSFORMS = [['svgo', {}]];

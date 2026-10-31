@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {Buffer} from 'node:buffer';
 import SVGSpriterConfig from '../../../lib/svgforge/config.js';
-import {setDependency, resetDependencies} from '../../../lib/deps.js';
+import {dependencyKeys, setDependency, resetDependencies} from '../../../lib/deps.js';
 import {
   afterEach,
   createMock,
@@ -12,7 +12,7 @@ import {
   it,
   restoreAllMocks,
   spyOn,
-} from '../../helpers/harness.js';
+} from '../../../test-utils/harness.js';
 
 afterEach(() => {
   restoreAllMocks();
@@ -103,7 +103,7 @@ describe('testing SVGSpriterConfig shape.meta', () => {
       });
       spyOn(fs, 'readFileSync').mockReturnValueOnce(TEST_FILE_CONTENTS);
       const yamlLoad = createMock().mockReturnValueOnce(TEST_META);
-      setDependency('js-yaml:load', yamlLoad);
+      setDependency(dependencyKeys.yamlLoad, yamlLoad);
 
       const config = new SVGSpriterConfig({shape: {meta: '.'}});
 
@@ -127,7 +127,7 @@ describe('testing SVGSpriterConfig shape.meta', () => {
         isFile: createMock().mockReturnValueOnce(true),
       });
       spyOn(fs, 'readFileSync').mockReturnValueOnce(TEST_FILE_CONTENTS);
-      setDependency('js-yaml:load', createMock().mockReturnValueOnce(TEST_META));
+      setDependency(dependencyKeys.yamlLoad, createMock().mockReturnValueOnce(TEST_META));
 
       const config = new SVGSpriterConfig({shape: {meta: '.'}});
 

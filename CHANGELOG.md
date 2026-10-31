@@ -16,7 +16,7 @@ Newer release notes are published on the GitHub release page: <https://github.co
 
 ### Changed
 
-* `@resvg/resvg-js` is now declared as a **peer dependency** (installed automatically by default) instead of a regular dependency — no action required. Making it an *optional* peer (never installed automatically) is planned for the next major release; see [docs/TODO.md](docs/TODO.md).
+* `@resvg/resvg-js` is now declared as a **peer dependency** (installed automatically by default) instead of a regular dependency — no action required. Making it an *optional* peer (never installed automatically) is planned for the next major release; see [docs/roadmap.md](docs/roadmap.md).
 * The `svgo` shape transformation now offloads SVG optimization to a pool of worker threads (sized to the CPU cores available to the process — detected with `availableParallelism()`, which respects cgroup limits and CPU affinity — minus one, so the main thread keeps a core; overridable via the `SVGFORGE_SVGO_WORKERS` environment variable), so sprite builds scale across cores instead of serializing all optimization on the main thread. The optimization is only offloaded when the SVGO configuration can be transferred to a worker thread; configurations with custom plugin functions or other non-serializable values fall back to in-process optimization automatically.
 * Shapes are now processed concurrently with a core-aware limit (the available CPU cores, with the former four as a floor) instead of a fixed four, so machines with more than four cores keep the SVGO worker pool saturated.
 
@@ -55,19 +55,15 @@ Newer release notes are published on the GitHub release page: <https://github.co
 
 ### Changed
 
-* The startup log message no longer claims to use "threads" — the value is a
-  task concurrency limit, not OS threads. It now reads
-  `Processing up to N shapes concurrently`.
-
-* The preview documents now hint that they have to be opened from a directory
-  URL with a trailing slash (e.g. `…/icons/`). Without it the relative
-  reference to the sprite file resolves against the parent directory and no
-  icons are shown.
-
+* The startup log now reads `Processing up to N shapes concurrently`; the value is
+  a task limit, not OS threads.
 * The HTML previews are now built from a shared Vento layout
   (`tmpl/common/layout.vto`): the per-mode templates provide their sections via
   slots, the `inline` option of the «defs» and «symbol» modes selects the
   embedded or external variant (named in the page heading).
+* Preview pages carry a note that they must be opened from a directory URL with a
+  trailing slash; otherwise the relative sprite reference resolves against the
+  parent directory and no icons appear.
 
 ### Fixed
 
@@ -174,37 +170,21 @@ Newer release notes are published on the GitHub release page: <https://github.co
   never actually raised. The parser error is now caught and rethrown as
   `XmlFixingError`
 
-### Hardened: Test matcher and view-mode coverage
+### Hardened: matcher and view-mode coverage
 
-* The synchronous `toThrow` matcher now honors its expected argument
-  (error constructor, `Error` instance, message substring or regular
-  expression) instead of accepting any thrown error
-* Add non-visual unit tests for the «view» mode (fragment composition,
-  sprite dimensions, `.dims` stylesheet, dimensions placeholder), raising the
-  line coverage of `mode/view.js` and `mode/viewbase.js` to 100% and 98%
-
+* toThrow now checks the expected error type, instance, message, or regex.
+  Add non-visual view-mode tests for fragment composition, sprite dimensions, .dims stylesheets, and dimension placeholders; coverage reaches 100% in mode/view.js and 98% in mode/viewbase.js.
 ### Documentation
-
-* Restore the README introduction and migrate the code examples to ESM
-* Fix typos and outdated sprite filenames in the documentation
-* Improve the mode documentation and link the DeepWiki API reference
-
+  Restore the README introduction and update examples to ESM.
+  Fix typos and outdated sprite filenames; improve mode docs and link the DeepWiki API reference.
 ---
 
 ## 1.0.1 — Patch release (first publishable fix)
 
-### Refactor: Drop remaining lodash/async dependencies
+### Changed: Fewer runtime dependencies
 
-* Replace the `async` package with native Promise-based helpers
-  (`runWaterfall`/`runParallelLimit`) and drop `async` from the dependencies;
-  the shape processing queue now uses a fixed concurrency limit of 4 instead
-  of scaling with the CPU core count
-* Replace `lodash.merge` with a native `deepMerge` utility
-  (`lib/svg-sprite/utils/index.js`) and drop `lodash.merge` from the
-  dependencies
-* Replace `lodash.escape` with a native `escapeHtml` utility
-  (`lib/svg-sprite/utils/index.js`) and drop `lodash.escape` from the
-  dependencies
+* Replaced the `async`, `lodash.merge` and `lodash.escape` packages with
+  internal helpers — three fewer runtime dependencies.
 
 ## 1.0.0 — First release (based on old svg-sprite package)
 
@@ -232,28 +212,23 @@ Newer release notes are published on the GitHub release page: <https://github.co
 
 ### Refactor: ES6 classes and xo-default linting
 
-* Convert `SVGSpriter`, `SVGShape` and all sprite mode classes from
-  prototype-based to ES6 classes (`SVGSpriteBase` + subclasses, `SVGSpriteCss`,
-  `SVGSpriteView`, `SVGSpriteDefs`, `SVGSpriteStack`, `SVGSpriteSymbol`,
-  `SVGSpriteStandalone`)
+* Convert all classes from prototype-based to ES6 classes
 * Strip all `off` rules from `xo.config.js`; fixed lint findings in code with
   justified line/file-level disables
-* Add `require-unicode-regexp` enforcement (`u` flag, per `requireFlag: 'u'`)
-  and raise `max-nested-calls` to 6 (required by `path.resolve(...)` chains)
+* Fix more xo linter errors
 * Migrate the complete test suite from Jest to `node --test` with a
   `jest-compat.js` compatibility layer (`createMock`/`spyOn` instead of
   `jest.*`, dependency injection via `lib/deps.js`)
 * Drop LESS/Stylus support entirely (code, dependencies, documentation)
-* Raise pixelmatch tolerance (`MAX_MISMATCH` 5 → 130) for AA differences under
-  the upgraded Chromium/Playwright rendering pipeline
 * Change primary author to svgforge; Joschi Kuphal remains as contributor
-* Replace the `glob` package with the native `fs.globSync`/`node:fs` API and
-  drop `glob` from the (dev) dependencies; `engines.node` is `>= 22` (required
-  for the glob API introduced in Node 22)
+* Replace the `glob` package with the native `fs.globSync`/`node:fs` API;
+  `engines.node` is `>= 22` (required for the glob API introduced in Node 22)
 * Normalize the `file` and `name` arguments of `SVGSpriter.prototype.add()` via
   `path.normalize()` so both values use the same path separators (fixes
-  svgforge/svgforge#942, per PR svgforge/svgforge#944); the now
-  redundant `trimStart()` call on `name` was dropped
+  svg-sprite/svg-sprite#942); the now redundant `trimStart()` call on `name` was dropped
+
+
+
 
 
 # About

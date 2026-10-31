@@ -7,7 +7,7 @@ import {
   it,
   restoreAllMocks,
   spyOn,
-} from '../../helpers/harness.js';
+} from '../../../test-utils/harness.js';
 
 describe('testing createLogger()', () => {
   let stdoutWriteSpy;

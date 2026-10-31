@@ -5,18 +5,18 @@ import {fileURLToPath} from 'node:url';
 import {renderTemplate} from '../../../../lib/svgforge/utils/template.js';
 import SVGSpriter from '../../../../lib/svgforge.js';
 import {isResvgAvailable} from '../../../../lib/svgforge/utils/index.js';
-import {addFixtureFiles} from '../../../helpers/add-files.js';
-import writeFiles from '../../../helpers/write-files.js';
-import writeFile from '../../../helpers/write-file.js';
-import {constants} from '../../../helpers/test-configs.js';
-import {paths} from '../../../helpers/constants.js';
-import removeTmpPath from '../../../helpers/remove-temp-path.js';
+import {addFixtureFiles} from '../../../../test-utils/add-files.js';
+import writeFiles from '../../../../test-utils/write-files.js';
+import writeFile from '../../../../test-utils/write-file.js';
+import {constants} from '../../../../test-utils/fixture-configs.js';
+import {paths} from '../../../../test-utils/constants.js';
+import removeTmpPath from '../../../../test-utils/remove-temp-path.js';
 import {
   beforeAll,
   describe,
   expect,
   it,
-} from '../../../helpers/harness.js';
+} from '../../../../test-utils/harness.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

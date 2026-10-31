@@ -6,7 +6,7 @@ import {fileURLToPath} from 'node:url';
 import File from 'vinyl';
 import getShape from '../../../lib/svgforge/shape/index.js';
 import SVGSpriter from '../../../lib/svgforge.js';
-import {setDependency} from '../../../lib/deps.js';
+import {dependencyKeys, setDependency} from '../../../lib/deps.js';
 import ArgumentError from '../../../lib/svgforge/errors/argument-error.js';
 import {
   beforeEach,
@@ -14,12 +14,12 @@ import {
   describe,
   expect,
   it,
-} from '../../helpers/harness.js';
+} from '../../../test-utils/harness.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const mockFixXMLString = createMock();
-setDependency('fixXMLString', mockFixXMLString);
+setDependency(dependencyKeys.fixXmlString, mockFixXMLString);
 
 const TEST_SVG = `<svg viewBox="0 0
                                 16 16"></svg>`;

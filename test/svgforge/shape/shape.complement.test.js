@@ -3,7 +3,7 @@ import {Buffer} from 'node:buffer';
 import File from 'vinyl';
 import createShape from '../../../lib/svgforge/shape/index.js';
 import DimensionsCalculationError from '../../../lib/svgforge/errors/dimensions-calculation-error.js';
-import {setDependency, resetDependencies} from '../../../lib/deps.js';
+import {dependencyKeys, setDependency, resetDependencies} from '../../../lib/deps.js';
 import {
   afterEach,
   beforeEach,
@@ -13,7 +13,7 @@ import {
   it,
   restoreAllMocks,
   spyOn,
-} from '../../helpers/harness.js';
+} from '../../../test-utils/harness.js';
 
 const TEST_SPRITER = {
   config: {
@@ -38,7 +38,7 @@ let mockCalc;
 
 beforeEach(() => {
   mockCalc = createMock();
-  setDependency('calculate-svg-dimensions', mockCalc);
+  setDependency(dependencyKeys.svgDimensions, mockCalc);
 });
 
 afterEach(() => {

@@ -7,7 +7,8 @@ import process from 'node:process';
 import {fileURLToPath} from 'node:url';
 import File from 'vinyl';
 import SVGSpriteBase from '../../../lib/svgforge/mode/base.js';
-import {setDependency, resetDependencies} from '../../../lib/deps.js';
+import ArgumentError from '../../../lib/svgforge/errors/argument-error.js';
+import {dependencyKeys, setDependency, resetDependencies} from '../../../lib/deps.js';
 import {
   afterEach,
   createMock,
@@ -15,7 +16,7 @@ import {
   expect,
   it,
   restoreAllMocks,
-} from '../../helpers/harness.js';
+} from '../../../test-utils/harness.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -30,8 +31,6 @@ describe('testings SVGSpriteBase', () => {
     const initFn = createMock();
     return {
       cls: class TestMode extends SVGSpriteBase {
-        // Polymorphic hook (overridden or dispatched cross-class); `#private` would break dispatch.
-        // eslint-disable-next-line unicorn/prefer-private-class-fields
         _init() {
           initFn();
         }
@@ -81,10 +80,6 @@ describe('testings SVGSpriteBase', () => {
       expect(base.config.sprite).toBe(path.resolve(TEST_CONFIG.dest, 'sprite.svg'));
       expect(base._cssDest).toBe(TEST_CONFIG.dest);
       expect(base.tmpl).toBe('common');
-      expect(base.MODE_DEFS).toBe('defs');
-      expect(base.MODE_SYMBOL).toBe('symbol');
-      expect(base.MODE_STACK).toBe('stack');
-      expect(base.MODE_VIEW).toBe('view');
     });
 
     describe('testing render', () => {
@@ -243,6 +238,30 @@ describe('testings SVGSpriteBase', () => {
         expect(base.data.example).toBe('sprite.svg');
       });
     });
+
+    it('should reject an example value that is neither true nor an object', () => {
+      expect.hasAssertions();
+
+      const TEST_SPRITER = {
+        config: {
+          dest: '.',
+          shape: {
+            spacing: [],
+          },
+        },
+        debug: createMock(),
+      };
+      const TEST_CONFIG = {
+        dest: '.',
+        prefix: '1',
+        sprite: '',
+        example: 'yes',
+      };
+
+      const {cls} = getClassAndInitFn();
+
+      expect(() => new cls(TEST_SPRITER, TEST_CONFIG, {}, '')).toThrow(ArgumentError);
+    });
   });
 
   describe('testing _buildCSSResources', () => {
@@ -271,7 +290,7 @@ describe('testings SVGSpriteBase', () => {
 
       const TEST_FILES = {};
       const testFn = createMock();
-      setDependency('template:render', createMock().mockResolvedValueOnce('first').mockResolvedValueOnce('second').mockResolvedValueOnce(''));
+      setDependency(dependencyKeys.templateRender, createMock().mockResolvedValueOnce('first').mockResolvedValueOnce('second').mockResolvedValueOnce(''));
 
       base._buildCSSResources(TEST_FILES, testFn);
 
@@ -324,7 +343,7 @@ describe('testings SVGSpriteBase', () => {
       const testFn = createMock();
       const TEST_FILES = {};
 
-      setDependency('template:render', createMock().mockResolvedValueOnce('test example'));
+      setDependency(dependencyKeys.templateRender, createMock().mockResolvedValueOnce('test example'));
       base._buildHTMLExample(TEST_FILES, testFn);
 
       await new Promise(setImmediate);

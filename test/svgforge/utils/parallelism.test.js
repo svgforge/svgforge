@@ -3,7 +3,7 @@ import {
   describe,
   expect,
   it,
-} from '../../helpers/harness.js';
+} from '../../../test-utils/harness.js';
 
 describe('testing coreCount()', () => {
   it('should never report less than one core', () => {

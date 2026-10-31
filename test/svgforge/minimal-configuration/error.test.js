@@ -6,7 +6,7 @@ import {
   expect,
   it,
   spyOn,
-} from '../../helpers/harness.js';
+} from '../../../test-utils/harness.js';
 
 class TestError extends Error {}
 

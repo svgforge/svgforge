@@ -1,14 +1,14 @@
 import {optimize as realOptimize} from 'svgo';
 import svgoTransform from '../../../lib/svgforge/transform/svgo.js';
 import {isSerializable, optimizeInWorker, terminateWorkers} from '../../../lib/svgforge/transform/svgo-pool.js';
-import {setDependency, resetDependencies} from '../../../lib/deps.js';
+import {dependencyKeys, setDependency, resetDependencies} from '../../../lib/deps.js';
 import {
   afterEach,
   createMock,
   describe,
   expect,
   it,
-} from '../../helpers/harness.js';
+} from '../../../test-utils/harness.js';
 
 const TEST_SVG = '<svg xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100"/></svg>';
 
@@ -92,7 +92,7 @@ describe('testing isSerializable', () => {
 describe('testing svgoTransform with the worker pool', () => {
   it('should dispatch optimization to a worker and apply the result', async () => {
     const workerOptimize = createMock(optimizeInWorker);
-    setDependency('svgo:pool:optimize', workerOptimize);
+    setDependency(dependencyKeys.svgoPoolOptimize, workerOptimize);
     const shape = createShape();
     const spriter = createSpriter();
 
@@ -106,9 +106,9 @@ describe('testing svgoTransform with the worker pool', () => {
 
   it('should fall back to the main thread when the optimizer is replaced', () => {
     const mockOptimize = createMock().mockReturnValue({data: 'optimized'});
-    setDependency('svgo:optimize', mockOptimize);
+    setDependency(dependencyKeys.svgoOptimize, mockOptimize);
     const workerOptimize = createMock();
-    setDependency('svgo:pool:optimize', workerOptimize);
+    setDependency(dependencyKeys.svgoPoolOptimize, workerOptimize);
     const shape = createShape();
     const spriter = createSpriter();
     const callback = createMock();
@@ -123,7 +123,7 @@ describe('testing svgoTransform with the worker pool', () => {
 
   it('should fall back to the main thread for non-serializable configs', async () => {
     const workerOptimize = createMock();
-    setDependency('svgo:pool:optimize', workerOptimize);
+    setDependency(dependencyKeys.svgoPoolOptimize, workerOptimize);
     const shape = createShape();
     const spriter = createSpriter();
 
@@ -139,7 +139,7 @@ describe('testing svgoTransform with the worker pool', () => {
   it('should report worker failures through the callback', async () => {
     const TEST_ERROR = new Error('worker boom');
     const workerOptimize = createMock().mockReturnValue(Promise.reject(TEST_ERROR));
-    setDependency('svgo:pool:optimize', workerOptimize);
+    setDependency(dependencyKeys.svgoPoolOptimize, workerOptimize);
     const shape = createShape();
     const spriter = createSpriter();
 

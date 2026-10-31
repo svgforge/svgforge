@@ -13,7 +13,7 @@ import {
 
   mock,
 } from 'node:test';
-import {isObject} from '../../lib/svgforge/utils/index.js';
+import {isObject} from '../lib/svgforge/utils/index.js';
 import compareSvg2Png from './compare-svg-2-png.js';
 import compareHTML2Png from './compare-html-2-png.js';
 import {closeBrowser} from './capture-browser.js';
@@ -37,11 +37,7 @@ function makeMock(implementation) {
       return onceFn.apply(this, args);
     }
 
-    if (typeof state.defaultImpl === 'function') {
-      return state.defaultImpl.apply(this, args);
-    }
-
-    return undefined;
+    return typeof state.defaultImpl === 'function' ? state.defaultImpl.apply(this, args) : undefined;
   };
 
   const impl = mock.fn(dispatch);
@@ -231,11 +227,7 @@ class Any {
         return Array.isArray(other);
       }
 
-      if (expectedType === Object) {
-        return other !== null && typeof other === 'object';
-      }
-
-      return other instanceof expectedType;
+      return expectedType === Object ? other !== null && typeof other === 'object' : other instanceof expectedType;
     };
 
     this.toAsymmetricMatcher = () => `Any<${expectedType.name}>`;
@@ -250,13 +242,11 @@ class Anything {
 class ObjectContaining {
   constructor(sample) {
     this.sample = sample;
-    this.asymmetricMatch = other => {
-      if (other === null || typeof other !== 'object') {
-        return false;
-      }
-
-      return Object.keys(this.sample).every(k => matches(this.sample[k], other[k]));
-    };
+    this.asymmetricMatch = other => (
+      other !== null
+      && typeof other === 'object'
+      && Object.keys(this.sample).every(k => matches(this.sample[k], other[k]))
+    );
 
     this.toAsymmetricMatcher = () => 'ObjectContaining';
   }
@@ -265,13 +255,10 @@ class ObjectContaining {
 class ArrayContaining {
   constructor(sample) {
     this.sample = sample;
-    this.asymmetricMatch = other => {
-      if (!Array.isArray(other)) {
-        return false;
-      }
-
-      return this.sample.every(expected => other.some(actual => matches(expected, actual)));
-    };
+    this.asymmetricMatch = other => (
+      Array.isArray(other)
+      && this.sample.every(expected => other.some(actual => matches(expected, actual)))
+    );
 
     this.toAsymmetricMatcher = () => 'ArrayContaining';
   }
@@ -311,19 +298,15 @@ function matches(expected, actual) {
   }
 
   if (Array.isArray(expected)) {
-    if (!Array.isArray(actual) || expected.length !== actual.length) {
-      return false;
-    }
-
-    return expected.every((element, i) => matches(element, actual[i]));
+    return Array.isArray(actual)
+      && expected.length === actual.length
+      && expected.every((element, i) => matches(element, actual[i]));
   }
 
   if (expected instanceof Set) {
-    if (!(actual instanceof Set) || expected.size !== actual.size) {
-      return false;
-    }
-
-    return [...expected].every(v => [...actual].some(o => matches(v, o)));
+    return actual instanceof Set
+      && expected.size === actual.size
+      && [...expected].every(v => [...actual].some(o => matches(v, o)));
   }
 
   const expectedKeys = Object.keys(expected);
@@ -353,20 +336,19 @@ function isEqual(received, expected) {
     return expected.source === received.source && expected.flags === received.flags;
   }
 
-  if (typeof expected !== 'object' || expected === null || typeof received !== 'object' || received === null) {
-    return false;
-  }
-
-  if (Array.isArray(expected) !== Array.isArray(received)) {
+  if (
+    typeof expected !== 'object'
+    || expected === null
+    || typeof received !== 'object'
+    || received === null
+    || Array.isArray(expected) !== Array.isArray(received)
+  ) {
     return false;
   }
 
   if (Array.isArray(expected)) {
-    if (expected.length !== received.length) {
-      return false;
-    }
-
-    return expected.every((element, i) => isEqual(received[i], element));
+    return expected.length === received.length
+      && expected.every((element, i) => isEqual(received[i], element));
   }
 
   if (expected instanceof Set) {
@@ -375,26 +357,15 @@ function isEqual(received, expected) {
 
   const aKeys = Object.keys(expected).toSorted((a, b) => a.localeCompare(b));
   const bKeys = Object.keys(received).toSorted((a, b) => a.localeCompare(b));
-  if (aKeys.join('\u{0}') !== bKeys.join('\u{0}')) {
-    return false;
-  }
-
-  return aKeys.every(key => isEqual(received[key], expected[key]));
+  return aKeys.join('\u{0}') === bKeys.join('\u{0}')
+    && aKeys.every(key => isEqual(received[key], expected[key]));
 }
 
 function format(value) {
-  if (typeof value === 'string') {
-    return value;
-  }
-
-  return inspect(value, {depth: null, compact: true});
+  return typeof value === 'string' ? value : inspect(value, {depth: null, compact: true});
 }
 
 function callCountOf(fn) {
-  if (fn && fn.mock && Array.isArray(fn.mock.calls)) {
-    return fn.mock.calls.length;
-  }
-
   if (fn && fn.mock && typeof fn.mock.callCount === 'function') {
     return fn.mock.callCount();
   }
@@ -418,11 +389,9 @@ function callsOf(fn) {
 }
 
 function argsEqual(callArgs, expectedArgs) {
-  if (!Array.isArray(callArgs) || callArgs.length !== expectedArgs.length) {
-    return false;
-  }
-
-  return callArgs.every((a, i) => isEqual(a, expectedArgs[i]));
+  return Array.isArray(callArgs)
+    && callArgs.length === expectedArgs.length
+    && callArgs.every((a, i) => isEqual(a, expectedArgs[i]));
 }
 
 // ---------------------------------------------------------------------------
@@ -476,11 +445,7 @@ function checkSnapshot(received) {
 }
 
 function normalizeForSnapshot(value) {
-  if (typeof value === 'string') {
-    return value;
-  }
-
-  return inspect(value, {depth: null, compact: false});
+  return typeof value === 'string' ? value : inspect(value, {depth: null, compact: false});
 }
 
 // ---------------------------------------------------------------------------
@@ -506,15 +471,9 @@ function errorMatches(error, expected) {
     return error instanceof expected;
   }
 
-  if (typeof expected === 'string') {
-    return error.message.includes(expected);
-  }
-
-  if (expected instanceof RegExp) {
-    return expected.test(error.message);
-  }
-
-  return false;
+  return typeof expected === 'string'
+    ? error.message.includes(expected)
+    : expected instanceof RegExp && expected.test(error.message);
 }
 
 function expect(received) {
@@ -719,10 +678,12 @@ function expect(received) {
 
         const didMatch = isThrown && errorMatches(error, expected);
 
-        if (didMatch === negated) {
-          const thrown = isThrown ? `threw ${error.constructor.name}: ${error.message}` : 'did not throw';
-          fail(`toThrow: ${negated ? 'expected not to throw' : 'expected to throw'} ${format(expected)} but ${thrown}`);
+        if (didMatch !== negated) {
+          return;
         }
+
+        const thrown = isThrown ? `threw ${error.constructor.name}: ${error.message}` : 'did not throw';
+        fail(`toThrow: ${negated ? 'expected not to throw' : 'expected to throw'} ${format(expected)} but ${thrown}`);
       },
 
       toMatchSnapshot() {
@@ -756,10 +717,12 @@ function expect(received) {
           });
         }
 
-        if (result.pass === negated) {
-          const message = typeof result.message === 'function' ? result.message() : result.message;
-          fail(String(message) || `${name} failed`);
+        if (result.pass !== negated) {
+          return;
         }
+
+        const message = typeof result.message === 'function' ? result.message() : result.message;
+        fail(String(message) || `${name} failed`);
       };
     }
 
@@ -956,11 +919,7 @@ function describeEach(kind) {
 
     const resolveCell = cell => {
       const m = cell.trim().match(/^\0VAL(?<val>\d+)\0$/u);
-      if (m) {
-        return values[Number(m.groups.val)];
-      }
-
-      return cell.trim();
+      return m ? values[Number(m.groups.val)] : cell.trim();
     };
 
     const rowOf = line => {

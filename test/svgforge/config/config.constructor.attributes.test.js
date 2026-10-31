@@ -1,13 +1,13 @@
 
 import path from 'node:path';
 import SVGSpriterConfig from '../../../lib/svgforge/config.js';
-import {paths} from '../../helpers/constants.js';
+import {paths} from '../../../test-utils/constants.js';
 import {
   createMock,
   describe,
   expect,
   it,
-} from '../../helpers/harness.js';
+} from '../../../test-utils/harness.js';
 
 describe('testing initial attributes', () => {
   it('should set dest from config.dest', () => {
