@@ -2,6 +2,8 @@
 
 [![npm version][npm-image]][npm-url] [![Build Status][ci-image]][ci-url] [![Coverage Status][coveralls-image]][coveralls-url] [![npm downloads][npm-downloads]][npm-url] [![Socket][socket-image]][socket-url]
 
+**If you need only a CLI, there's a separate project [svgforge-cli](https://github.com/svgforge/svgforge-cli)**, you only have to install the cli but the documention here may be still relevant.
+
 svgforge is a low-level [Node.js](https://nodejs.org/) module that **takes a bunch of [SVG](https://www.w3.org/TR/SVG/) files**, optimizes them and bakes them into **SVG sprites** of several types:
 
 * **view**: tiled sprites with **pre-defined `<view>` elements**, useful for foreground images via [SVG fragment identifiers](https://css-tricks.com/svg-fragment-identifiers-work/),
@@ -9,7 +11,7 @@ svgforge is a low-level [Node.js](https://nodejs.org/) module that **takes a bun
 * **symbol**: sprites using the **`<symbol>` element**, referenced via `<use href="#id">` (inline) or `href="sprite.svg#id"` (external) — the modern, more convenient variant,
 * **defs**: sprites using the **`<defs>` element**, the same technique as `<symbol>`, but with the `viewBox` duplicated on every `<use>`.
 
-You can explore the API with [DeepWiki](https://deepwiki.com/svgforge/svgforge), which can also help you create a configuration file or short script for building the icons. If you need a CLI, there's a separate project [svgforge-cli](https://github.com/svgforge/svgforge-cli).
+You can explore the API with [DeepWiki](https://deepwiki.com/svgforge/svgforge), which can also help you create a configuration file or short script for building the icons.
 
 There is also a Github page, with some [tutorials how to use svgforge](https://svgforge.github.io) and related projects.
 
@@ -34,8 +36,8 @@ The idea is to have it as a ***drop-in replacement of svg-sprite***, with the ex
 * Replace cssom with css-tree because the package is not maintained anymore.
 * Replace lodash with native ES6 + utility functions
 * Replace mustache with ventojs templates.
-* Remove support for the sprite technique (CSS background position). I've found it antique and not required anymore and it simplifies the code a lot! If you want to use icons as `background-image` you can use the `stack` mode, and then: `background: url(icon.svg#ID)`. See here: https://css-tricks.com/svg-fragment-identifiers-work/#syntax-for-css
-* Improved example templates with copy id button for each icon
+* **Remove support for the sprite technique** (CSS background position). I've found it antique and not required anymore and it simplifies the code a lot! If you want to use icons as `background-image` you can use the `stack` mode, and then: `background: url(icon.svg#ID)`. See here: https://css-tricks.com/svg-fragment-identifiers-work/#syntax-for-css
+* Improved example templates with copy id button for each icon, using a `twig` compatible syntax.
 * Finally all tests are fixed with over 90% coverage and use [Node.js's native test runner](https://nodejs.org/api/test.html) instead of Jest
 * The CLI now has tests.
 
@@ -62,7 +64,7 @@ For an up-to-date list of browsers supporting [SVG fragment identifiers](https:/
   * [Tweaking and adding output formats](docs/templating.md)
 * [Command line usage](#command-line-usage)
 * [Known problems / To-do](#known-problems--to-do)
-  * [Postponed changes](docs/TODO.md)
+  * [Roadmap](docs/roadmap.md)
 * [Changelog](CHANGELOG.md)
 * [Legal](#legal)
 
@@ -403,7 +405,7 @@ Please refer to the [CLI guide](https://github.com/svgforge/svgforge-cli/docs/co
 
 * SVGO does not minify element IDs when there are `<style>` or `<script>` elements contained in the file
 
-See [`docs/TODO.md`](docs/TODO.md) for changes that are planned but deliberately postponed —
+See [`docs/roadmap.md`](docs/roadmap.md) for open items and postponed changes —
 for example making the optional [`@resvg/resvg-js`](https://www.npmjs.com/package/@resvg/resvg-js)
 dimension fallback an optional peer dependency, which is a breaking change and therefore
 targeted at **4.x**.

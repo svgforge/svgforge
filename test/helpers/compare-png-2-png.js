@@ -4,7 +4,7 @@ import path from 'node:path';
 import {PNG} from 'pngjs';
 import pixelmatch from 'pixelmatch';
 
-const MAX_MISMATCH = 130;
+const MAX_MISMATCH = 5;
 
 /**
  Writes the diff PNG to disk alongside the source.
@@ -42,12 +42,6 @@ export default async function comparePng2Png(input, expected) {
       // default; `false` restores the pre-v7 (v5) behavior of blending against
       // plain white that the expected snapshots were generated with.
       checkerboard: false,
-      // Thin lines (e.g. bus windows) get anti-aliased slightly darker by the
-      // newer Chromium than the v5-era expected snapshots (~100px, spread over
-      // the bottom edge). Only visible at extreme zoom. The default v7
-      // tolerance (5) was too strict for this, so raise it to 130. This is a
-      // deliberate, documented allowance for the AA rendering-version drift;
-      // real differences are still caught well above this threshold.
     },
   );
 
