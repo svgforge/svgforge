@@ -24,23 +24,9 @@ const xoConfig = [
     name: 'svgforge/test-overrides',
     files: ['test/**', 'test/helpers/**'],
     rules: {
-      'jsdoc/require-returns': 'off',
+      // Helpers live under `test/`, so every helper import contains a `test`
+      // path segment. The rule has no options to narrow that check.
       'node-test/no-import-test-files': 'off',
-      'node-test/prefer-mock-call-count': 'off',
-      'unicorn/prefer-early-return': 'off',
-      'unicorn/prefer-ternary': 'off',
-      'unicorn/prefer-combined-guards': 'off',
-    },
-  },
-  {
-    name: 'svgforge/lib-overrides',
-    files: ['lib/**'],
-    rules: {
-      'unicorn/prefer-early-return': 'off',
-      'unicorn/prefer-ternary': 'off',
-      'unicorn/prefer-continue': 'off',
-      'unicorn/prefer-simple-condition-first': 'off',
-      'unicorn/no-immediate-mutation': 'off',
     },
   },
   {
