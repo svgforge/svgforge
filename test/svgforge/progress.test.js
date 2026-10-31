@@ -1,16 +1,16 @@
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import SVGSpriter from '../../lib/svgforge.js';
-import {addFixtureFiles} from '../helpers/add-files.js';
-import {constants} from '../helpers/test-configs.js';
-import {paths} from '../helpers/constants.js';
-import removeTmpPath from '../helpers/remove-temp-path.js';
+import {addFixtureFiles} from '../../test-utils/add-files.js';
+import {constants} from '../../test-utils/fixture-configs.js';
+import {paths} from '../../test-utils/constants.js';
+import removeTmpPath from '../../test-utils/remove-temp-path.js';
 import {
   createMock,
   describe,
   expect,
   it,
-} from '../helpers/harness.js';
+} from '../../test-utils/harness.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

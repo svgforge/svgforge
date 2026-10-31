@@ -5,7 +5,7 @@ import {
   describe,
   expect,
   it,
-} from '../../helpers/harness.js';
+} from '../../../test-utils/harness.js';
 
 describe('testing svg SVGSpriterConfig.constructor', () => {
   it('should merge config.svg', () => {

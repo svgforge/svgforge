@@ -1,6 +1,6 @@
 
 import SVGSpriterConfig from '../../../lib/svgforge/config.js';
-import {describe, expect, it} from '../../helpers/harness.js';
+import {describe, expect, it} from '../../../test-utils/harness.js';
 
 describe('testing SVGSpriterConfig shape.spacing', () => {
   const DEFAULT_SPACING = {

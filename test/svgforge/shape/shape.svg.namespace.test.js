@@ -10,7 +10,7 @@ import {
   expect,
   it,
   spyOn,
-} from '../../helpers/harness.js';
+} from '../../../test-utils/harness.js';
 
 const mockMinifyBlock = createMock().mockReturnValue({css: ''});
 setDependency(dependencyKeys.csso, {minifyBlock: mockMinifyBlock});

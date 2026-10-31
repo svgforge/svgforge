@@ -8,7 +8,7 @@ import {
   expect,
   it,
   spyOn,
-} from '../helpers/harness.js';
+} from '../../test-utils/harness.js';
 
 describe('testing SVGSprite', () => {
   describe('testing initial settings', () => {

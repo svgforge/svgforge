@@ -60,9 +60,9 @@ the row layout of `<view>` lives in `mode/view-layout.js`.
 ## Tests
 
 - Test file name = unit under test; the tree mirrors `lib/`.
-- Fixtures in `test/fixture/`, helpers in `test/helpers/`.
+- Fixtures in `test/fixture/`, helpers in `test-utils/`.
 - The visual comparison tolerance is 5 pixels (`MAX_MISMATCH` in
-  `test/helpers/compare-png-2-png.js`).
+  `test-utils/compare-png-2-png.js`).
 
 ## JSDoc and comments
 

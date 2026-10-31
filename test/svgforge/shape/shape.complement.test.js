@@ -13,7 +13,7 @@ import {
   it,
   restoreAllMocks,
   spyOn,
-} from '../../helpers/harness.js';
+} from '../../../test-utils/harness.js';
 
 const TEST_SPRITER = {
   config: {

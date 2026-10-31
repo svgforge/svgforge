@@ -11,7 +11,7 @@ import {
   deepMerge,
   escapeHtml,
 } from '../../../lib/svgforge/utils/index.js';
-import {describe, expect, it} from '../../helpers/harness.js';
+import {describe, expect, it} from '../../../test-utils/harness.js';
 
 describe('utils', () => {
   describe('isFunction', () => {

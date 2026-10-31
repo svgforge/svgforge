@@ -10,7 +10,7 @@ import {
   describe,
   expect,
   it,
-} from '../../helpers/harness.js';
+} from '../../../test-utils/harness.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

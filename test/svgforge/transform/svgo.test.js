@@ -9,7 +9,7 @@ import {
   expect,
   it,
   restoreAllMocks,
-} from '../../helpers/harness.js';
+} from '../../../test-utils/harness.js';
 
 const TEST_SVG = '<svg></svg>';
 

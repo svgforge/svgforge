@@ -6,7 +6,7 @@ import {
   describe,
   expect,
   it,
-} from '../../helpers/harness.js';
+} from '../../../test-utils/harness.js';
 
 const temporaryPath = fs.mkdtempSync(path.join(os.tmpdir(), 'svgforge-template-'));
 

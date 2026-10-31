@@ -12,7 +12,7 @@ import {
   expect,
   it,
   spyOn,
-} from '../helpers/harness.js';
+} from '../../test-utils/harness.js';
 
 /* eslint-disable max-nested-callbacks -- Mock implementations of the queued shape/process callbacks are intentionally nested to model the async event flow under test. */
 

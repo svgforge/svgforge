@@ -21,15 +21,6 @@ const xoConfig = [
     },
   },
   {
-    name: 'svgforge/test-overrides',
-    files: ['test/**', 'test/helpers/**'],
-    rules: {
-      // Helpers live under `test/`, so every helper import contains a `test`
-      // path segment. The rule has no options to narrow that check.
-      'node-test/no-import-test-files': 'off',
-    },
-  },
-  {
     name: 'svgforge/ignore-non-code',
     ignores: [
       '**/*.md',
