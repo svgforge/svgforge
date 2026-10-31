@@ -14,23 +14,7 @@ Open items and postponed changes. Finished work is in `git log`, not here.
 | JSDoc accuracy | Types are lint-checked for existence, not correctness (`@param {Array} files` for a map) |
 | xo `max-nested-calls` | Raised to 6 for the render and mode call chains; the default is 3. Revisit once the `.call(this)` delegation is replaced (4.x) |
 | xo `prefer-private-class-fields` | Off because base classes dispatch on overridable `_` members. Re-enable per file once modes use composition; `#` stays truly private |
-
-## 3.2.0 — Retire the test harness shim
-
-`test-utils/harness.js` (994 lines) provides `expect()`, snapshots, mocks and
-custom matchers on top of `node:test`. Internal only: the package ships `lib/`
-and `tmpl/` only, so this is a minor release, but the work covers all 42 test
-files:
-
-- 665 `expect()` calls → `node:assert/strict`
-- 271 asymmetric matchers (`expect.any`, `expect.objectContaining`, …) → predicate helpers
-- 179 `createMock()` and 56 `spyOn()` call sites → `mock.fn()` / `mock.method()`; one-shot chaining becomes explicit call sequences
-- four `toMatchSnapshot()` calls → `t.assert.snapshot()` with the test context
-- seven calls to the three custom matchers (`toBeVisuallyEqualTo`, `toBeVisuallyCorrectAsHTMLTo`, `toBeDefaultLogger`) → async helpers
-
-Proceed file by file, keeping `npx xo` clean and the suite green after each
-step; the visual tests are the risky part. `test-utils/` keeps the remaining
-helpers (`add-files`, `compare-*`, `fixture-configs`, …).
+| xo `prefer-context-mock` | Off in `test/**` because the suite uses module-scope and shared mocks (`mock.fn`/`mock.method`) that a test context cannot own; revisit once tests own all mocks |
 
 ## 4.x — `@resvg/resvg-js`
 

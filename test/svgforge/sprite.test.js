@@ -1,169 +1,139 @@
 
 import {Buffer} from 'node:buffer';
+import assert from 'node:assert/strict';
+import {describe, it, mock} from 'node:test';
+import {isDeepStrictEqual} from 'node:util';
 import File from 'vinyl';
 import SVGSprite from '../../lib/svgforge/sprite.js';
-import {
-  createMock,
-  describe,
-  expect,
-  it,
-  spyOn,
-} from '../../test-utils/harness.js';
 
 describe('testing SVGSprite', () => {
   describe('testing initial settings', () => {
     it('should set initial attributes', () => {
-      expect.hasAssertions();
-
-      const TEST_TRANSFORM = [createMock()];
+      const TEST_TRANSFORM = [mock.fn()];
       const sprite = new SVGSprite('', '', {}, false, TEST_TRANSFORM);
 
-      expect(sprite.transform).toBe(TEST_TRANSFORM);
-      expect(sprite.content).toStrictEqual([]);
-      expect(sprite._serialized).toBeNull();
+      assert.strictEqual(sprite.transform, TEST_TRANSFORM);
+      assert.deepStrictEqual(sprite.content, []);
+      assert.strictEqual(sprite._serialized, null);
 
-      expect(sprite.DEFAULT_SVG_NAMESPACE).toBe('http://www.w3.org/2000/svg');
-      expect(sprite.XLINK_NAMESPACE).toBe('http://www.w3.org/1999/xlink');
+      assert.strictEqual(sprite.DEFAULT_SVG_NAMESPACE, 'http://www.w3.org/2000/svg');
+      assert.strictEqual(sprite.XLINK_NAMESPACE, 'http://www.w3.org/1999/xlink');
     });
 
     it('should set xmlDeclaration', () => {
-      expect.hasAssertions();
-
       const TEST_XML_DECLARATION = 'xml';
       const sprite = new SVGSprite(TEST_XML_DECLARATION, '', {}, false, []);
 
-      expect(sprite.xmlDeclaration).toBe(TEST_XML_DECLARATION);
+      assert.strictEqual(sprite.xmlDeclaration, TEST_XML_DECLARATION);
     });
 
     it('should set empty xmlDeclaration', () => {
-      expect.hasAssertions();
-
       const sprite = new SVGSprite(false, '', {}, false, []);
 
-      expect(sprite.xmlDeclaration).toBe('');
+      assert.strictEqual(sprite.xmlDeclaration, '');
     });
 
     it('should set doctypeDeclaration', () => {
-      expect.hasAssertions();
-
       const TEST_DOCTYPE_DECLARATION = 'doctype';
       const sprite = new SVGSprite('', TEST_DOCTYPE_DECLARATION, {}, false, []);
 
-      expect(sprite.doctypeDeclaration).toBe(TEST_DOCTYPE_DECLARATION);
+      assert.strictEqual(sprite.doctypeDeclaration, TEST_DOCTYPE_DECLARATION);
     });
 
     it('should set empty doctypeDeclaration', () => {
-      expect.hasAssertions();
-
       const sprite = new SVGSprite(false, false, {}, false, []);
 
-      expect(sprite.doctypeDeclaration).toBe('');
+      assert.strictEqual(sprite.doctypeDeclaration, '');
     });
 
     it('should add namespaces', () => {
-      expect.hasAssertions();
-
       const sprite = new SVGSprite(false, false, {}, true, []);
 
-      expect(sprite.rootAttributes.xmlns).toBe(sprite.DEFAULT_SVG_NAMESPACE);
-      expect(sprite.rootAttributes['xmlns:xlink']).toBe(sprite.XLINK_NAMESPACE);
+      assert.strictEqual(sprite.rootAttributes.xmlns, sprite.DEFAULT_SVG_NAMESPACE);
+      assert.strictEqual(sprite.rootAttributes['xmlns:xlink'], sprite.XLINK_NAMESPACE);
     });
 
     it('should not add namespaces', () => {
-      expect.hasAssertions();
-
       const sprite = new SVGSprite(false, false, {}, false, []);
 
-      expect(sprite.rootAttributes).not.toHaveProperty('xmlns');
-      expect(sprite.rootAttributes).not.toHaveProperty('xmlns:xlink');
+      assert.ok(!Object.hasOwn(sprite.rootAttributes, 'xmlns'));
+      assert.ok(!Object.hasOwn(sprite.rootAttributes, 'xmlns:xlink'));
     });
   });
 
   describe('testing add()', () => {
     it('should push to content if array is passed', () => {
-      expect.hasAssertions();
-
       const TEST_CONTENT = ['<svg/>'];
       const sprite = new SVGSprite(false, false, {}, false, []);
 
       sprite.add(TEST_CONTENT);
 
-      expect(sprite.content).toStrictEqual(TEST_CONTENT);
-      expect(sprite._serialized).toBeNull();
+      assert.deepStrictEqual(sprite.content, TEST_CONTENT);
+      assert.strictEqual(sprite._serialized, null);
     });
 
-    it.each([false, true, {}, createMock(), Symbol(''), 1, null, undefined, 'string'])('should not push to content if %p passed', parameter => {
-      expect.hasAssertions();
+    for (const parameter of [false, true, {}, mock.fn(), Symbol(''), 1, null, undefined, 'string']) {
+      it(`should not push to content if ${String(parameter)} passed`, () => {
+        const sprite = new SVGSprite(false, false, {}, false, []);
 
-      const sprite = new SVGSprite(false, false, {}, false, []);
+        sprite.add(parameter);
 
-      sprite.add(parameter);
-
-      expect(sprite.content).toStrictEqual([parameter]);
-      expect(sprite._serialized).toBeNull();
-    });
+        assert.deepStrictEqual(sprite.content, [parameter]);
+        assert.strictEqual(sprite._serialized, null);
+      });
+    }
   });
 
   describe('testing toString()', () => {
     it('should return serialized content', () => {
-      expect.hasAssertions();
-
       const TEST_CONTENT = 'test content';
       const sprite = new SVGSprite(false, false, {}, false, []);
 
       sprite._serialized = TEST_CONTENT;
 
-      expect(sprite.toString()).toBe(TEST_CONTENT);
+      assert.strictEqual(sprite.toString(), TEST_CONTENT);
     });
 
     it('should serialize according to rootAttributes', () => {
-      expect.hasAssertions();
-
       const TEST_ROOT_ATTRS = {ATTR_1: 1, ATTR_2: 2};
       const sprite = new SVGSprite(false, false, TEST_ROOT_ATTRS, false, []);
       sprite.content = ['content'];
       const expected = `<svg ATTR_1="1" ATTR_2="2">${sprite.content[0]}</svg>`;
 
-      expect(sprite.toString()).toBe(expected);
-      expect(sprite._serialized).toBe(expected);
+      assert.strictEqual(sprite.toString(), expected);
+      assert.strictEqual(sprite._serialized, expected);
     });
 
     it('should escape special characters in root attributes', () => {
-      expect.hasAssertions();
-
       const sprite = new SVGSprite(false, false, {title: 'A&B <tag> "q" \'s\''}, false, []);
       sprite.content = ['content'];
       const expected = '<svg title="A&amp;B &lt;tag&gt; &quot;q&quot; &#39;s&#39;">content</svg>';
 
-      expect(sprite.toString()).toBe(expected);
+      assert.strictEqual(sprite.toString(), expected);
     });
 
     it('should transform svg in series', () => {
-      expect.hasAssertions();
-
-      const TEST_TRANSFORM = [createMock().mockReturnValueOnce(false), createMock().mockReturnValueOnce('TEST')];
+      const TEST_TRANSFORM = [mock.fn(() => (false)), mock.fn(() => ('TEST'))];
       const sprite = new SVGSprite(false, false, {}, false, TEST_TRANSFORM);
       const expected = 'TEST';
 
-      expect(sprite.toString()).toBe(expected);
-      expect(sprite._serialized).toBe(expected);
+      assert.strictEqual(sprite.toString(), expected);
+      assert.strictEqual(sprite._serialized, expected);
 
-      expect(TEST_TRANSFORM[0]).toHaveBeenCalledWith('<svg></svg>');
-      expect(TEST_TRANSFORM[1]).toHaveBeenCalledWith('');
+      assert.ok(TEST_TRANSFORM[0].mock.calls.some(call => isDeepStrictEqual(call.arguments, ['<svg></svg>'])), 'expected a matching call');
+      assert.ok(TEST_TRANSFORM[1].mock.calls.some(call => isDeepStrictEqual(call.arguments, [''])), 'expected a matching call');
     });
   });
 
   describe('testing toFile()', () => {
     it('should return file', () => {
-      expect.hasAssertions();
-
       const TEST_CONTENT = 'TEST';
       const TEST_BASE = 'TEST_BASE';
       const TEST_PATH = 'TEST_PATH';
       const sprite = new SVGSprite(false, false, {}, false, []);
-      spyOn(sprite, 'toString').mockReturnValueOnce(TEST_CONTENT);
+      mock.method(sprite, 'toString').mock.mockImplementationOnce(() => (TEST_CONTENT));
 
-      expect(sprite.toFile(TEST_BASE, TEST_PATH)).toStrictEqual(new File({
+      assert.deepStrictEqual(sprite.toFile(TEST_BASE, TEST_PATH), new File({
         base: TEST_BASE,
         path: TEST_PATH,
         contents: Buffer.from(TEST_CONTENT),

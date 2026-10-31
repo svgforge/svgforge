@@ -1,25 +1,17 @@
 
+import assert from 'node:assert/strict';
+import {describe, it, mock} from 'node:test';
 import SVGSpriterConfig from '../../../lib/svgforge/config.js';
-import {
-  createMock,
-  describe,
-  expect,
-  it,
-} from '../../../test-utils/harness.js';
 
 describe('testing svg SVGSpriterConfig.constructor', () => {
   it('should merge config.svg', () => {
-    expect.hasAssertions();
-
     const TEST_SVG = {TEST: 1, TEST_2: 2};
     const config = new SVGSpriterConfig({svg: TEST_SVG});
 
-    expect(config.svg).toStrictEqual(expect.objectContaining(TEST_SVG));
+    assert.partialDeepStrictEqual(config.svg, TEST_SVG);
   });
 
   it('should set default object if provided falsy value', () => {
-    expect.hasAssertions();
-
     const DEFAULT_SVG_CONFIG = {
       doctypeDeclaration: true,
       xmlDeclaration: true,
@@ -33,136 +25,108 @@ describe('testing svg SVGSpriterConfig.constructor', () => {
 
     const config = new SVGSpriterConfig({svg: false});
 
-    expect(config.svg).toStrictEqual(expect.objectContaining(DEFAULT_SVG_CONFIG));
+    assert.partialDeepStrictEqual(config.svg, DEFAULT_SVG_CONFIG);
   });
 
-  describe.each(['xmlDeclaration', 'doctypeDeclaration', 'dimensionAttributes'])('testing %p attr', field => {
-    it('should set the passed value', () => {
-      expect.hasAssertions();
+  for (const field of ['xmlDeclaration', 'doctypeDeclaration', 'dimensionAttributes']) {
+    describe(`testing ${field} attr`, () => {
+      it('should set the passed value', () => {
+        const TEST_VAR = 'test-var';
+        const config = new SVGSpriterConfig({svg: {[field]: TEST_VAR}});
 
-      const TEST_VAR = 'test-var';
-      const config = new SVGSpriterConfig({svg: {[field]: TEST_VAR}});
+        assert.strictEqual(config.svg[field], TEST_VAR);
+      });
 
-      expect(config.svg[field]).toBe(TEST_VAR);
+      it('should set to true if not provided', () => {
+        const config = new SVGSpriterConfig({});
+
+        assert.strictEqual(config.svg[field], true);
+      });
+
+      it('should set to false if falsy value provided', () => {
+        const config = new SVGSpriterConfig({svg: {[field]: false}});
+
+        assert.strictEqual(config.svg[field], false);
+      });
     });
-
-    it('should set to true if not provided', () => {
-      expect.hasAssertions();
-
-      const config = new SVGSpriterConfig({});
-
-      expect(config.svg[field]).toBe(true);
-    });
-
-    it('should set to false if falsy value provided', () => {
-      expect.hasAssertions();
-
-      const config = new SVGSpriterConfig({svg: {[field]: false}});
-
-      expect(config.svg[field]).toBe(false);
-    });
-  });
+  }
 
   it('should set rootAttributes with passed value', () => {
-    expect.hasAssertions();
-
     const TEST_VAR = 'test-var';
     const config = new SVGSpriterConfig({svg: {rootAttributes: TEST_VAR}});
 
-    expect(config.svg.rootAttributes).toBe(TEST_VAR);
+    assert.strictEqual(config.svg.rootAttributes, TEST_VAR);
   });
 
   it('should set rootAttributes to {} if not provided', () => {
-    expect.hasAssertions();
-
     const config = new SVGSpriterConfig({});
 
-    expect(config.svg.rootAttributes).toStrictEqual({});
+    assert.deepStrictEqual(config.svg.rootAttributes, {});
   });
 
   it('should set rootAttributes to {} if falsy value provided', () => {
-    expect.hasAssertions();
-
     const config = new SVGSpriterConfig({svg: {rootAttributes: false}});
 
-    expect(config.svg.rootAttributes).toStrictEqual({});
+    assert.deepStrictEqual(config.svg.rootAttributes, {});
   });
 
   it('should set precision to -1 if not provided', () => {
-    expect.hasAssertions();
-
     const config = new SVGSpriterConfig();
 
-    expect(config.svg.precision).toBe(-1);
+    assert.strictEqual(config.svg.precision, -1);
   });
 
   it('should set precision to -1 if provided falsy value', () => {
-    expect.hasAssertions();
-
     const config = new SVGSpriterConfig({svg: {precision: false}});
 
-    expect(config.svg.precision).toBe(-1);
+    assert.strictEqual(config.svg.precision, -1);
   });
 
   it('should set precision to provided value', () => {
-    expect.hasAssertions();
-
     const config = new SVGSpriterConfig({svg: {precision: 10}});
 
-    expect(config.svg.precision).toBe(10);
+    assert.strictEqual(config.svg.precision, 10);
   });
 
   it('should set precision to -1 if provided value less than -1', () => {
-    expect.hasAssertions();
-
     const config = new SVGSpriterConfig({svg: {precision: -10}});
 
-    expect(config.svg.precision).toBe(-1);
+    assert.strictEqual(config.svg.precision, -1);
   });
 
   describe('testing svg.transform', () => {
     it('should set empty array if not provided', () => {
-      expect.hasAssertions();
-
       const config = new SVGSpriterConfig({});
 
-      expect(config.svg.transform).toStrictEqual([]);
+      assert.deepStrictEqual(config.svg.transform, []);
     });
 
     it('should fill with functions if provided', () => {
-      expect.hasAssertions();
-
-      const TEST_TRANSFORMS = [createMock(), createMock()];
+      const TEST_TRANSFORMS = [mock.fn(), mock.fn()];
       const config = new SVGSpriterConfig({svg: {transform: TEST_TRANSFORMS}});
 
-      expect(config.svg.transform).toStrictEqual(TEST_TRANSFORMS);
+      assert.deepStrictEqual(config.svg.transform, TEST_TRANSFORMS);
     });
 
     it('should set empty array if incorrect config provided', () => {
-      expect.hasAssertions();
-
       const TEST_TRANSFORMS = [1, 'test'];
       const config = new SVGSpriterConfig({svg: {transform: TEST_TRANSFORMS}});
 
-      expect(config.svg.transform).toStrictEqual([]);
+      assert.deepStrictEqual(config.svg.transform, []);
     });
 
     it('should set array of provided function', () => {
-      expect.hasAssertions();
-
-      const TEST_TRANSFORM = createMock();
+      const TEST_TRANSFORM = mock.fn();
       const config = new SVGSpriterConfig({svg: {transform: TEST_TRANSFORM}});
 
-      expect(config.svg.transform).toStrictEqual([TEST_TRANSFORM]);
+      assert.deepStrictEqual(config.svg.transform, [TEST_TRANSFORM]);
     });
 
     it('should throw an error if wrong type is passed', () => {
-      expect.hasAssertions();
-
-      expect(() => {
+      assert.throws(() => {
         // eslint-disable-next-line no-new
         new SVGSpriterConfig({svg: {transform: 42}});
-      }).toThrow(TypeError);
+      }, TypeError);
     });
   });
 });

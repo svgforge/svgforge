@@ -1,12 +1,12 @@
 
-import SVGSpriter from '../../../lib/svgforge.js';
+import assert from 'node:assert/strict';
 import {
   beforeEach,
   describe,
-  expect,
   it,
-  spyOn,
-} from '../../../test-utils/harness.js';
+  mock,
+} from 'node:test';
+import SVGSpriter from '../../../lib/svgforge.js';
 
 class TestError extends Error {}
 
@@ -22,25 +22,24 @@ describe('svg-sprite: errors', () => {
         symbol: true,
       },
     });
-    spyOn(spriter, '_layout').mockImplementation((_, cb) => {
+    mock.method(spriter, '_layout').mock.mockImplementation((_, cb) => {
       cb(new TestError(), {}, {});
     });
   });
 
   it('should throw error if compilation has failed in async mode', async () => {
-    expect.hasAssertions();
-    await expect(async () => {
+    await assert.rejects(async () => {
       await spriter.compileAsync();
-    }).rejects.toThrow(TestError);
+    }, TestError);
   });
 
-  it('should throw error if compilation has failed in callback mode', done => {
-    expect.hasAssertions();
+  it('should throw error if compilation has failed in callback mode', async () => {
+    await new Promise(resolve => {
+      spriter.compile(error => {
+        assert.ok(error instanceof TestError);
 
-    spriter.compile(error => {
-      expect(error).toBeInstanceOf(TestError);
-
-      done();
+        resolve();
+      });
     });
   });
 });

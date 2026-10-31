@@ -1,13 +1,13 @@
-import SVGSpriterConfig from '../../../lib/svgforge/config.js';
+import assert from 'node:assert/strict';
 import {
-  afterAll,
-  beforeAll,
-  createMock,
+  after as afterAll,
+  before as beforeAll,
   describe,
-  expect,
   it,
-  spyOn,
-} from '../../../test-utils/harness.js';
+  mock,
+} from 'node:test';
+import {isDeepStrictEqual} from 'node:util';
+import SVGSpriterConfig from '../../../lib/svgforge/config.js';
 
 describe('testing log', () => {
   const getLogger = () => ({
@@ -15,47 +15,43 @@ describe('testing log', () => {
     transports: [{
       level: 'info',
     }],
-    log: createMock(),
-    debug: createMock(),
-    info: createMock(),
-    verbose: createMock(),
-    warn: createMock(),
-    error: createMock(),
+    log: mock.fn(),
+    debug: mock.fn(),
+    info: mock.fn(),
+    verbose: mock.fn(),
+    warn: mock.fn(),
+    error: mock.fn(),
   });
 
   it('should keep a logger if it is passed as config.log', () => {
-    expect.hasAssertions();
-
     const TEST_LOGGER = getLogger();
     const config = new SVGSpriterConfig({
       log: TEST_LOGGER,
     });
 
-    expect(config.log).toStrictEqual(TEST_LOGGER);
+    assert.deepStrictEqual(config.log, TEST_LOGGER);
   });
 
   it('should call debug 6 times and verbose 1 time if shape has no meta and align', () => {
-    expect.hasAssertions();
-
     const TEST_LOGGER = getLogger();
 
-    spyOn(TEST_LOGGER, 'debug');
-    spyOn(TEST_LOGGER, 'verbose');
+    mock.method(TEST_LOGGER, 'debug');
+    mock.method(TEST_LOGGER, 'verbose');
 
     // eslint-disable-next-line no-new
     new SVGSpriterConfig({
       log: TEST_LOGGER,
     });
 
-    expect(TEST_LOGGER.debug).toHaveBeenCalledTimes(6);
-    expect(TEST_LOGGER.debug.mock.calls[0][0]).toBe('Started logging');
-    expect(TEST_LOGGER.debug.mock.calls[1][0]).toBe('Prepared general options');
-    expect(TEST_LOGGER.debug.mock.calls[2][0]).toBe('Prepared `shape` options');
-    expect(TEST_LOGGER.debug.mock.calls[3][0]).toBe('Prepared `svg` options');
-    expect(TEST_LOGGER.debug.mock.calls[4][0]).toBe('Prepared `mode` options');
-    expect(TEST_LOGGER.debug.mock.calls[5][0]).toBe('Prepared `variables` options');
-    expect(TEST_LOGGER.verbose).toHaveBeenCalledTimes(1);
-    expect(TEST_LOGGER.verbose).toHaveBeenCalledWith('Initialized spriter configuration');
+    assert.strictEqual(TEST_LOGGER.debug.mock.callCount(), 6);
+    assert.strictEqual(TEST_LOGGER.debug.mock.calls[0].arguments[0], 'Started logging');
+    assert.strictEqual(TEST_LOGGER.debug.mock.calls[1].arguments[0], 'Prepared general options');
+    assert.strictEqual(TEST_LOGGER.debug.mock.calls[2].arguments[0], 'Prepared `shape` options');
+    assert.strictEqual(TEST_LOGGER.debug.mock.calls[3].arguments[0], 'Prepared `svg` options');
+    assert.strictEqual(TEST_LOGGER.debug.mock.calls[4].arguments[0], 'Prepared `mode` options');
+    assert.strictEqual(TEST_LOGGER.debug.mock.calls[5].arguments[0], 'Prepared `variables` options');
+    assert.strictEqual(TEST_LOGGER.verbose.mock.callCount(), 1);
+    assert.ok(TEST_LOGGER.verbose.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['Initialized spriter configuration'])), 'expected a matching call');
   });
 
   describe('should create default logger', () => {
@@ -64,7 +60,7 @@ describe('testing log', () => {
     beforeAll(() => {
       // Suppressing console
       console._stdout = {
-        write: createMock(),
+        write: mock.fn(),
       };
     });
 
@@ -73,40 +69,39 @@ describe('testing log', () => {
       globalThis.console = originalConsole;
     });
 
-    it.each(['info', 'verbose', 'debug'])('non-silent with %p log level if passed config.log has %p value', logLevel => {
-      expect.hasAssertions();
+    for (const logLevel of ['info', 'verbose', 'debug']) {
+      it(`non-silent with ${logLevel} log level if passed config.log has ${logLevel} value`, () => {
+        const config = new SVGSpriterConfig({
+          log: logLevel,
+        });
 
-      const config = new SVGSpriterConfig({
-        log: logLevel,
+        assert.ok(Array.isArray(config.log.transports));
+        assert.strictEqual(config.log.transports.length, 1);
+        assert.strictEqual(config.log.transports[0].level, logLevel);
+        assert.strictEqual(config.log.transports[0].silent, false);
       });
-
-      expect(config.log).toBeDefaultLogger();
-      expect(config.log.transports[0].level).toBe(logLevel);
-      expect(config.log.transports[0].silent).toBe(false);
-    });
+    }
 
     it('non-silent with info level if passed truthy value', () => {
-      expect.hasAssertions();
-
       const config = new SVGSpriterConfig({
         log: true,
       });
 
-      expect(config.log).toBeDefaultLogger();
-      expect(config.log.transports[0].level).toBe('info');
-      expect(config.log.transports[0].silent).toBe(false);
+      assert.ok(Array.isArray(config.log.transports));
+      assert.strictEqual(config.log.transports.length, 1);
+      assert.strictEqual(config.log.transports[0].level, 'info');
+      assert.strictEqual(config.log.transports[0].silent, false);
     });
 
     it('silent with info level if passed falsy value', () => {
-      expect.hasAssertions();
-
       const config = new SVGSpriterConfig({
         log: false,
       });
 
-      expect(config.log).toBeDefaultLogger();
-      expect(config.log.transports[0].level).toBe('info');
-      expect(config.log.transports[0].silent).toBe(true);
+      assert.ok(Array.isArray(config.log.transports));
+      assert.strictEqual(config.log.transports.length, 1);
+      assert.strictEqual(config.log.transports[0].level, 'info');
+      assert.strictEqual(config.log.transports[0].silent, true);
     });
   });
 });

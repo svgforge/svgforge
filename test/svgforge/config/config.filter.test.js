@@ -1,11 +1,7 @@
 
+import assert from 'node:assert/strict';
+import {beforeEach, describe, it} from 'node:test';
 import SVGSpriterConfig from '../../../lib/svgforge/config.js';
-import {
-  beforeEach,
-  describe,
-  expect,
-  it,
-} from '../../../test-utils/harness.js';
 
 describe('testing filter', () => {
   let config;
@@ -16,51 +12,52 @@ describe('testing filter', () => {
   });
 
   it('should return empty object if empty object passed', () => {
-    expect.hasAssertions();
-    expect(config.filter({})).toStrictEqual({});
+    assert.deepStrictEqual(config.filter({}), {});
   });
 
-  it.each(modes)('should filter plainObjects and set %p mode if mode is not specified', mode => {
-    expect.hasAssertions();
-    expect(config.filter({
-      [mode]: {},
-    })).toStrictEqual({[mode]: {mode}});
-    expect(config.filter({
-      [mode]: true,
-    })).toStrictEqual({[mode]: {mode}});
-  });
+  for (const mode of modes) {
+    it(`should filter plainObjects and set ${mode} mode if mode is not specified`, () => {
+      assert.deepStrictEqual(config.filter({
+        [mode]: {},
+      }), {[mode]: {mode}});
+      assert.deepStrictEqual(config.filter({
+        [mode]: true,
+      }), {[mode]: {mode}});
+    });
+  }
 
-  it.each(modes)('should filter plainObjects and set mode %p if mode is specified', mode => {
-    expect.hasAssertions();
-    expect(config.filter({
-      view: {
-        mode,
-      },
-    })).toStrictEqual({view: {mode}});
-  });
+  for (const mode of modes) {
+    it(`should filter plainObjects and set mode ${mode} if mode is specified`, () => {
+      assert.deepStrictEqual(config.filter({
+        view: {
+          mode,
+        },
+      }), {view: {mode}});
+    });
+  }
 
   it('should ignore plainObjects with bad config', () => {
-    expect.hasAssertions();
-    expect(config.filter({
+    assert.deepStrictEqual(config.filter({
       view: {
         mode: 'nonsense',
       },
-    })).toStrictEqual({});
-    expect(config.filter({
+    }), {});
+    assert.deepStrictEqual(config.filter({
       nonsense: {},
-    })).toStrictEqual({});
+    }), {});
   });
 
-  it.each(modes)('should ignore if passed value is not object and not true', mode => {
-    expect.hasAssertions();
-    expect(config.filter({
-      [mode]: 'nonsense',
-    })).toStrictEqual({});
-    expect(config.filter({
-      [mode]: false,
-    })).toStrictEqual({});
-    expect(config.filter({
-      [mode]: Symbol('test'),
-    })).toStrictEqual({});
-  });
+  for (const mode of modes) {
+    it(`should ignore if passed value is not object and not true for ${mode}`, () => {
+      assert.deepStrictEqual(config.filter({
+        [mode]: 'nonsense',
+      }), {});
+      assert.deepStrictEqual(config.filter({
+        [mode]: false,
+      }), {});
+      assert.deepStrictEqual(config.filter({
+        [mode]: Symbol('test'),
+      }), {});
+    });
+  }
 });

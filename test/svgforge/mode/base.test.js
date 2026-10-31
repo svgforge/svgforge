@@ -5,30 +5,30 @@ import path from 'node:path';
 import {Buffer} from 'node:buffer';
 import process from 'node:process';
 import {fileURLToPath} from 'node:url';
+import assert from 'node:assert/strict';
+import {
+  afterEach,
+  describe,
+  it,
+  mock,
+} from 'node:test';
+import {isDeepStrictEqual} from 'node:util';
 import File from 'vinyl';
 import SVGSpriteBase from '../../../lib/svgforge/mode/base.js';
 import ArgumentError from '../../../lib/svgforge/errors/argument-error.js';
 import {dependencyKeys, setDependency, resetDependencies} from '../../../lib/deps.js';
-import {
-  afterEach,
-  createMock,
-  describe,
-  expect,
-  it,
-  restoreAllMocks,
-} from '../../../test-utils/harness.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 afterEach(() => {
-  restoreAllMocks();
+  mock.restoreAll();
   resetDependencies();
 });
 
 describe('testings SVGSpriteBase', () => {
   const TEST_MODE_NAME = 'base';
   const getClassAndInitFn = () => {
-    const initFn = createMock();
+    const initFn = mock.fn();
     return {
       cls: class TestMode extends SVGSpriteBase {
         _init() {
@@ -45,8 +45,6 @@ describe('testings SVGSpriteBase', () => {
 
   describe('testing constructor', () => {
     it('should set default values', () => {
-      expect.hasAssertions();
-
       const TEST_SPRITER = {
         config: {
           dest: '.',
@@ -54,7 +52,7 @@ describe('testings SVGSpriteBase', () => {
             spacing: [],
           },
         },
-        debug: createMock(),
+        debug: mock.fn(),
       };
       const TEST_CONFIG = {
         dest: '.',
@@ -66,26 +64,24 @@ describe('testings SVGSpriteBase', () => {
       const {cls, initFn} = getClassAndInitFn();
       const base = new cls(TEST_SPRITER, TEST_CONFIG, TEST_DATA, '');
 
-      expect(initFn).toHaveBeenCalledWith();
+      assert.ok(initFn.mock.calls.some(call => isDeepStrictEqual(call.arguments, [])), 'expected a matching call');
 
-      expect(base._spriter).toBe(TEST_SPRITER);
-      expect(base.config).toBe(TEST_CONFIG);
-      expect(base.data).toBe(TEST_DATA);
-      expect(base.data.mode).toBe(TEST_MODE_NAME);
-      expect(base.data.key).toBe(TEST_MODE_NAME);
+      assert.strictEqual(base._spriter, TEST_SPRITER);
+      assert.strictEqual(base.config, TEST_CONFIG);
+      assert.strictEqual(base.data, TEST_DATA);
+      assert.strictEqual(base.data.mode, TEST_MODE_NAME);
+      assert.strictEqual(base.data.key, TEST_MODE_NAME);
 
-      expect(base.config.dest).toBe(path.resolve(TEST_SPRITER.config.dest, TEST_CONFIG.dest));
-      expect(base.config.bust).toBe(false);
-      expect(base.config.prefix).toBe('1%s');
-      expect(base.config.sprite).toBe(path.resolve(TEST_CONFIG.dest, 'sprite.svg'));
-      expect(base._cssDest).toBe(TEST_CONFIG.dest);
-      expect(base.tmpl).toBe('common');
+      assert.strictEqual(base.config.dest, path.resolve(TEST_SPRITER.config.dest, TEST_CONFIG.dest));
+      assert.strictEqual(base.config.bust, false);
+      assert.strictEqual(base.config.prefix, '1%s');
+      assert.strictEqual(base.config.sprite, path.resolve(TEST_CONFIG.dest, 'sprite.svg'));
+      assert.strictEqual(base._cssDest, TEST_CONFIG.dest);
+      assert.strictEqual(base.tmpl, 'common');
     });
 
     describe('testing render', () => {
       it('should update config.render as expected', () => {
-        expect.hasAssertions();
-
         const TEST_SPRITER = {
           config: {
             dest: '.',
@@ -93,7 +89,7 @@ describe('testings SVGSpriteBase', () => {
               spacing: [],
             },
           },
-          debug: createMock(),
+          debug: mock.fn(),
         };
         const TEST_CONFIG = {
           dest: '.',
@@ -121,7 +117,7 @@ describe('testings SVGSpriteBase', () => {
         const {cls} = getClassAndInitFn();
         const base = new cls(TEST_SPRITER, TEST_CONFIG, TEST_DATA, '');
 
-        expect(base.config.render).toStrictEqual(expect.objectContaining({
+        assert.partialDeepStrictEqual(base.config.render, {
           png: {
             template: path.resolve(path.dirname(path.dirname(path.dirname(__dirname))), 'tmpl/common/sprite.png.vto'),
             dest: path.join(TEST_CONFIG.dest, 'sprite.png'),
@@ -138,17 +134,14 @@ describe('testings SVGSpriteBase', () => {
             dest: path.resolve(TEST_CONFIG.dest, 'here.webp'),
             template: path.resolve(path.dirname(path.dirname(path.dirname(__dirname))), 'tmpl/common/sprite.webp.vto'),
           },
-
-        }));
-        expect(base._cssDest).toBe(TEST_CONFIG.dest);
+        });
+        assert.strictEqual(base._cssDest, TEST_CONFIG.dest);
       });
     });
   });
 
   describe('testing _initData()', () => {
     it('should log', () => {
-      expect.hasAssertions();
-
       const TEST_SPRITER = {
         config: {
           dest: '.',
@@ -156,7 +149,7 @@ describe('testings SVGSpriteBase', () => {
             spacing: [],
           },
         },
-        debug: createMock(),
+        debug: mock.fn(),
       };
       const TEST_CONFIG = {
         dest: '.',
@@ -170,13 +163,12 @@ describe('testings SVGSpriteBase', () => {
       // eslint-disable-next-line no-new
       new cls(TEST_SPRITER, TEST_CONFIG, TEST_DATA, '');
 
-      expect(TEST_SPRITER.debug).toHaveBeenCalledWith('Created «%s» sprite instance («%s» mode)', TEST_MODE_NAME, TEST_MODE_NAME);
+      const expectedDebugArguments = ['Created «%s» sprite instance («%s» mode)', TEST_MODE_NAME, TEST_MODE_NAME];
+      assert.ok(TEST_SPRITER.debug.mock.calls.some(call => isDeepStrictEqual(call.arguments, expectedDebugArguments)), 'expected a matching call');
     });
 
     describe('if example passed', () => {
       it('should create default config if truthy value passed', () => {
-        expect.hasAssertions();
-
         const TEST_SPRITER = {
           config: {
             dest: '.',
@@ -184,7 +176,7 @@ describe('testings SVGSpriteBase', () => {
               spacing: [],
             },
           },
-          debug: createMock(),
+          debug: mock.fn(),
         };
         const TEST_CONFIG = {
           dest: '.',
@@ -197,16 +189,14 @@ describe('testings SVGSpriteBase', () => {
         const {cls} = getClassAndInitFn();
         const base = new cls(TEST_SPRITER, TEST_CONFIG, TEST_DATA, '');
 
-        expect(base.config.example).toStrictEqual({
+        assert.deepStrictEqual(base.config.example, {
           template: path.resolve(path.dirname(path.dirname(path.dirname(__dirname))), path.join('tmpl', TEST_MODE_NAME, 'sprite.vto')),
           dest: path.join(TEST_CONFIG.dest, `sprite.${TEST_MODE_NAME}.html`),
         });
-        expect(base.data.example).toBe('sprite.svg');
+        assert.strictEqual(base.data.example, 'sprite.svg');
       });
 
       it('should follow passed config', () => {
-        expect.hasAssertions();
-
         const TEST_SPRITER = {
           config: {
             dest: '.',
@@ -214,7 +204,7 @@ describe('testings SVGSpriteBase', () => {
               spacing: [],
             },
           },
-          debug: createMock(),
+          debug: mock.fn(),
         };
         const TEST_CONFIG = {
           dest: '.',
@@ -230,18 +220,16 @@ describe('testings SVGSpriteBase', () => {
         const {cls} = getClassAndInitFn();
         const base = new cls(TEST_SPRITER, TEST_CONFIG, TEST_DATA, '');
 
-        expect(base.config.example).toStrictEqual({
+        assert.deepStrictEqual(base.config.example, {
           template: path.resolve(process.cwd(), TEST_CONFIG.example.template),
           dest: path.resolve(TEST_CONFIG.dest, TEST_CONFIG.example.dest),
         });
 
-        expect(base.data.example).toBe('sprite.svg');
+        assert.strictEqual(base.data.example, 'sprite.svg');
       });
     });
 
     it('should reject an example value that is neither true nor an object', () => {
-      expect.hasAssertions();
-
       const TEST_SPRITER = {
         config: {
           dest: '.',
@@ -249,7 +237,7 @@ describe('testings SVGSpriteBase', () => {
             spacing: [],
           },
         },
-        debug: createMock(),
+        debug: mock.fn(),
       };
       const TEST_CONFIG = {
         dest: '.',
@@ -260,14 +248,12 @@ describe('testings SVGSpriteBase', () => {
 
       const {cls} = getClassAndInitFn();
 
-      expect(() => new cls(TEST_SPRITER, TEST_CONFIG, {}, '')).toThrow(ArgumentError);
+      assert.throws(() => new cls(TEST_SPRITER, TEST_CONFIG, {}, ''), ArgumentError);
     });
   });
 
   describe('testing _buildCSSResources', () => {
     it('should transform passed files', async () => {
-      expect.hasAssertions();
-
       const TEST_SPRITER = {
         config: {
           dest: '.',
@@ -276,8 +262,8 @@ describe('testings SVGSpriteBase', () => {
           },
         },
         _limit: 100,
-        debug: createMock(),
-        verbose: createMock(),
+        debug: mock.fn(),
+        verbose: mock.fn(),
       };
       const TEST_CONFIG = {
         dest: '.',
@@ -289,18 +275,20 @@ describe('testings SVGSpriteBase', () => {
       const base = new cls(TEST_SPRITER, TEST_CONFIG, {}, '');
 
       const TEST_FILES = {};
-      const testFn = createMock();
-      setDependency(dependencyKeys.templateRender, createMock().mockResolvedValueOnce('first').mockResolvedValueOnce('second').mockResolvedValueOnce(''));
+      const testFn = mock.fn();
+      const outputs = ['first', 'second'];
+      const renderTemplateMock = mock.fn(async () => outputs.shift() ?? '');
+      setDependency(dependencyKeys.templateRender, renderTemplateMock);
 
       base._buildCSSResources(TEST_FILES, testFn);
 
       await new Promise(setImmediate);
 
-      expect(testFn).toHaveBeenCalledWith(null, [undefined, undefined]);
-      expect(TEST_SPRITER.verbose).toHaveBeenCalledTimes(2);
-      expect(TEST_SPRITER.verbose.mock.calls[0]).toEqual(['Created «%s» stylesheet resource', 'svg']);
-      expect(TEST_SPRITER.verbose.mock.calls[1]).toEqual(['Created «%s» stylesheet resource', 'png']);
-      expect(TEST_FILES).toStrictEqual({
+      assert.ok(testFn.mock.calls.some(call => isDeepStrictEqual(call.arguments, [null, [undefined, undefined]])), 'expected a matching call');
+      assert.strictEqual(TEST_SPRITER.verbose.mock.callCount(), 2);
+      assert.deepStrictEqual(TEST_SPRITER.verbose.mock.calls[0].arguments, ['Created «%s» stylesheet resource', 'svg']);
+      assert.deepStrictEqual(TEST_SPRITER.verbose.mock.calls[1].arguments, ['Created «%s» stylesheet resource', 'png']);
+      assert.deepStrictEqual(TEST_FILES, {
         svg: new File({
           base: TEST_SPRITER.config.dest,
           path: path.join(TEST_CONFIG.dest, 'sprite.svg'),
@@ -317,8 +305,6 @@ describe('testings SVGSpriteBase', () => {
 
   describe('testing _buildHTMLExample()', () => {
     it('should add example in files', async () => {
-      expect.hasAssertions();
-
       const TEST_SPRITER = {
         config: {
           dest: '.',
@@ -327,8 +313,8 @@ describe('testings SVGSpriteBase', () => {
           },
         },
         _limit: 100,
-        debug: createMock(),
-        verbose: createMock(),
+        debug: mock.fn(),
+        verbose: mock.fn(),
       };
       const TEST_CONFIG = {
         dest: '.',
@@ -340,70 +326,60 @@ describe('testings SVGSpriteBase', () => {
       };
       const {cls} = getClassAndInitFn();
       const base = new cls(TEST_SPRITER, TEST_CONFIG, {}, '');
-      const testFn = createMock();
+      const testFn = mock.fn();
       const TEST_FILES = {};
 
-      setDependency(dependencyKeys.templateRender, createMock().mockResolvedValueOnce('test example'));
+      setDependency(dependencyKeys.templateRender, mock.fn(async () => ('test example')));
       base._buildHTMLExample(TEST_FILES, testFn);
 
       await new Promise(setImmediate);
 
-      expect(testFn).toHaveBeenCalledWith(null, base.data);
-      expect(TEST_FILES).toStrictEqual({
+      assert.ok(testFn.mock.calls.some(call => isDeepStrictEqual(call.arguments, [null, base.data])), 'expected a matching call');
+      assert.deepStrictEqual(TEST_FILES, {
         example: new File({
           base: TEST_SPRITER.config.dest,
           path: TEST_CONFIG.example.dest,
           contents: Buffer.from('test example'),
         }),
       });
-      expect(TEST_SPRITER.verbose).toHaveBeenCalledWith('Created «%s» HTML example file', TEST_MODE_NAME);
+      assert.ok(TEST_SPRITER.verbose.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['Created «%s» HTML example file', TEST_MODE_NAME])), 'expected a matching call');
     });
   });
 
   describe('testing _addUnit()', () => {
     it('should add unit to number if number is not zero', () => {
-      expect.hasAssertions();
-      expect(SVGSpriteBase.prototype._addUnit(1, 'px')).toBe('1px');
+      assert.strictEqual(SVGSpriteBase.prototype._addUnit(1, 'px'), '1px');
     });
 
     it('should not add anything if number is zero', () => {
-      expect.hasAssertions();
-      expect(SVGSpriteBase.prototype._addUnit(0, 'px')).toBe('0');
+      assert.strictEqual(SVGSpriteBase.prototype._addUnit(0, 'px'), '0');
     });
   });
 
   describe('testing declaration()', () => {
     it('should return local declaration if exists', () => {
-      expect.hasAssertions();
-
       const TEST_DECLARATION = 'test declaration';
 
-      expect(SVGSpriteBase.prototype.declaration(true, TEST_DECLARATION)).toBe(TEST_DECLARATION);
+      assert.strictEqual(SVGSpriteBase.prototype.declaration(true, TEST_DECLARATION), TEST_DECLARATION);
     });
 
     it('should return empty string if local declaration is falsy', () => {
-      expect.hasAssertions();
-      expect(SVGSpriteBase.prototype.declaration(true, false)).toBe('');
+      assert.strictEqual(SVGSpriteBase.prototype.declaration(true, false), '');
     });
 
     it('should return global if provided', () => {
-      expect.hasAssertions();
-
       const TEST_DECLARATION = 'test declaration';
 
-      expect(SVGSpriteBase.prototype.declaration(`${TEST_DECLARATION} `)).toBe(TEST_DECLARATION);
+      assert.strictEqual(SVGSpriteBase.prototype.declaration(`${TEST_DECLARATION} `), TEST_DECLARATION);
     });
 
     it('should return empty string if global declaration is not provided', () => {
-      expect.hasAssertions();
-      expect(SVGSpriteBase.prototype.declaration()).toBe('');
+      assert.strictEqual(SVGSpriteBase.prototype.declaration(), '');
     });
   });
 
   describe('testing _addCacheBusting()', () => {
     it('should add busting', () => {
-      expect.hasAssertions();
-
       const TEST_SPRITER = {
         config: {
           dest: '.',
@@ -412,8 +388,8 @@ describe('testings SVGSpriteBase', () => {
           },
         },
         _limit: 100,
-        debug: createMock(),
-        verbose: createMock(),
+        debug: mock.fn(),
+        verbose: mock.fn(),
       };
       const TEST_CONFIG = {
         dest: '.',
@@ -429,9 +405,9 @@ describe('testings SVGSpriteBase', () => {
       const TEST_SVG = 'svg';
       const TEST_SPRITE_MATCH = /sprite-[\da-z]{8}\.svg/u;
 
-      expect(base._addCacheBusting(TEST_SVG)).toStrictEqual(expect.stringMatching(TEST_SPRITE_MATCH));
-      expect(base.data.sprite).toStrictEqual(expect.stringMatching(TEST_SPRITE_MATCH));
-      expect(base.data.example).toStrictEqual(expect.stringMatching(TEST_SPRITE_MATCH));
+      assert.match(String(base._addCacheBusting(TEST_SVG)), TEST_SPRITE_MATCH);
+      assert.match(String(base.data.sprite), TEST_SPRITE_MATCH);
+      assert.match(String(base.data.example), TEST_SPRITE_MATCH);
     });
   });
 });

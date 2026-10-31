@@ -21,6 +21,17 @@ const xoConfig = [
     },
   },
   {
+    name: 'svgforge/tests',
+    files: ['test/**/*.js'],
+    rules: {
+      // The suite relies on module-scope and shared mocks (`mock.fn`,
+      // `mock.method`) that cannot be created from a test context. Files that
+      // patch shared objects restore them with `mock.restoreAll()` in
+      // `afterEach`.
+      'node-test/prefer-context-mock': 'off',
+    },
+  },
+  {
     name: 'svgforge/ignore-non-code',
     ignores: [
       '**/*.md',

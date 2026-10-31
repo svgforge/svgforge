@@ -9,16 +9,12 @@
 
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import assert from 'node:assert/strict';
+import {before as beforeAll, describe, it} from 'node:test';
 import SVGSpriter from '../../lib/svgforge.js';
 import {addFixtureFiles} from '../../test-utils/add-files.js';
 import {paths} from '../../test-utils/constants.js';
 import removeTmpPath from '../../test-utils/remove-temp-path.js';
-import {
-  beforeAll,
-  describe,
-  expect,
-  it,
-} from '../../test-utils/harness.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const fixtureDirectory = path.join(__dirname, '../fixture/svg/single');
@@ -61,26 +57,26 @@ describe('public API', () => {
 
   describe('entry point', () => {
     it('default-exports a factory function', () => {
-      expect(typeof SVGSpriter).toBe('function');
+      assert.strictEqual(typeof SVGSpriter, 'function');
     });
 
     it('creates a spriter when called with new, as documented', () => {
       const spriter = new SVGSpriter({dest: temporaryPath});
 
-      expect(typeof spriter.add).toBe('function');
-      expect(typeof spriter.compile).toBe('function');
-      expect(typeof spriter.compileAsync).toBe('function');
-      expect(typeof spriter.getShapes).toBe('function');
+      assert.strictEqual(typeof spriter.add, 'function');
+      assert.strictEqual(typeof spriter.compile, 'function');
+      assert.strictEqual(typeof spriter.compileAsync, 'function');
+      assert.strictEqual(typeof spriter.getShapes, 'function');
     });
 
     it('creates a spriter when called without new (upstream parity)', () => {
       // eslint-disable-next-line new-cap -- Deliberate: the default export is a factory callable with and without `new`, like upstream svg-sprite.
       const spriter = SVGSpriter({dest: temporaryPath});
 
-      expect(typeof spriter.add).toBe('function');
-      expect(typeof spriter.compile).toBe('function');
-      expect(typeof spriter.compileAsync).toBe('function');
-      expect(typeof spriter.getShapes).toBe('function');
+      assert.strictEqual(typeof spriter.add, 'function');
+      assert.strictEqual(typeof spriter.compile, 'function');
+      assert.strictEqual(typeof spriter.compileAsync, 'function');
+      assert.strictEqual(typeof spriter.getShapes, 'function');
     });
   });
 
@@ -88,13 +84,13 @@ describe('public API', () => {
     it('accepts (config, callback)', async () => {
       const {result} = await compileWithCallback(createSpriter(), {symbol: {}});
 
-      expect(Object.keys(result)).toEqual(['symbol']);
+      assert.deepStrictEqual(Object.keys(result), ['symbol']);
     });
 
     it('accepts (callback) and uses the configured modes', async () => {
       const {result} = await compileWithCallback(createSpriter({symbol: {}}));
 
-      expect(Object.keys(result)).toEqual(['symbol']);
+      assert.deepStrictEqual(Object.keys(result), ['symbol']);
     });
 
     it('emits "compiled" after a run', async () => {
@@ -105,7 +101,7 @@ describe('public API', () => {
 
       await compileWithCallback(spriter);
 
-      expect(await compiled).toBe(true);
+      assert.strictEqual(await compiled, true);
     });
   });
 
@@ -119,11 +115,9 @@ describe('public API', () => {
         stack: {},
       });
 
-      expect(Object.keys(result).toSorted((a, b) => a.localeCompare(b))).toEqual(['defs', 'stack', 'symbol', 'view']);
+      assert.deepStrictEqual(Object.keys(result).toSorted((a, b) => a.localeCompare(b)), ['defs', 'stack', 'symbol', 'view']);
 
-      for (const files of Object.values(result)) {
-        expect(Object.keys(files)).toContain('sprite');
-      }
+      assert.ok(Object.values(result).every(files => Object.keys(files).includes('sprite')));
     });
   });
 });

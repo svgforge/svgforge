@@ -1,13 +1,12 @@
 
 import path from 'node:path';
+import assert from 'node:assert/strict';
+import {describe, it} from 'node:test';
 import SVGSpriter from '../../../lib/svgforge.js';
 import {paths} from '../../../test-utils/constants.js';
-import {describe, expect, it} from '../../../test-utils/harness.js';
 
 describe('testing font face preserving', () => {
   it('preserve font-face in sprite', async () => {
-    expect.hasAssertions();
-
     const TEST_FONT_FACE = '@font-face{font-family:Montserrat-SemiBold;src:url() format(\'woff\');font-weight:600;font-style:normal;font-display:swap}';
     const spriter = new SVGSpriter({
       dest: '.',
@@ -37,6 +36,6 @@ describe('testing font face preserving', () => {
       },
     });
 
-    expect(result.symbol.sprite.contents.toString().trim()).toContain(TEST_FONT_FACE);
+    assert.ok(result.symbol.sprite.contents.toString().trim().includes(TEST_FONT_FACE));
   });
 });

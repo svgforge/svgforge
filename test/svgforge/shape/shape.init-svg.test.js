@@ -1,15 +1,16 @@
 
 import {Buffer} from 'node:buffer';
+import assert from 'node:assert/strict';
+import {
+  afterEach,
+  describe,
+  it,
+  mock,
+} from 'node:test';
+import {isDeepStrictEqual} from 'node:util';
 import File from 'vinyl';
 import createShape from '../../../lib/svgforge/shape/index.js';
 import {dependencyKeys, setDependency} from '../../../lib/deps.js';
-import {
-  afterEach,
-  createMock,
-  describe,
-  expect,
-  it,
-} from '../../../test-utils/harness.js';
 
 const TEST_SPRITER = {
   config: {
@@ -18,20 +19,18 @@ const TEST_SPRITER = {
       align: {},
     },
   },
-  verbose: createMock(),
+  verbose: mock.fn(),
 };
 
-const mockFixXMLString = createMock();
+const mockFixXMLString = mock.fn();
 setDependency(dependencyKeys.fixXmlString, mockFixXMLString);
 
 afterEach(() => {
-  mockFixXMLString.mockReset();
+  mockFixXMLString.mock.resetCalls();
 });
 
 describe('testing _initSVG()', () => {
   it('should call fixXMLString if passed svg is not normal', () => {
-    expect.hasAssertions();
-
     const TEST_FILE = new File({
       contents: Buffer.from('s'),
       path: '/test_base/test_path',
@@ -45,19 +44,17 @@ describe('testing _initSVG()', () => {
           align: {},
         },
       },
-      verbose: createMock(),
+      verbose: mock.fn(),
     };
 
-    mockFixXMLString.mockReturnValueOnce('<svg></svg>');
+    mockFixXMLString.mock.mockImplementationOnce(() => ('<svg></svg>'));
 
     createShape(TEST_FILE, spriter);
 
-    expect(mockFixXMLString).toHaveBeenCalledWith('s');
+    assert.ok(mockFixXMLString.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['s'])), 'expected a matching call');
   });
 
   it('should call fixXMLString and throw error if passed svg is not normal', () => {
-    expect.hasAssertions();
-
     const TEST_FILE = new File({
       contents: Buffer.from('s'),
       path: '/test_base/test_path',
@@ -71,21 +68,19 @@ describe('testing _initSVG()', () => {
           align: {},
         },
       },
-      verbose: createMock(),
+      verbose: mock.fn(),
     };
 
-    mockFixXMLString.mockReturnValueOnce('<');
+    mockFixXMLString.mock.mockImplementationOnce(() => ('<'));
 
-    expect(() => {
+    assert.throws(() => {
       createShape(TEST_FILE, spriter);
-    }).toThrow(new Error('Invalid SVG file'));
+    }, {message: 'Invalid SVG file'});
 
-    expect(mockFixXMLString).toHaveBeenCalledWith('s');
+    assert.ok(mockFixXMLString.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['s'])), 'expected a matching call');
   });
 
   it('should call fixXMLString and throw error if passed svg is not normal and fixXMLString thrown error', () => {
-    expect.hasAssertions();
-
     const TEST_FILE = new File({
       contents: Buffer.from('s'),
       path: '/test_base/test_path',
@@ -99,22 +94,20 @@ describe('testing _initSVG()', () => {
           align: {},
         },
       },
-      verbose: createMock(),
+      verbose: mock.fn(),
     };
 
-    mockFixXMLString.mockImplementation(() => {
+    mockFixXMLString.mock.mockImplementation(() => {
       throw new Error('error');
     });
 
-    expect(() => {
+    assert.throws(() => {
       createShape(TEST_FILE, spriter);
-    }).toThrow(new Error('Invalid SVG file (error)'));
-    expect(mockFixXMLString).toHaveBeenCalledWith('s');
+    }, {message: 'Invalid SVG file (error)'});
+    assert.ok(mockFixXMLString.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['s'])), 'expected a matching call');
   });
 
   it('should not call fixXMLString if passed svg is normal', () => {
-    expect.hasAssertions();
-
     const TEST_FILE = new File({
       contents: Buffer.from('<svg></svg>'),
       path: '/test_base/test_path',
@@ -128,17 +121,15 @@ describe('testing _initSVG()', () => {
           align: {},
         },
       },
-      verbose: createMock(),
+      verbose: mock.fn(),
     };
 
     createShape(TEST_FILE, spriter);
 
-    expect(mockFixXMLString).not.toHaveBeenCalled();
+    assert.strictEqual(mockFixXMLString.mock.callCount(), 0);
   });
 
   it('should fill entities', () => {
-    expect.hasAssertions();
-
     const TEST_ENTITIES = [
       '<!ENTITY name1 "value1">',
       '<!ENTITY name2 "value2">',
@@ -156,17 +147,15 @@ describe('testing _initSVG()', () => {
           align: {},
         },
       },
-      verbose: createMock(),
+      verbose: mock.fn(),
     };
 
     const shape = createShape(TEST_FILE, spriter);
 
-    expect(shape.svg.current.replace('\n', '')).toBe('<svg><!DOCTYPE <!ENTITY name1 "value1"><!ENTITY name2 "value2">>value1</svg>');
+    assert.strictEqual(shape.svg.current.replace('\n', ''), '<svg><!DOCTYPE <!ENTITY name1 "value1"><!ENTITY name2 "value2">>value1</svg>');
   });
 
   it('should throw error if bad svg parsed', () => {
-    expect.hasAssertions();
-
     const TEST_FILE = new File({
       contents: Buffer.from('<<ddfasdfasdf>>'),
       path: '/test_base/test_path',
@@ -180,17 +169,15 @@ describe('testing _initSVG()', () => {
           align: {},
         },
       },
-      verbose: createMock(),
+      verbose: mock.fn(),
     };
 
-    expect(() => {
+    assert.throws(() => {
       createShape(TEST_FILE, spriter);
-    }).toThrow('Invalid SVG file');
+    }, {message: 'Invalid SVG file (error)'});
   });
 
   it('should set width and height', () => {
-    expect.hasAssertions();
-
     const TEST_WIDTH = 200;
     const TEST_HEIGHT = 100;
 
@@ -207,18 +194,16 @@ describe('testing _initSVG()', () => {
           align: {},
         },
       },
-      verbose: createMock(),
+      verbose: mock.fn(),
     };
 
     const shape = createShape(TEST_FILE, spriter);
 
-    expect(shape.width).toBe(TEST_WIDTH);
-    expect(shape.height).toBe(TEST_HEIGHT);
+    assert.strictEqual(shape.width, TEST_WIDTH);
+    assert.strictEqual(shape.height, TEST_HEIGHT);
   });
 
   it('should set width, height and viewBox to false', () => {
-    expect.hasAssertions();
-
     const TEST_FILE = new File({
       contents: Buffer.from('<svg></svg>'),
       path: '/test_base/test_path',
@@ -232,19 +217,17 @@ describe('testing _initSVG()', () => {
           align: {},
         },
       },
-      verbose: createMock(),
+      verbose: mock.fn(),
     };
 
     const shape = createShape(TEST_FILE, spriter);
 
-    expect(shape.width).toBe(false);
-    expect(shape.height).toBe(false);
-    expect(shape.viewBox).toBe(false);
+    assert.strictEqual(shape.width, false);
+    assert.strictEqual(shape.height, false);
+    assert.strictEqual(shape.viewBox, false);
   });
 
   it('should set expected viewBox', () => {
-    expect.hasAssertions();
-
     const TEST_FILE = new File({
       contents: Buffer.from('<svg viewBox="0 1 2 3 4 5 20d ten"></svg>'),
       path: '/test_base/test_path',
@@ -258,17 +241,15 @@ describe('testing _initSVG()', () => {
           align: {},
         },
       },
-      verbose: createMock(),
+      verbose: mock.fn(),
     };
 
     const shape = createShape(TEST_FILE, spriter);
 
-    expect(shape.viewBox).toStrictEqual([0, 1, 2, 3, 4, 5, 20, NaN]);
+    assert.deepStrictEqual(shape.viewBox, [0, 1, 2, 3, 4, 5, 20, NaN]);
   });
 
   it('should fill viewBox', () => {
-    expect.hasAssertions();
-
     const TEST_FILE = new File({
       contents: Buffer.from('<svg viewBox="0 1"></svg>'),
       path: '/test_base/test_path',
@@ -282,17 +263,15 @@ describe('testing _initSVG()', () => {
           align: {},
         },
       },
-      verbose: createMock(),
+      verbose: mock.fn(),
     };
 
     const shape = createShape(TEST_FILE, spriter);
 
-    expect(shape.viewBox).toStrictEqual([0, 1, 0, 0]);
+    assert.deepStrictEqual(shape.viewBox, [0, 1, 0, 0]);
   });
 
   it('should set title and description to null', () => {
-    expect.hasAssertions();
-
     const TEST_FILE = new File({
       contents: Buffer.from('<svg></svg>'),
       path: '/test_base/test_path',
@@ -302,13 +281,11 @@ describe('testing _initSVG()', () => {
 
     const shape = createShape(TEST_FILE, TEST_SPRITER);
 
-    expect(shape.title).toBeNull();
-    expect(shape.description).toBeNull();
+    assert.strictEqual(shape.title, null);
+    assert.strictEqual(shape.description, null);
   });
 
   it('should set title and description accordingly to svg', () => {
-    expect.hasAssertions();
-
     const TEST_FILE = new File({
       contents: Buffer.from('<svg><title>test title</title><desc>test description</desc></svg>'),
       path: '/test_base/test_path',
@@ -317,7 +294,7 @@ describe('testing _initSVG()', () => {
     });
     const shape = createShape(TEST_FILE, TEST_SPRITER);
 
-    expect(shape.title.toString()).toBe('<title xmlns="http://www.w3.org/2000/svg">test title</title>');
-    expect(shape.description.toString()).toBe('<desc xmlns="http://www.w3.org/2000/svg">test description</desc>');
+    assert.strictEqual(shape.title.toString(), '<title xmlns="http://www.w3.org/2000/svg">test title</title>');
+    assert.strictEqual(shape.description.toString(), '<desc xmlns="http://www.w3.org/2000/svg">test description</desc>');
   });
 });

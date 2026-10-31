@@ -1,15 +1,15 @@
 
-import svgoTransform from '../../../lib/svgforge/transform/svgo.js';
-import {dependencyKeys, setDependency, resetDependencies} from '../../../lib/deps.js';
+import assert from 'node:assert/strict';
 import {
   afterEach,
   beforeEach,
-  createMock,
   describe,
-  expect,
   it,
-  restoreAllMocks,
-} from '../../../test-utils/harness.js';
+  mock,
+} from 'node:test';
+import {isDeepStrictEqual} from 'node:util';
+import {dependencyKeys, setDependency, resetDependencies} from '../../../lib/deps.js';
+import svgoTransform from '../../../lib/svgforge/transform/svgo.js';
 
 const TEST_SVG = '<svg></svg>';
 
@@ -18,19 +18,17 @@ describe('testing transforms.svgo', () => {
   let mockOptimize;
 
   beforeEach(() => {
-    noop = createMock();
-    mockOptimize = createMock().mockReturnValue({data: ''});
+    noop = mock.fn();
+    mockOptimize = mock.fn(() => ({data: ''}));
     setDependency(dependencyKeys.svgoOptimize, mockOptimize);
   });
 
   afterEach(() => {
-    restoreAllMocks();
+    mock.restoreAll();
     resetDependencies();
   });
 
   it('should set default config with expected params if not provided 1', () => {
-    expect.hasAssertions();
-
     const spriter = {
       config: {
         svg: {
@@ -38,18 +36,18 @@ describe('testing transforms.svgo', () => {
           doctypeDeclaration: false,
         },
       },
-      error: createMock(),
+      error: mock.fn(),
     };
     const shape = {
-      setSVG: createMock(),
-      getSVG: createMock().mockReturnValue(TEST_SVG),
+      setSVG: mock.fn(),
+      getSVG: mock.fn(() => (TEST_SVG)),
     };
     const TEST_RESULT = 'test result';
 
-    mockOptimize.mockReturnValueOnce(TEST_RESULT);
+    mockOptimize.mock.mockImplementationOnce(() => (TEST_RESULT));
     svgoTransform(shape, {}, spriter, noop);
 
-    expect(mockOptimize).toHaveBeenCalledWith(TEST_SVG, {
+    assert.ok(mockOptimize.mock.calls.some(call => isDeepStrictEqual(call.arguments, [TEST_SVG, {
       plugins: [{
         name: 'preset-default',
         params: {
@@ -68,12 +66,10 @@ describe('testing transforms.svgo', () => {
       }, {
         name: 'removeDoctype',
       }],
-    });
+    }])), 'expected a matching call');
   });
 
   it('should set default config with expected params if not provided 2', () => {
-    expect.hasAssertions();
-
     const spriter = {
       config: {
         svg: {
@@ -81,18 +77,18 @@ describe('testing transforms.svgo', () => {
           doctypeDeclaration: true,
         },
       },
-      error: createMock(),
+      error: mock.fn(),
     };
     const shape = {
-      setSVG: createMock(),
-      getSVG: createMock().mockReturnValue(TEST_SVG),
+      setSVG: mock.fn(),
+      getSVG: mock.fn(() => (TEST_SVG)),
     };
     const TEST_RESULT = 'test result';
 
-    mockOptimize.mockReturnValueOnce(TEST_RESULT);
+    mockOptimize.mock.mockImplementationOnce(() => (TEST_RESULT));
     svgoTransform(shape, {}, spriter, noop);
 
-    expect(mockOptimize).toHaveBeenCalledWith(TEST_SVG, {
+    assert.ok(mockOptimize.mock.calls.some(call => isDeepStrictEqual(call.arguments, [TEST_SVG, {
       plugins: [{
         name: 'preset-default',
         params: {
@@ -107,12 +103,10 @@ describe('testing transforms.svgo', () => {
       }, {
         name: 'removeTitle',
       }],
-    });
+    }])), 'expected a matching call');
   });
 
   it('should add provided config', () => {
-    expect.hasAssertions();
-
     const TEST_PLUGINS = [{
       name: 'preset-default',
       params: {
@@ -129,23 +123,23 @@ describe('testing transforms.svgo', () => {
           doctypeDeclaration: true,
         },
       },
-      error: createMock(),
+      error: mock.fn(),
     };
     const shape = {
-      setSVG: createMock(),
-      getSVG: createMock().mockReturnValue(TEST_SVG),
+      setSVG: mock.fn(),
+      getSVG: mock.fn(() => (TEST_SVG)),
     };
     const TEST_RESULT = 'test result';
 
-    mockOptimize.mockReturnValueOnce(TEST_RESULT);
+    mockOptimize.mock.mockImplementationOnce(() => (TEST_RESULT));
     svgoTransform(shape, {plugins: TEST_PLUGINS}, spriter, noop);
 
-    expect(mockOptimize).toHaveBeenCalledWith(TEST_SVG, {plugins: expect.arrayContaining(TEST_PLUGINS)});
+    assert.strictEqual(mockOptimize.mock.callCount(), 1);
+    assert.strictEqual(mockOptimize.mock.calls[0].arguments[0], TEST_SVG);
+    assert.ok(TEST_PLUGINS.every(plugin => mockOptimize.mock.calls[0].arguments[1].plugins.some(actual => isDeepStrictEqual(actual, plugin))));
   });
 
   it('should log about optimizations', () => {
-    expect.hasAssertions();
-
     const MOCKED_ORIGINAL_SVG = 'svgsvg';
     const MOCKED_OPTIMIZED_SVG = 'svg';
     const spriter = {
@@ -159,25 +153,25 @@ describe('testing transforms.svgo', () => {
           }],
         },
       },
-      error: createMock(),
-      debug: createMock(),
+      error: mock.fn(),
+      debug: mock.fn(),
     };
     const shape = {
       name: 'name',
-      setSVG: createMock(),
-      getSVG: createMock().mockReturnValueOnce(MOCKED_ORIGINAL_SVG).mockReturnValueOnce(MOCKED_OPTIMIZED_SVG),
+      setSVG: mock.fn(),
+      getSVG: mock.fn(() => (MOCKED_OPTIMIZED_SVG)),
     };
 
-    mockOptimize.mockReturnValueOnce({});
+    shape.getSVG.mock.mockImplementationOnce(() => (MOCKED_ORIGINAL_SVG));
+
+    mockOptimize.mock.mockImplementationOnce(() => ({}));
     svgoTransform(shape, {}, spriter, noop);
 
-    expect(spriter.debug).toHaveBeenCalledTimes(2);
-    expect(spriter.debug).toHaveBeenCalledWith('Optimized "%s" with SVGO (saved %s / %s%%)', 'name', '3 Bytes', 50);
+    assert.strictEqual(spriter.debug.mock.callCount(), 2);
+    assert.ok(spriter.debug.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['Optimized "%s" with SVGO (saved %s / %s%%)', 'name', '3 Bytes', 50])), 'expected a matching call');
   });
 
   it('should not log about optimizations', () => {
-    expect.hasAssertions();
-
     const spriter = {
       config: {
         svg: {},
@@ -187,24 +181,22 @@ describe('testing transforms.svgo', () => {
           }],
         },
       },
-      error: createMock(),
-      debug: createMock(),
+      error: mock.fn(),
+      debug: mock.fn(),
     };
     const shape = {
       name: 'name',
-      setSVG: createMock(),
-      getSVG: createMock().mockReturnValue(TEST_SVG),
+      setSVG: mock.fn(),
+      getSVG: mock.fn(() => (TEST_SVG)),
     };
 
-    mockOptimize.mockReturnValueOnce({});
+    mockOptimize.mock.mockImplementationOnce(() => ({}));
     svgoTransform(shape, {}, spriter, noop);
 
-    expect(spriter.debug).not.toHaveBeenCalled();
+    assert.strictEqual(spriter.debug.mock.callCount(), 0);
   });
 
   it('should call callback', () => {
-    expect.hasAssertions();
-
     const spriter = {
       config: {
         svg: {},
@@ -212,45 +204,43 @@ describe('testing transforms.svgo', () => {
           transports: [],
         },
       },
-      error: createMock(),
-      debug: createMock(),
+      error: mock.fn(),
+      debug: mock.fn(),
     };
     const shape = {
       name: 'name',
-      setSVG: createMock(),
-      getSVG: createMock().mockReturnValue(TEST_SVG),
+      setSVG: mock.fn(),
+      getSVG: mock.fn(() => (TEST_SVG)),
     };
 
-    mockOptimize.mockReturnValueOnce({});
+    mockOptimize.mock.mockImplementationOnce(() => ({}));
     svgoTransform(shape, {}, spriter, noop);
 
-    expect(noop).toHaveBeenCalledWith(null);
+    assert.ok(noop.mock.calls.some(call => isDeepStrictEqual(call.arguments, [null])), 'expected a matching call');
   });
 
   it('should call callback with error and call spriter.error if error raised', () => {
-    expect.hasAssertions();
-
     const TEST_ERROR = new Error('test');
 
     const spriter = {
       config: {
         svg: {},
       },
-      error: createMock(),
-      debug: createMock(),
+      error: mock.fn(),
+      debug: mock.fn(),
     };
     const shape = {
       name: 'name',
-      setSVG: createMock(),
-      getSVG: createMock().mockReturnValue(TEST_SVG),
+      setSVG: mock.fn(),
+      getSVG: mock.fn(() => (TEST_SVG)),
     };
 
-    mockOptimize.mockImplementationOnce(() => {
+    mockOptimize.mock.mockImplementationOnce(() => {
       throw TEST_ERROR;
     });
     svgoTransform(shape, {}, spriter, noop);
 
-    expect(noop).toHaveBeenCalledWith(TEST_ERROR);
-    expect(spriter.error).toHaveBeenCalledWith('Optimizing "%s" with SVGO failed with error "%s"', 'name', TEST_ERROR);
+    assert.ok(noop.mock.calls.some(call => isDeepStrictEqual(call.arguments, [TEST_ERROR])), 'expected a matching call');
+    assert.ok(spriter.error.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['Optimizing "%s" with SVGO failed with error "%s"', 'name', TEST_ERROR])), 'expected a matching call');
   });
 });

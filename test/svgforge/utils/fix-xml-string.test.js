@@ -1,40 +1,41 @@
 
+import assert from 'node:assert/strict';
+import {describe, it} from 'node:test';
 import fixXMLString from '../../../lib/svgforge/utils/fix-xml-string.js';
 import XmlFixingError from '../../../lib/svgforge/errors/xml-fixing-error.js';
-import {describe, expect, it} from '../../../test-utils/harness.js';
 
 describe('testing fixing svg string', () => {
   it('should return valid svg file on svg with one multiline attribute values', () => {
-    expect(fixXMLString(`<svg viewBox="0 0 16
-                                     16"></svg>`)).toBe('<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"/>');
+    assert.strictEqual(fixXMLString(`<svg viewBox="0 0 16
+                                     16"></svg>`), '<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"/>');
   });
 
   it('should return valid svg file on svg with few multiline attribute values', () => {
-    expect(fixXMLString(`<svg fill="r
+    assert.strictEqual(fixXMLString(`<svg fill="r
                                                             e
                                                             d"
                                                             viewBox="0 0 16
-                                                                                                 16"></svg>`)).toBe('<svg fill="r e d" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"/>');
+                                                                                                 16"></svg>`), '<svg fill="r e d" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"/>');
   });
 
   it('should return valid svg file on svg with multiple multiline attribute values', () => {
-    expect(fixXMLString(`<svg fill="r
+    assert.strictEqual(fixXMLString(`<svg fill="r
                                                             e
                                                             d"
                                                             viewBox="0
                                                             0
                                                             16
-                                                            16"></svg>`)).toBe('<svg fill="r e d" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"/>');
+                                                            16"></svg>`), '<svg fill="r e d" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"/>');
   });
 
   it('should return same string on valid svg', () => {
-    expect(fixXMLString('<svg viewBox="0 0 16 16"></svg>')).toBe('<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"/>');
+    assert.strictEqual(fixXMLString('<svg viewBox="0 0 16 16"></svg>'), '<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"/>');
   });
 
   it('should throw an error on invalid file', () => {
-    expect(() => {
+    assert.throws(() => {
       fixXMLString('<svg viewBox=></svg>');
-    }).toThrow(XmlFixingError);
+    }, XmlFixingError);
   });
 
   it('should keep the generic message and attach the parser error as the cause', () => {
@@ -46,9 +47,9 @@ describe('testing fixing svg string', () => {
       thrown = error;
     }
 
-    expect(thrown).toBeInstanceOf(XmlFixingError);
-    expect(thrown.message).toBe('Invalid XML string');
-    expect(thrown.cause).toBeInstanceOf(Error);
-    expect(thrown.cause.message.length).toBeGreaterThan(0);
+    assert.ok(thrown instanceof XmlFixingError);
+    assert.strictEqual(thrown.message, 'Invalid XML string');
+    assert.ok(thrown.cause instanceof Error);
+    assert.ok(thrown.cause.message.length > 0);
   });
 });

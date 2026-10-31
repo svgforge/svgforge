@@ -1,47 +1,34 @@
+import assert from 'node:assert/strict';
+import {describe, it} from 'node:test';
 import {coreCount, shapeConcurrency, svgoWorkerCount} from '../../../lib/svgforge/utils/parallelism.js';
-import {
-  describe,
-  expect,
-  it,
-} from '../../../test-utils/harness.js';
 
 describe('testing coreCount()', () => {
   it('should never report less than one core', () => {
-    expect.hasAssertions();
-
-    expect(coreCount(0)).toBe(1);
-    expect(coreCount(1)).toBe(1);
-    expect(coreCount(8)).toBe(8);
+    assert.strictEqual(coreCount(0), 1);
+    assert.strictEqual(coreCount(1), 1);
+    assert.strictEqual(coreCount(8), 8);
   });
 });
 
 describe('testing svgoWorkerCount()', () => {
   it('should leave one core for the main thread', () => {
-    expect.hasAssertions();
-
-    expect(svgoWorkerCount(1)).toBe(1);
-    expect(svgoWorkerCount(2)).toBe(1);
-    expect(svgoWorkerCount(4)).toBe(3);
-    expect(svgoWorkerCount(16)).toBe(15);
+    assert.strictEqual(svgoWorkerCount(1), 1);
+    assert.strictEqual(svgoWorkerCount(2), 1);
+    assert.strictEqual(svgoWorkerCount(4), 3);
+    assert.strictEqual(svgoWorkerCount(16), 15);
   });
 });
 
 describe('testing shapeConcurrency()', () => {
   it('should pin the concurrency to the cores with a floor of four', () => {
-    expect.hasAssertions();
-
-    expect(shapeConcurrency(1)).toBe(4);
-    expect(shapeConcurrency(2)).toBe(4);
-    expect(shapeConcurrency(4)).toBe(4);
-    expect(shapeConcurrency(8)).toBe(8);
-    expect(shapeConcurrency(16)).toBe(16);
+    assert.strictEqual(shapeConcurrency(1), 4);
+    assert.strictEqual(shapeConcurrency(2), 4);
+    assert.strictEqual(shapeConcurrency(4), 4);
+    assert.strictEqual(shapeConcurrency(8), 8);
+    assert.strictEqual(shapeConcurrency(16), 16);
   });
 
   it('should never starve the worker pool', () => {
-    expect.hasAssertions();
-
-    for (const cores of [1, 2, 4, 8, 16, 64]) {
-      expect(shapeConcurrency(cores) >= svgoWorkerCount(cores)).toBe(true);
-    }
+    assert.ok([1, 2, 4, 8, 16, 64].every(cores => shapeConcurrency(cores) >= svgoWorkerCount(cores)));
   });
 });
