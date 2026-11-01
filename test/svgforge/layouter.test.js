@@ -1,15 +1,11 @@
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import assert from 'node:assert/strict';
+import {before as beforeAll, describe, it} from 'node:test';
 import SVGSpriter from '../../lib/svgforge.js';
 import {addFixtureFiles} from '../../test-utils/add-files.js';
 import {paths} from '../../test-utils/constants.js';
 import removeTmpPath from '../../test-utils/remove-temp-path.js';
-import {
-  beforeAll,
-  describe,
-  expect,
-  it,
-} from '../../test-utils/harness.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -23,8 +19,6 @@ describe('svg-sprite: layouter fileSize data', () => {
   });
 
   it('renders the file size when a mode enables the example', async () => {
-    expect.hasAssertions();
-
     const spriter = new SVGSpriter({dest: temporaryPath});
     addFixtureFiles(spriter, ['weather-clear.svg'], path.dirname(fixtest));
 
@@ -38,13 +32,11 @@ describe('svg-sprite: layouter fileSize data', () => {
       },
     });
 
-    expect(data.stack.shapes).toHaveLength(1);
-    expect(data.stack.shapes[0].fileSize).toMatch(/^\d+(?:\.\d+)? kB$/u);
+    assert.strictEqual(data.stack.shapes.length, 1);
+    assert.match(data.stack.shapes[0].fileSize, /^\d+(?:\.\d+)? kB$/u);
   });
 
   it('leaves the file size empty when no mode enables the example', async () => {
-    expect.hasAssertions();
-
     const spriter = new SVGSpriter({dest: temporaryPath});
     addFixtureFiles(spriter, ['weather-clear.svg'], path.dirname(fixtest));
 
@@ -57,13 +49,11 @@ describe('svg-sprite: layouter fileSize data', () => {
       },
     });
 
-    expect(data.stack.shapes).toHaveLength(1);
-    expect(data.stack.shapes[0].fileSize).toBeNull();
+    assert.strictEqual(data.stack.shapes.length, 1);
+    assert.strictEqual(data.stack.shapes[0].fileSize, null);
   });
 
   it('renders a copy button for each shape in the HTML example', async () => {
-    expect.hasAssertions();
-
     const spriter = new SVGSpriter({dest: temporaryPath});
     addFixtureFiles(spriter, ['weather-clear.svg'], path.dirname(fixtest));
 
@@ -76,8 +66,8 @@ describe('svg-sprite: layouter fileSize data', () => {
 
     const html = result.defs.example.contents.toString('utf8');
 
-    expect(html).toContain('data-copy-label="Copy ID"');
-    expect(html).toContain('data-copy="weather-clear"');
-    expect(html).toContain('<button type="button" class="copy" data-copy="weather-clear" data-copy-label="Copy ID">Copy ID</button>');
+    assert.ok(html.includes('data-copy-label="Copy ID"'));
+    assert.ok(html.includes('data-copy="weather-clear"'));
+    assert.ok(html.includes('<button type="button" class="copy" data-copy="weather-clear" data-copy-label="Copy ID">Copy ID</button>'));
   });
 });

@@ -2,15 +2,11 @@
 import {readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import assert from 'node:assert/strict';
+import {describe, it, mock} from 'node:test';
 import calculateSvgDimensions, {isResvgAvailable} from '../../../lib/svgforge/utils/calculate-svg-dimensions.js';
 import {dependencyKeys, setDependency, resetDependencies} from '../../../lib/deps.js';
 import DimensionsCalculationError from '../../../lib/svgforge/errors/dimensions-calculation-error.js';
-import {
-  createMock,
-  describe,
-  expect,
-  it,
-} from '../../../test-utils/harness.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -36,8 +32,6 @@ const createMockResvgPackage = (width, height) => ({
 
 describe('calculateSvgDimensions', () => {
   it('should return the expected dimensions from 46x46 fixture', async () => {
-    expect.hasAssertions();
-
     setDependency(dependencyKeys.resvg, createMockResvgPackage(46, 46));
 
     const svgFilePath = path.join(__dirname, '../../fixture/svg/special/without-dims/46x46.svg');
@@ -45,12 +39,10 @@ describe('calculateSvgDimensions', () => {
     const dimensions = calculateSvgDimensions(svg);
     const expected = {width: 46, height: 46};
 
-    expect(dimensions).toStrictEqual(expected);
+    assert.deepStrictEqual(dimensions, expected);
   });
 
   it('should return the expected dimensions from 2048x2048 fixture', async () => {
-    expect.hasAssertions();
-
     setDependency(dependencyKeys.resvg, createMockResvgPackage(2048, 2048));
 
     const svgFilePath = path.join(__dirname, '../../fixture/svg/special/without-dims/2048x2048.svg');
@@ -58,12 +50,10 @@ describe('calculateSvgDimensions', () => {
     const dimensions = calculateSvgDimensions(svg);
     const expected = {width: 2048, height: 2048};
 
-    expect(dimensions).toStrictEqual(expected);
+    assert.deepStrictEqual(dimensions, expected);
   });
 
   it('should return the expected dimensions from 32x32 fixture', async () => {
-    expect.hasAssertions();
-
     setDependency(dependencyKeys.resvg, createMockResvgPackage(32, 32));
 
     const svgFilePath = path.join(__dirname, '../../fixture/svg/special/without-dims/32x32.svg');
@@ -71,12 +61,10 @@ describe('calculateSvgDimensions', () => {
     const dimensions = calculateSvgDimensions(svg);
     const expected = {width: 32, height: 32};
 
-    expect(dimensions).toStrictEqual(expected);
+    assert.deepStrictEqual(dimensions, expected);
   });
 
   it('should return the expected dimensions from 100x100 fixture', async () => {
-    expect.hasAssertions();
-
     setDependency(dependencyKeys.resvg, createMockResvgPackage(100, 100));
 
     const svgFilePath = path.join(__dirname, '../../fixture/svg/special/without-dims/100x100.svg');
@@ -84,12 +72,10 @@ describe('calculateSvgDimensions', () => {
     const dimensions = calculateSvgDimensions(svg);
     const expected = {width: 100, height: 100};
 
-    expect(dimensions).toStrictEqual(expected);
+    assert.deepStrictEqual(dimensions, expected);
   });
 
   it('should return the expected dimensions from 231x69 fixture', async () => {
-    expect.hasAssertions();
-
     setDependency(dependencyKeys.resvg, createMockResvgPackage(231, 69));
 
     const svgFilePath = path.join(__dirname, '../../fixture/svg/special/without-dims/231x69.svg');
@@ -97,12 +83,10 @@ describe('calculateSvgDimensions', () => {
     const dimensions = calculateSvgDimensions(svg);
     const expected = {width: 231, height: 69};
 
-    expect(dimensions).toStrictEqual(expected);
+    assert.deepStrictEqual(dimensions, expected);
   });
 
   it('should return same results no each run', async () => {
-    expect.hasAssertions();
-
     setDependency(dependencyKeys.resvg, createMockResvgPackage(46, 46));
 
     const svgFilePath = path.join(__dirname, '../../fixture/svg/special/without-dims/46x46.svg');
@@ -112,45 +96,39 @@ describe('calculateSvgDimensions', () => {
     const secondRunDimensions = calculateSvgDimensions(svg);
     const thirdRunDimensions = calculateSvgDimensions(svg);
 
-    expect(firstRunDimensions).toStrictEqual(secondRunDimensions);
-    expect(thirdRunDimensions).toStrictEqual(secondRunDimensions);
+    assert.deepStrictEqual(firstRunDimensions, secondRunDimensions);
+    assert.deepStrictEqual(thirdRunDimensions, secondRunDimensions);
   });
 
   it('should throw error if error occurred', () => {
-    expect.hasAssertions();
-
     setDependency(dependencyKeys.resvg, {
-      Resvg: createMock().mockImplementationOnce(() => {
+      Resvg: mock.fn(() => {
         throw new Error('test');
       }),
     });
 
     try {
-      expect(() => {
+      assert.throws(() => {
         calculateSvgDimensions('');
-      }).toThrow(DimensionsCalculationError);
+      }, DimensionsCalculationError);
     } finally {
       resetDependencies();
     }
   });
 
   it('should report the optional package as missing when it is not installed', () => {
-    expect.hasAssertions();
-
     // The optional package is no longer a dev dependency, so a default
     // install has no dimension fallback available.
-    expect(isResvgAvailable()).toBe(false);
+    assert.strictEqual(isResvgAvailable(), false);
   });
 
   it('should throw error if the optional package is not installed', () => {
-    expect.hasAssertions();
-
     setDependency(dependencyKeys.resvg, {});
 
     try {
-      expect(() => {
+      assert.throws(() => {
         calculateSvgDimensions('');
-      }).toThrow(/not installed.*npm install @resvg\/resvg-js/u);
+      }, /not installed.*npm install @resvg\/resvg-js/u);
     } finally {
       resetDependencies();
     }

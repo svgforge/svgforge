@@ -1,18 +1,14 @@
 import {Buffer} from 'node:buffer';
+import assert from 'node:assert/strict';
+import {describe, it, mock} from 'node:test';
+import {isDeepStrictEqual} from 'node:util';
 import {DOMParser} from '@xmldom/xmldom';
 import File from 'vinyl';
 import createShape from '../../../lib/svgforge/shape/index.js';
 import NotPermittedError from '../../../lib/svgforge/errors/not-permitted-error.js';
 import {dependencyKeys, setDependency} from '../../../lib/deps.js';
-import {
-  createMock,
-  describe,
-  expect,
-  it,
-  spyOn,
-} from '../../../test-utils/harness.js';
 
-const mockMinifyBlock = createMock().mockReturnValue({css: ''});
+const mockMinifyBlock = mock.fn(() => ({css: ''}));
 setDependency(dependencyKeys.csso, {minifyBlock: mockMinifyBlock});
 
 const TEST_SPRITER = {
@@ -25,7 +21,7 @@ const TEST_SPRITER = {
       doctypeDeclaration: '',
     },
   },
-  verbose: createMock(),
+  verbose: mock.fn(),
 };
 const TEST_FILE = new File({
   contents: Buffer.from('<svg></svg>'),
@@ -58,22 +54,18 @@ describe('testing setNamespace()', () => {
   };
 
   it('should raise error if shape is not ready', () => {
-    expect.hasAssertions();
-
     const shape = makeShape(true, false, true);
     shape.svg.ready = false;
 
-    expect(() => {
+    assert.throws(() => {
       shape.setNamespace({});
-    }).toThrow(new NotPermittedError('Shape namespace cannot be set before complementing'));
+    }, new NotPermittedError('Shape namespace cannot be set before complementing'));
   });
 
   describe('if namespaceIds', () => {
     it('should namespace all IDs and substitute ID references', () => {
-      expect.hasAssertions();
-
       const shape = makeShape(true, false, false);
-      spyOn(shape, '_replaceIdAndClassnameReferences').mockImplementation(value => value);
+      mock.method(shape, '_replaceIdAndClassnameReferences').mock.mockImplementation(value => value);
       const TEST_NAMESPACE = 'test-namespace';
       shape.dom = parse(`<svg xmlns="${SVG_NAMESPACE}" xmlns:xlink="${XLINK_NAMESPACE}" aria-labelledby="a test">
         <g id="a"><use href="#a"/><use href="data:keep"/><path fill="#a"/><use xlink:href="#a"/><use xlink:href="data:also-keep"/></g>
@@ -89,27 +81,25 @@ describe('testing setNamespace()', () => {
       // eslint-disable-next-line unicorn/prefer-query-selector -- `@xmldom/xmldom` provides no `querySelector` API.
       const path = shape.dom.getElementsByTagName('path')[0];
 
-      expect(g.getAttribute('id')).toBe(`${TEST_NAMESPACE}a`);
-      expect(uses[0].getAttribute('href')).toBe(`#${TEST_NAMESPACE}a`);
-      expect(uses[1].getAttribute('href')).toBe('data:keep');
-      expect(path.getAttribute('fill')).toBe('#a');
-      expect(uses[2].getAttribute('href')).toBe(`#${TEST_NAMESPACE}a`);
-      expect(uses[2].getAttributeNS(XLINK_NAMESPACE, 'href')).toBeNull();
-      expect(uses[3].getAttribute('href')).toBeNull();
-      expect(uses[3].getAttributeNS(XLINK_NAMESPACE, 'href')).toBe('data:also-keep');
-      expect(shape.dom.documentElement.getAttribute('aria-labelledby')).toBe(`${TEST_NAMESPACE}a test`);
-      expect(shape._namespaced).toBe(true);
+      assert.strictEqual(g.getAttribute('id'), `${TEST_NAMESPACE}a`);
+      assert.strictEqual(uses[0].getAttribute('href'), `#${TEST_NAMESPACE}a`);
+      assert.strictEqual(uses[1].getAttribute('href'), 'data:keep');
+      assert.strictEqual(path.getAttribute('fill'), '#a');
+      assert.strictEqual(uses[2].getAttribute('href'), `#${TEST_NAMESPACE}a`);
+      assert.strictEqual(uses[2].getAttributeNS(XLINK_NAMESPACE, 'href'), null);
+      assert.strictEqual(uses[3].getAttribute('href'), null);
+      assert.strictEqual(uses[3].getAttributeNS(XLINK_NAMESPACE, 'href'), 'data:also-keep');
+      assert.strictEqual(shape.dom.documentElement.getAttribute('aria-labelledby'), `${TEST_NAMESPACE}a test`);
+      assert.strictEqual(shape._namespaced, true);
 
-      expect(mockMinifyBlock).toHaveBeenCalledWith('x{}', {restructure: false});
+      assert.ok(mockMinifyBlock.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['x{}', {restructure: false}])), 'expected a matching call');
     });
   });
 
   describe('with namespaceClassnames', () => {
     it('should namespace all class names', () => {
-      expect.hasAssertions();
-
       const shape = makeShape(false, false, true);
-      spyOn(shape, '_replaceIdAndClassnameReferences').mockImplementation();
+      mock.method(shape, '_replaceIdAndClassnameReferences').mock.mockImplementation(() => undefined);
       const TEST_NAMESPACE = 'ns';
       shape.dom = parse(`<svg xmlns="${SVG_NAMESPACE}"><g class="1 2 3 4 5  6 "/></svg>`);
 
@@ -117,24 +107,20 @@ describe('testing setNamespace()', () => {
 
       // eslint-disable-next-line unicorn/prefer-query-selector -- `@xmldom/xmldom` provides no `querySelector` API.
       const g = shape.dom.getElementsByTagName('g')[0];
-      expect(g.getAttribute('class')).toBe(`${TEST_NAMESPACE}1 ${TEST_NAMESPACE}2 ${TEST_NAMESPACE}3 ${TEST_NAMESPACE}4 ${TEST_NAMESPACE}5 ${TEST_NAMESPACE}6`);
-      expect(shape._namespaced).toBe(true);
+      assert.strictEqual(g.getAttribute('class'), `${TEST_NAMESPACE}1 ${TEST_NAMESPACE}2 ${TEST_NAMESPACE}3 ${TEST_NAMESPACE}4 ${TEST_NAMESPACE}5 ${TEST_NAMESPACE}6`);
+      assert.strictEqual(shape._namespaced, true);
     });
   });
 
   it('should return early if already namespaced', () => {
-    expect.hasAssertions();
-
     const shape = makeShape(true, true, true);
 
     shape.setNamespace('123');
 
-    expect(shape._namespaced).toBe(true);
+    assert.strictEqual(shape._namespaced, true);
   });
 
   it('should convert xlink:href attributes even without namespaceIds and namespaceClassnames', () => {
-    expect.hasAssertions();
-
     const shape = makeShape(false, false, false);
     shape.dom = parse(`<svg xmlns="${SVG_NAMESPACE}" xmlns:xlink="${XLINK_NAMESPACE}"><use xlink:href="#id"/></svg>`);
 
@@ -142,43 +128,37 @@ describe('testing setNamespace()', () => {
 
     // eslint-disable-next-line unicorn/prefer-query-selector -- `@xmldom/xmldom` provides no `querySelector` API.
     const use = shape.dom.getElementsByTagName('use')[0];
-    expect(use.getAttribute('href')).toBe('#id');
-    expect(use.getAttributeNS(XLINK_NAMESPACE, 'href')).toBeNull();
-    expect(shape._namespaced).toBe(true);
+    assert.strictEqual(use.getAttribute('href'), '#id');
+    assert.strictEqual(use.getAttributeNS(XLINK_NAMESPACE, 'href'), null);
+    assert.strictEqual(shape._namespaced, true);
   });
 });
 
 describe('testing resetNamespace()', () => {
   it('should not change _namespaced if it is already not namespaced', () => {
-    expect.hasAssertions();
-
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     shape._namespaced = false;
     shape.resetNamespace();
 
-    expect(shape._namespaced).toBe(false);
+    assert.strictEqual(shape._namespaced, false);
   });
 
   it('should not change _namespaced if this.spriter.config.svg.namespaceIDs is falsy', () => {
-    expect.hasAssertions();
-
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     shape.spriter.config.svg.namespaceIDs = false;
     shape._namespaced = true;
     shape.resetNamespace();
 
-    expect(shape._namespaced).toBe(true);
+    assert.strictEqual(shape._namespaced, true);
   });
 
   it('should change _namespaced if it is namespaced and this.spriter.config.svg.namespaceIDs is truthy', () => {
-    expect.hasAssertions();
-
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     shape.spriter.config.svg.namespaceIDs = true;
     shape._namespaced = true;
     shape.svg.ready = TEST_FILE.contents.toString();
     shape.resetNamespace();
 
-    expect(shape._namespaced).toBe(false);
+    assert.strictEqual(shape._namespaced, false);
   });
 });

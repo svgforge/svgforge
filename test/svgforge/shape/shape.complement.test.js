@@ -1,19 +1,18 @@
 
 import {Buffer} from 'node:buffer';
+import assert from 'node:assert/strict';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  it,
+  mock,
+} from 'node:test';
+import {isDeepStrictEqual} from 'node:util';
 import File from 'vinyl';
 import createShape from '../../../lib/svgforge/shape/index.js';
 import DimensionsCalculationError from '../../../lib/svgforge/errors/dimensions-calculation-error.js';
 import {dependencyKeys, setDependency, resetDependencies} from '../../../lib/deps.js';
-import {
-  afterEach,
-  beforeEach,
-  createMock,
-  describe,
-  expect,
-  it,
-  restoreAllMocks,
-  spyOn,
-} from '../../../test-utils/harness.js';
 
 const TEST_SPRITER = {
   config: {
@@ -25,7 +24,7 @@ const TEST_SPRITER = {
       doctypeDeclaration: '',
     },
   },
-  verbose: createMock(),
+  verbose: mock.fn(),
 };
 const TEST_FILE = new File({
   contents: Buffer.from('<svg></svg>'),
@@ -37,169 +36,155 @@ const TEST_FILE = new File({
 let mockCalc;
 
 beforeEach(() => {
-  mockCalc = createMock();
+  mockCalc = mock.fn();
   setDependency(dependencyKeys.svgDimensions, mockCalc);
 });
 
 afterEach(() => {
-  restoreAllMocks();
+  mock.restoreAll();
   resetDependencies();
 });
 
 describe('testing _complementDimensions()', () => {
   it('should call _setDimensions if shape has width and height', () => {
-    expect.hasAssertions();
-
     const shape = createShape(TEST_FILE, TEST_SPRITER);
-    const cb = createMock();
+    const cb = mock.fn();
 
     shape.width = 10;
     shape.height = 10;
-    spyOn(shape, '_setDimensions');
+    mock.method(shape, '_setDimensions');
 
     shape._complementDimensions(cb);
 
-    expect(shape._setDimensions).toHaveBeenCalledWith(cb);
+    assert.ok(shape._setDimensions.mock.calls.some(call => isDeepStrictEqual(call.arguments, [cb])), 'expected a matching call');
   });
 
   it('should call _determineDimensions and then _setDimensions if shape has no width and height', () => {
-    expect.hasAssertions();
-
     const shape = createShape(TEST_FILE, TEST_SPRITER);
-    const cb = createMock();
+    const cb = mock.fn();
 
     shape.width = 0;
     shape.height = 0;
-    spyOn(shape, '_determineDimensions').mockImplementation(dimensionCb => dimensionCb(null));
-    spyOn(shape, '_setDimensions');
+    mock.method(shape, '_determineDimensions').mock.mockImplementation(dimensionCb => dimensionCb(null));
+    mock.method(shape, '_setDimensions');
 
     shape._complementDimensions(cb);
 
-    expect(shape._determineDimensions).toHaveBeenCalledTimes(1);
-    expect(shape._setDimensions).toHaveBeenCalledWith(cb);
+    assert.strictEqual(shape._determineDimensions.mock.callCount(), 1);
+    assert.ok(shape._setDimensions.mock.calls.some(call => isDeepStrictEqual(call.arguments, [cb])), 'expected a matching call');
   });
 
   it('should call the callback with an error and skip _setDimensions if dimension determination fails', () => {
-    expect.hasAssertions();
-
     const shape = createShape(TEST_FILE, TEST_SPRITER);
-    const cb = createMock();
+    const cb = mock.fn();
     const TEST_ERROR = new Error('dimension calculation failed');
 
     shape.width = 0;
     shape.height = 0;
-    spyOn(shape, '_determineDimensions').mockImplementation(dimensionCb => dimensionCb(TEST_ERROR));
-    spyOn(shape, '_setDimensions');
+    mock.method(shape, '_determineDimensions').mock.mockImplementation(dimensionCb => dimensionCb(TEST_ERROR));
+    mock.method(shape, '_setDimensions');
 
     shape._complementDimensions(cb);
 
-    expect(shape._determineDimensions).toHaveBeenCalledTimes(1);
-    expect(shape._setDimensions).not.toHaveBeenCalled();
-    expect(cb).toHaveBeenCalledWith(TEST_ERROR);
+    assert.strictEqual(shape._determineDimensions.mock.callCount(), 1);
+    assert.strictEqual(shape._setDimensions.mock.callCount(), 0);
+    assert.ok(cb.mock.calls.some(call => isDeepStrictEqual(call.arguments, [TEST_ERROR])), 'expected a matching call');
   });
 });
 
 describe('testing _determineDimensions()', () => {
   it('should set viewBox', () => {
-    expect.hasAssertions();
-
     const shape = createShape(TEST_FILE, TEST_SPRITER);
-    const cb = createMock();
-    spyOn(shape, '_round').mockReturnValueOnce(10).mockReturnValueOnce(20);
+    const cb = mock.fn();
+    mock.method(shape, '_round', () => (20));
+    shape._round.mock.mockImplementationOnce(() => (10));
     shape.viewBox = [0, 1, 2, 3];
     shape.width = 1;
     shape.height = 1;
 
     shape._determineDimensions(cb);
 
-    expect(cb).toHaveBeenCalledWith(null);
-    expect(shape._round).toHaveBeenCalledTimes(2);
-    expect(shape._round.mock.calls[0][0]).toBe(2);
-    expect(shape._round.mock.calls[1][0]).toBe(3);
-    expect(shape.width).toBe(10);
-    expect(shape.height).toBe(20);
+    assert.ok(cb.mock.calls.some(call => isDeepStrictEqual(call.arguments, [null])), 'expected a matching call');
+    assert.strictEqual(shape._round.mock.callCount(), 2);
+    assert.strictEqual(shape._round.mock.calls[0].arguments[0], 2);
+    assert.strictEqual(shape._round.mock.calls[1].arguments[0], 3);
+    assert.strictEqual(shape.width, 10);
+    assert.strictEqual(shape.height, 20);
   });
 
   it('should call calculateSvgDimensions', () => {
-    expect.hasAssertions();
-
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_WIDTH = 200;
     const TEST_HEIGHT = 100;
     const TEST_SVG = 'svg';
 
-    const cb = createMock();
-    spyOn(shape, '_round').mockReturnValueOnce(10).mockReturnValueOnce(20);
-    spyOn(shape, 'getSVG').mockReturnValueOnce(TEST_SVG);
+    const cb = mock.fn();
+    mock.method(shape, '_round', () => (20));
+    shape._round.mock.mockImplementationOnce(() => (10));
+    mock.method(shape, 'getSVG').mock.mockImplementationOnce(() => (TEST_SVG));
     shape.width = 0;
     shape.height = 0;
 
-    mockCalc.mockReturnValueOnce({width: TEST_WIDTH, height: TEST_HEIGHT});
+    mockCalc.mock.mockImplementationOnce(() => ({width: TEST_WIDTH, height: TEST_HEIGHT}));
     shape._determineDimensions(cb);
 
-    expect(cb).toHaveBeenCalledWith(null);
-    expect(mockCalc).toHaveBeenCalledWith(TEST_SVG);
-    expect(shape._round).toHaveBeenCalledTimes(2);
-    expect(shape._round.mock.calls[0][0]).toBe(TEST_HEIGHT);
-    expect(shape._round.mock.calls[1][0]).toBe(TEST_WIDTH);
+    assert.ok(cb.mock.calls.some(call => isDeepStrictEqual(call.arguments, [null])), 'expected a matching call');
+    assert.ok(mockCalc.mock.calls.some(call => isDeepStrictEqual(call.arguments, [TEST_SVG])), 'expected a matching call');
+    assert.strictEqual(shape._round.mock.callCount(), 2);
+    assert.strictEqual(shape._round.mock.calls[0].arguments[0], TEST_HEIGHT);
+    assert.strictEqual(shape._round.mock.calls[1].arguments[0], TEST_WIDTH);
   });
 
   it('should call callback with error raised in calculateSvgDimensions', () => {
-    expect.hasAssertions();
-
     const shape = createShape(TEST_FILE, TEST_SPRITER);
-    const cb = createMock();
+    const cb = mock.fn();
     const TEST_ERROR = 'test error';
     shape.width = 0;
     shape.height = 0;
 
-    mockCalc.mockImplementation(() => {
+    mockCalc.mock.mockImplementation(() => {
       throw new DimensionsCalculationError(TEST_ERROR);
     });
     shape._determineDimensions(cb);
 
-    expect(cb).toHaveBeenCalledWith(new DimensionsCalculationError(TEST_ERROR));
+    assert.ok(cb.mock.calls.some(call => isDeepStrictEqual(call.arguments, [new DimensionsCalculationError(TEST_ERROR)])), 'expected a matching call');
   });
 });
 
 describe('testing _setDimensions()', () => {
   it('should set viewbox and call cb', () => {
-    expect.hasAssertions();
-
     const TEST_WIDTH = 300;
     const TEST_HEIGHT = 100;
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     shape.width = TEST_WIDTH;
     shape.height = TEST_HEIGHT;
 
-    const cb = createMock();
-    spyOn(shape, 'getViewbox').mockReturnValueOnce(null);
+    const cb = mock.fn();
+    mock.method(shape, 'getViewbox').mock.mockImplementationOnce(() => (null));
     shape._setDimensions(cb);
 
-    expect(shape.getViewbox).toHaveBeenCalledWith(TEST_WIDTH, TEST_HEIGHT);
-    expect(cb).toHaveBeenCalledWith(null);
+    assert.ok(shape.getViewbox.mock.calls.some(call => isDeepStrictEqual(call.arguments, [TEST_WIDTH, TEST_HEIGHT])), 'expected a matching call');
+    assert.ok(cb.mock.calls.some(call => isDeepStrictEqual(call.arguments, [null])), 'expected a matching call');
   });
 
   it('should set attributes for all dimensions', () => {
-    expect.hasAssertions();
-
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_WIDTH = 300;
     const TEST_HEIGHT = 100;
-    spyOn(shape.dom.documentElement, 'setAttribute').mockImplementation();
-    spyOn(shape, 'getViewbox').mockReturnValueOnce(null);
-    spyOn(shape, 'getDimensions').mockReturnValueOnce({height: TEST_HEIGHT, width: TEST_WIDTH});
-    shape._setDimensions(createMock());
+    mock.method(shape.dom.documentElement, 'setAttribute').mock.mockImplementation(() => undefined);
+    mock.method(shape, 'getViewbox').mock.mockImplementationOnce(() => (null));
+    mock.method(shape, 'getDimensions').mock.mockImplementationOnce(() => ({height: TEST_HEIGHT, width: TEST_WIDTH}));
+    shape._setDimensions(mock.fn());
 
-    expect(shape.dom.documentElement.setAttribute).toHaveBeenCalledTimes(2);
-    expect(shape.dom.documentElement.setAttribute.mock.calls[0]).toStrictEqual(expect.arrayContaining(['height', TEST_HEIGHT]));
-    expect(shape.dom.documentElement.setAttribute.mock.calls[1]).toStrictEqual(expect.arrayContaining(['width', TEST_WIDTH]));
+    assert.strictEqual(shape.dom.documentElement.setAttribute.mock.callCount(), 2);
+    assert.ok(shape.dom.documentElement.setAttribute.mock.calls[0].arguments.includes('height'));
+    assert.ok(shape.dom.documentElement.setAttribute.mock.calls[0].arguments.includes(TEST_HEIGHT));
+    assert.ok(shape.dom.documentElement.setAttribute.mock.calls[1].arguments.includes('width'));
+    assert.ok(shape.dom.documentElement.setAttribute.mock.calls[1].arguments.includes(TEST_WIDTH));
   });
 
   describe('shape need to be scaled', () => {
     it('should scale if width is more than maxWidth', () => {
-      expect.hasAssertions();
-
       const TEST_WIDTH = 400;
       const TEST_HEIGHT = 100;
       const shape = createShape(TEST_FILE, TEST_SPRITER);
@@ -210,16 +195,14 @@ describe('testing _setDimensions()', () => {
       shape.config.spacing.padding.left = 10;
       shape.config.dimension.maxWidth = TEST_WIDTH;
 
-      shape._setDimensions(createMock());
+      shape._setDimensions(mock.fn());
 
-      expect(shape._scale).toBe(380 / 400);
-      expect(shape.width).toBe(380);
-      expect(shape.height).toBe(100 * 380 / 400);
+      assert.strictEqual(shape._scale, 380 / 400);
+      assert.strictEqual(shape.width, 380);
+      assert.strictEqual(shape.height, 100 * 380 / 400);
     });
 
     it('should scale if height is more than maxHeight', () => {
-      expect.hasAssertions();
-
       const TEST_WIDTH = 300;
       const TEST_HEIGHT = 100;
       const shape = createShape(TEST_FILE, TEST_SPRITER);
@@ -230,16 +213,14 @@ describe('testing _setDimensions()', () => {
       shape.config.spacing.padding.bottom = 10;
       shape.config.dimension.maxHeight = TEST_HEIGHT;
 
-      shape._setDimensions(createMock());
+      shape._setDimensions(mock.fn());
 
-      expect(shape.height).toBe(80);
-      expect(shape.width).toBe(300 * 80 / 100);
-      expect(shape._scale).toBe(0.8);
+      assert.strictEqual(shape.height, 80);
+      assert.strictEqual(shape.width, 300 * 80 / 100);
+      assert.strictEqual(shape._scale, 0.8);
     });
 
     it('should scale if height is less than maxHeight and width is less than maxWidth nad spacing is icon', () => {
-      expect.hasAssertions();
-
       const TEST_WIDTH = 300;
       const TEST_HEIGHT = 100;
       const shape = createShape(TEST_FILE, TEST_SPRITER);
@@ -249,18 +230,16 @@ describe('testing _setDimensions()', () => {
       shape.config.dimension.maxHeight = TEST_HEIGHT;
       shape.config.dimension.maxWidth = TEST_WIDTH;
 
-      shape._setDimensions(createMock());
+      shape._setDimensions(mock.fn());
 
-      expect(shape._scale).toBe(2);
-      expect(shape.height).toBe(100);
-      expect(shape.width).toBe(150 * 2);
+      assert.strictEqual(shape._scale, 2);
+      assert.strictEqual(shape.height, 100);
+      assert.strictEqual(shape.width, 150 * 2);
     });
   });
 
   describe('with icon box size', () => {
     it('should set expected spacing', () => {
-      expect.hasAssertions();
-
       const TEST_WIDTH = 300;
       const TEST_HEIGHT = 100;
       const shape = createShape(TEST_FILE, TEST_SPRITER);
@@ -270,26 +249,24 @@ describe('testing _setDimensions()', () => {
       shape.config.dimension.maxHeight = TEST_HEIGHT;
       shape.config.dimension.maxWidth = TEST_WIDTH;
 
-      shape._setDimensions(createMock());
+      shape._setDimensions(mock.fn());
 
-      expect(shape.config.spacing.padding.left).toBe(0);
-      expect(shape.config.spacing.padding.right).toBe(0);
-      expect(shape.config.spacing.padding.top).toBe(25);
-      expect(shape.config.spacing.padding.bottom).toBe(25);
+      assert.strictEqual(shape.config.spacing.padding.left, 0);
+      assert.strictEqual(shape.config.spacing.padding.right, 0);
+      assert.strictEqual(shape.config.spacing.padding.top, 25);
+      assert.strictEqual(shape.config.spacing.padding.bottom, 25);
     });
   });
 });
 
 describe('testing _addPadding()', () => {
   it('should set viewbox from getViewbox() and add padding from config.spacing.padding', () => {
-    expect.hasAssertions();
-
-    const noop = createMock();
+    const noop = mock.fn();
     const shape = createShape(TEST_FILE, TEST_SPRITER);
 
-    spyOn(shape, 'getViewbox').mockReturnValueOnce([100, 200, 300, 400]);
-    spyOn(shape, 'setViewbox');
-    spyOn(shape, 'setDimensions');
+    mock.method(shape, 'getViewbox').mock.mockImplementationOnce(() => ([100, 200, 300, 400]));
+    mock.method(shape, 'setViewbox');
+    mock.method(shape, 'setDimensions');
 
     shape.config.spacing.padding = {
       top: 10,
@@ -301,20 +278,18 @@ describe('testing _addPadding()', () => {
 
     shape._addPadding(noop);
 
-    expect(noop).toHaveBeenCalledWith(null);
-    expect(shape.setViewbox).toHaveBeenCalledWith([80, 195, 330, 420]);
-    expect(shape.setDimensions).toHaveBeenCalledWith(60, 40);
+    assert.ok(noop.mock.calls.some(call => isDeepStrictEqual(call.arguments, [null])), 'expected a matching call');
+    assert.ok(shape.setViewbox.mock.calls.some(call => isDeepStrictEqual(call.arguments, [[80, 195, 330, 420]])), 'expected a matching call');
+    assert.ok(shape.setDimensions.mock.calls.some(call => isDeepStrictEqual(call.arguments, [60, 40])), 'expected a matching call');
   });
 
   it('should set viewbox if config.spacing.padding is zero', () => {
-    expect.hasAssertions();
-
-    const noop = createMock();
+    const noop = mock.fn();
     const shape = createShape(TEST_FILE, TEST_SPRITER);
 
-    spyOn(shape, 'getViewbox');
-    spyOn(shape, 'setViewbox');
-    spyOn(shape, 'setDimensions');
+    mock.method(shape, 'getViewbox');
+    mock.method(shape, 'setViewbox');
+    mock.method(shape, 'setDimensions');
 
     shape.config.spacing.padding = {
       top: 0,
@@ -325,38 +300,34 @@ describe('testing _addPadding()', () => {
 
     shape._addPadding(noop);
 
-    expect(noop).toHaveBeenCalledWith(null);
-    expect(shape.setViewbox).not.toHaveBeenCalled();
-    expect(shape.setDimensions).not.toHaveBeenCalled();
+    assert.ok(noop.mock.calls.some(call => isDeepStrictEqual(call.arguments, [null])), 'expected a matching call');
+    assert.strictEqual(shape.setViewbox.mock.callCount(), 0);
+    assert.strictEqual(shape.setDimensions.mock.callCount(), 0);
   });
 });
 
 describe('testing _addMetadata()', () => {
   it('should set meta description', () => {
-    expect.hasAssertions();
-
     const shape = createShape(TEST_FILE, TEST_SPRITER);
-    const noop = createMock();
+    const noop = mock.fn();
     const TEST_DESCRIPTION = 'TEST';
 
     shape.meta.description = TEST_DESCRIPTION;
     shape.id = 'TEST_ID';
-    shape.description = {setAttribute: createMock()};
-    spyOn(shape.dom.documentElement, 'setAttribute').mockImplementation();
+    shape.description = {setAttribute: mock.fn()};
+    mock.method(shape.dom.documentElement, 'setAttribute').mock.mockImplementation(() => undefined);
 
     shape._addMetadata(noop);
 
-    expect(noop).toHaveBeenCalledWith(null);
-    expect(shape.description.textContent).toBe(TEST_DESCRIPTION);
-    expect(shape.description.setAttribute).toHaveBeenCalledWith('id', `${shape.id}-desc`);
-    expect(shape.dom.documentElement.setAttribute).toHaveBeenCalledWith('aria-labelledby', `${shape.id}-desc`);
+    assert.ok(noop.mock.calls.some(call => isDeepStrictEqual(call.arguments, [null])), 'expected a matching call');
+    assert.strictEqual(shape.description.textContent, TEST_DESCRIPTION);
+    assert.ok(shape.description.setAttribute.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['id', `${shape.id}-desc`])), 'expected a matching call');
+    assert.ok(shape.dom.documentElement.setAttribute.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['aria-labelledby', `${shape.id}-desc`])), 'expected a matching call');
   });
 
   it('should set description if not exists', () => {
-    expect.hasAssertions();
-
     const shape = createShape(TEST_FILE, TEST_SPRITER);
-    const noop = createMock();
+    const noop = mock.fn();
     const TEST_DESCRIPTION = 'TEST';
 
     shape.description = null;
@@ -364,35 +335,31 @@ describe('testing _addMetadata()', () => {
 
     shape._addMetadata(noop);
 
-    expect(shape.description).not.toBeNull();
-    expect(shape.description.toString()).toBe('<desc id="test_path-desc" xmlns="http://www.w3.org/2000/svg">TEST</desc>');
+    assert.notStrictEqual(shape.description, null);
+    assert.strictEqual(shape.description.toString(), '<desc id="test_path-desc" xmlns="http://www.w3.org/2000/svg">TEST</desc>');
   });
 
   it('should set meta title', () => {
-    expect.hasAssertions();
-
     const shape = createShape(TEST_FILE, TEST_SPRITER);
-    const noop = createMock();
+    const noop = mock.fn();
     const TEST_TITLE = 'TEST';
 
     shape.meta.title = TEST_TITLE;
     shape.id = 'TEST_ID';
-    shape.title = {setAttribute: createMock()};
-    spyOn(shape.dom.documentElement, 'setAttribute').mockImplementation();
+    shape.title = {setAttribute: mock.fn()};
+    mock.method(shape.dom.documentElement, 'setAttribute').mock.mockImplementation(() => undefined);
 
     shape._addMetadata(noop);
 
-    expect(noop).toHaveBeenCalledWith(null);
-    expect(shape.title.textContent).toBe(TEST_TITLE);
-    expect(shape.title.setAttribute).toHaveBeenCalledWith('id', `${shape.id}-title`);
-    expect(shape.dom.documentElement.setAttribute).toHaveBeenCalledWith('aria-labelledby', `${shape.id}-title`);
+    assert.ok(noop.mock.calls.some(call => isDeepStrictEqual(call.arguments, [null])), 'expected a matching call');
+    assert.strictEqual(shape.title.textContent, TEST_TITLE);
+    assert.ok(shape.title.setAttribute.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['id', `${shape.id}-title`])), 'expected a matching call');
+    assert.ok(shape.dom.documentElement.setAttribute.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['aria-labelledby', `${shape.id}-title`])), 'expected a matching call');
   });
 
   it('should set title if not exists', () => {
-    expect.hasAssertions();
-
     const shape = createShape(TEST_FILE, TEST_SPRITER);
-    const noop = createMock();
+    const noop = mock.fn();
     const TEST_TITLE = 'TEST';
 
     shape.title = null;
@@ -400,34 +367,30 @@ describe('testing _addMetadata()', () => {
 
     shape._addMetadata(noop);
 
-    expect(shape.title).not.toBeNull();
-    expect(shape.title.toString()).toBe('<title id="test_path-title" xmlns="http://www.w3.org/2000/svg">TEST</title>');
+    assert.notStrictEqual(shape.title, null);
+    assert.strictEqual(shape.title.toString(), '<title id="test_path-title" xmlns="http://www.w3.org/2000/svg">TEST</title>');
   });
 
   it('should remove aria-labelledby if neither title or descriptions contains in meta', () => {
-    expect.hasAssertions();
-
     const shape = createShape(TEST_FILE, TEST_SPRITER);
-    const noop = createMock();
+    const noop = mock.fn();
 
-    spyOn(shape.dom.documentElement, 'hasAttribute').mockReturnValueOnce(true);
-    spyOn(shape.dom.documentElement, 'removeAttribute');
+    mock.method(shape.dom.documentElement, 'hasAttribute').mock.mockImplementationOnce(() => (true));
+    mock.method(shape.dom.documentElement, 'removeAttribute');
 
     shape._addMetadata(noop);
 
-    expect(shape.dom.documentElement.hasAttribute).toHaveBeenCalledWith('aria-labelledby');
-    expect(shape.dom.documentElement.removeAttribute).toHaveBeenCalledWith('aria-labelledby');
+    assert.ok(shape.dom.documentElement.hasAttribute.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['aria-labelledby'])), 'expected a matching call');
+    assert.ok(shape.dom.documentElement.removeAttribute.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['aria-labelledby'])), 'expected a matching call');
   });
 });
 
 describe('testing complement()', () => {
   it('should call all functions and set ready state', async () => {
-    expect.hasAssertions();
-
-    const testComplementDimensions = createMock().mockImplementation(fn => fn(null));
-    const testAddPadding = createMock().mockImplementation(fn => fn(null));
-    const testAddMetadata = createMock().mockImplementation(fn => fn(null));
-    const noop = createMock();
+    const testComplementDimensions = mock.fn(fn => fn(null));
+    const testAddPadding = mock.fn(fn => fn(null));
+    const testAddMetadata = mock.fn(fn => fn(null));
+    const noop = mock.fn();
 
     const shape = createShape(TEST_FILE, TEST_SPRITER);
 
@@ -451,11 +414,11 @@ describe('testing complement()', () => {
 
     await new Promise(setImmediate);
 
-    expect(testComplementDimensions).toHaveBeenCalledTimes(1);
-    expect(testAddPadding).toHaveBeenCalledTimes(1);
-    expect(testAddMetadata).toHaveBeenCalledTimes(1);
+    assert.strictEqual(testComplementDimensions.mock.callCount(), 1);
+    assert.strictEqual(testAddPadding.mock.callCount(), 1);
+    assert.strictEqual(testAddMetadata.mock.callCount(), 1);
 
-    expect(shape.svg.ready.toString()).toBe('<svg xmlns="http://www.w3.org/2000/svg"/>');
-    expect(noop).toHaveBeenCalledWith(null, shape);
+    assert.strictEqual(shape.svg.ready.toString(), '<svg xmlns="http://www.w3.org/2000/svg"/>');
+    assert.ok(noop.mock.calls.some(call => isDeepStrictEqual(call.arguments, [null, shape])), 'expected a matching call');
   });
 });

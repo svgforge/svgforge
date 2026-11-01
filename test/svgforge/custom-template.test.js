@@ -1,15 +1,12 @@
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import assert from 'node:assert/strict';
+import {describe, it} from 'node:test';
 import SVGSpriter from '../../lib/svgforge.js';
 import {addFixtureFiles} from '../../test-utils/add-files.js';
 import {constants} from '../../test-utils/fixture-configs.js';
 import {paths} from '../../test-utils/constants.js';
 import removeTmpPath from '../../test-utils/remove-temp-path.js';
-import {
-  describe,
-  expect,
-  it,
-} from '../../test-utils/harness.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -20,8 +17,6 @@ const customDest = 'custom.html';
 
 describe('custom templates', () => {
   it('should render the HTML example with a custom Vento template', async () => {
-    expect.hasAssertions();
-
     await removeTmpPath(temporaryPath);
 
     const spriter = new SVGSpriter({dest: temporaryPath});
@@ -39,18 +34,16 @@ describe('custom templates', () => {
 
     const exampleOutput = result.defs.example.contents.toString();
 
-    expect(result.defs.example.path).toStrictEqual(path.join(temporaryPath, 'defs', customDest));
-    expect(exampleOutput).toContain('<title>defs custom example</title>');
-    expect(exampleOutput).toContain('<ul>');
-    expect(exampleOutput).toContain('<li title="weather-clear">');
-    expect(exampleOutput).toContain('<li title="weather-storm~hover">');
-    expect(exampleOutput).toContain('<svg viewBox="0 0 48 48">');
-    expect(exampleOutput).toContain('<use href="svg/sprite.defs.svg#weather-clear"/>');
+    assert.deepStrictEqual(result.defs.example.path, path.join(temporaryPath, 'defs', customDest));
+    assert.ok(exampleOutput.includes('<title>defs custom example</title>'));
+    assert.ok(exampleOutput.includes('<ul>'));
+    assert.ok(exampleOutput.includes('<li title="weather-clear">'));
+    assert.ok(exampleOutput.includes('<li title="weather-storm~hover">'));
+    assert.ok(exampleOutput.includes('<svg viewBox="0 0 48 48">'));
+    assert.ok(exampleOutput.includes('<use href="svg/sprite.defs.svg#weather-clear"/>'));
   });
 
   it('should default to the built-in sprite.vto template when example is true', async () => {
-    expect.hasAssertions();
-
     await removeTmpPath(temporaryPath);
 
     const spriter = new SVGSpriter({dest: temporaryPath});
@@ -65,8 +58,8 @@ describe('custom templates', () => {
 
     const exampleOutput = result.defs.example.contents.toString();
 
-    expect(exampleOutput).toContain('<h1>SVG <code>&lt;defs&gt;</code> sprite preview (external)</h1>');
-    expect(exampleOutput).toContain('<figcaption');
-    expect(exampleOutput).toContain('Copy ID');
+    assert.ok(exampleOutput.includes('<h1>SVG <code>&lt;defs&gt;</code> sprite preview (external)</h1>'));
+    assert.ok(exampleOutput.includes('<figcaption'));
+    assert.ok(exampleOutput.includes('Copy ID'));
   });
 });
