@@ -2,7 +2,7 @@
 
 [![npm version][npm-image]][npm-url] [![Build Status][ci-image]][ci-url] [![Coverage Status][coveralls-image]][coveralls-url] [![npm downloads][npm-downloads]][npm-url] [![Socket][socket-image]][socket-url]
 
-**If you need only a CLI, there's a separate project [svgforge-cli](https://github.com/svgforge/svgforge-cli)**, you only have to install the cli but the documention here may be still relevant.
+**If you need only a CLI, there's a separate project [svgforge-cli](https://github.com/svgforge/svgforge-cli)** — you only have to install the CLI, but the documentation here may still be relevant.
 
 svgforge is a low-level [Node.js](https://nodejs.org/) module that **takes a bunch of [SVG](https://www.w3.org/TR/SVG/) files**, optimizes them and bakes them into **SVG sprites** of several types:
 
@@ -25,6 +25,7 @@ The idea is to have it as a ***drop-in replacement of svg-sprite***, with the ex
 * All node dependencies are upgraded
 * You need Node.js version >= 24
 * Split package to `svgforge` and `svgforge-cli` for easier testing
+* Block deep imports: the `exports` map only exposes the main entry point, `./utils` and the legacy `./lib/svg-sprite/utils/index.js` alias — every other `lib/` path is blocked
 * Drop grunt and gulp (you can still use it with a few lines of code)
 * Replace glob with native [fs.glob](https://nodejs.org/api/fs.html#fspromisesglobpattern-options)
 * Remove SCSS, LESS and Stylus support, it was only useful for sprite generation.
@@ -37,7 +38,7 @@ The idea is to have it as a ***drop-in replacement of svg-sprite***, with the ex
 * Replace lodash with native ES6 + utility functions
 * Replace mustache with ventojs templates.
 * **Remove support for the sprite technique** (CSS background position). I've found it antique and not required anymore and it simplifies the code a lot! If you want to use icons as `background-image` you can use the `stack` mode, and then: `background: url(icon.svg#ID)`. See here: https://css-tricks.com/svg-fragment-identifiers-work/#syntax-for-css
-* Improved example templates with copy id button for each icon, using a `twig` compatible syntax.
+* Improved example templates with copy id button for each icon, using a `twig`-like syntax.
 * Finally all tests are fixed with over 90% coverage and use [Node.js's native test runner](https://nodejs.org/api/test.html) instead of Jest
 * The CLI now has tests.
 
@@ -57,7 +58,7 @@ For an up-to-date list of browsers supporting [SVG fragment identifiers](https:/
     * [Common mode properties](#common-mode-properties)
     * [Basic examples](#basic-examples)
   * [Output destinations](#output-destinations)
-    * [Pre-processor formats and the sprite location](#pre-processor-formats-and-the-sprite-location)
+    * [CSS resources and the sprite location](#css-resources-and-the-sprite-location)
   * [Full configuration documentation](docs/configuration.md)
 * [Advanced techniques](#advanced-techniques)
   * [Meta data injection](docs/meta-data.md)
@@ -99,7 +100,7 @@ The procedure is the very same for all supported sprite types («modes»).
 
 ### Usage pattern
 
-Hint: Even the library is ESM only, since Node 22+ you can also [use CJS (require) instead of ESM imports](https://nodejs.org/api/modules.html#loading-ecmascript-modules-using-require)
+Hint: The library is ESM-only. Since Node.js 24 you can also [use CJS (`require`) instead of ESM imports](https://nodejs.org/api/modules.html#loading-ecmascript-modules-using-require).
 
 ```js
 import fs from 'node:fs';
@@ -188,7 +189,6 @@ const config = {
     },
     transform: ['svgo'], // List of transformations / optimizations
     meta: null, // Path to YAML file with meta / accessibility data
-    align: null, // Path to YAML file with extended alignment data
     dest: null // Output directory for optimized intermediate SVG shapes
   },
   svg: { // General options for created SVG files
@@ -197,7 +197,8 @@ const config = {
     namespaceIDs: true, // Add namespace token to all IDs in SVG shapes
     namespaceIDPrefix: '', // Add a prefix to the automatically generated namespaceIDs
     namespaceClassnames: true, // Add namespace token to all CSS class names in SVG shapes
-    dimensionAttributes: true // Width and height attributes on the sprite
+    dimensionAttributes: true, // Width and height attributes on the sprite
+    rootAttributes: {} // Additional attributes for the outermost <svg> element
   },
   variables: {} // Custom Vento templating variables and functions
 }

@@ -1,11 +1,11 @@
 {
   "name": "@svgforge/svgforge",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "author": "svgforge (https://github.com/SpotlightOn)",
   "contributors": [
     "Joschi Kuphal <joschi@kuphal.net> (https://jkphl.is)"
   ],
-  "description": "SVG sprites & stacks galore \u2014 A low-level Node.js module that takes a bunch of SVG files, optimizes them and bakes them into SVG sprites of several types along with suitable stylesheet resources (e.g. CSS, Sass, etc.)",
+  "description": "SVG sprites & stacks galore \u2014 A low-level Node.js module that takes a bunch of SVG files, optimizes them and bakes them into SVG sprites of several types along with suitable stylesheet resources (e.g. CSS)",
   "homepage": "https://github.com/svgforge/svgforge",
   "repository": {
     "type": "git",

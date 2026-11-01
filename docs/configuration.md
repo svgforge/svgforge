@@ -87,7 +87,6 @@ shape: {
   transform: ['svgo'], // List of transformations / optimizations
   sort: function() { /*...*/ }, // SVG shape sorting callback
   meta: null, // Path to YAML file with meta / accessibility data
-  align: null, // Path to YAML file with extended alignment data
   dest: null // Output directory for optimized intermediate SVG shapes
 }
 ```
@@ -241,7 +240,6 @@ Property         | Type      | Default     | Description                |
 -------------------------| --------------- | ------------- | ------------------------------------------ |
 `shape.sort`       | Function    |         | Callback for sorting the list of shapes. The callback's signature is `function(shape1, shape2) { /* ... */ return order; }`. It gets passed two shape objects and is expected to return an integer with `0` meaning both shapes are equal in their position, `1` meaning the first shape should follow the second one, and `-1` the other way round. The default callback simply compares the shapes' `id` values and returns them in alphabetical order, but you may as well implement your own ordering logic. |
 `shape.meta`       | String      |         | Path to a [YAML](https://yaml.org/) file with [meta data to be injected](meta-data.md) into the SVG shapes. |
-`shape.align`      | String      |         | Path to a [YAML](https://yaml.org/) file with [extended alignment settings](shape-alignment.md) for sprites with `"vertical"` or `"horizontal"` layout. |
 `shape.dest`       | String      |         | Implicit way of calling [`.getShapes()`](api.md#svgspritergetshapes-dest--callback-) during sprite compilation. If given, the `result` of subsequent [`.compile()`](api.md#svgspritercompile-config--callback-) calls will carry an additional `shapes` property, listing the intermediate SVG files as an Array of [vinyl](https://github.com/gulpjs/vinyl) files. The value will be used as the destination directory for the files (relative to the main output directory if not absolute anyway). |
 
 
@@ -254,11 +252,10 @@ Property         | Type      | Default     | Description                |
 `svg.xmlDeclaration`     | Boolean\|String | `true`  | Output an XML declaration at the very beginning of each compiled sprite. If you provide a non-empty string here, it will be used one-to-one as declaration (e.g. `<?xml version="1.0" encoding="utf-8"?>`). If you set this to `true`, *svgforge* will look at the registered shapes for an XML declaration and use the first one it can find. |
 `svg.doctypeDeclaration`   | Boolean\|String | `true`  | Include a `<DOCTYPE>` declaration in each compiled sprite. If you provide a non-empty string here, it will be used one-to-one as declaration (e.g. `<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1 Basic//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-basic.dtd">`). If you set this to `true`, *svgforge* will look at the registered shapes for a DOCTYPE declaration and use the first one it can find. |
 `svg.namespaceIDs`       | Boolean     | `true`  | In order to avoid ID clashes, the default behavior is to namespace all IDs in the source SVGs before compiling them into a sprite. Each ID is prepended with a unique string. In some situations, it might be desirable to disable ID namespacing, e.g. when you want to script the resulting sprite. Just set `svg.namespaceIDs` to `false` then and be aware that you might also want to disable SVGO's ID minification (`shape.transform.svgo.plugins.params.overrides: {cleanupIDs: false}`). |
-`svg.namespaceIDPrefix`    | String      |       | Under some circumstances, the automatically generated ID namespaces might interfere with external scripts (e.g. see [this issue](namespaceIDPrefix) for a problem detected with Google Analytics). In these situations it might be helpful to prefix all IDs with a custom prefix set with this option. |
+`svg.namespaceIDPrefix`    | String      |       | Under some circumstances, the automatically generated ID namespaces might interfere with external scripts — a problem detected with Google Analytics. In these situations it might be helpful to prefix all IDs with a custom prefix set with this option. |
 `svg.namespaceClassnames`  | Boolean     | `true`  | In order to avoid CSS class name ambiguities, the default behavior is to namespace CSS class names in the source SVGs before compiling them into a sprite. Each class name is prepended with a unique string. Disable this option to keep the class names untouched. |
 `svg.dimensionAttributes`  | Boolean     | `true`  | If truthy, `width` and `height` attributes will be set on the sprite's `<svg>` element (where applicable). |
 `svg.rootAttributes`     | Object      |       | Shorthand for applying custom attributes to the outermost `<svg>` element. Please be aware that certain attributes (e.g. `viewBox`) will be calculated dynamically and override custom `rootAttributes` in any case. |
-`svg.precision`        | Integer     |       | Floating point precision for CSS positioning values (defaults to `-1` meaning highest possible precision). |
 `svg.transform`        | Function\|Array |       | Callback (or list of callbacks) that will be applied to the resulting SVG sprites as global [post-processing transformation](#svgforge-customization). |
 
 
