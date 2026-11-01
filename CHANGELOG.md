@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Newer release notes are published on the GitHub release page: <https://github.com/svgforge/svgforge/releases>
 
+## 3.2.0 — Native test suite, stricter example option
+
+### Changed
+
+* The test suite runs directly on `node:assert`, `node:test` and the native
+  `mock` API. The `jest-compat` / `harness` compatibility layer (`describe`,
+  `it`, `expect`, `createMock`, `spyOn`) is gone: every test file was ported,
+  the mode snapshots regenerated, and the four visual tests that need the
+  `@resvg/resvg-js` dimension fallback skip themselves when the package is not
+  installed. Coverage now reports `lib/` only.
+* Test helpers moved from `test/` to `test-utils/`. Node's test runner treats
+  every `.js` file under `test/` as a test file, so the helpers ran as twelve
+  extra test files on every run.
+* xo runs on its default rule set across the project. The remaining overrides
+  are documented in `xo.config.js`.
+* `lib/` was reorganised without API changes: a single mode registry
+  (`mode/registry.js`), named dependency-injection keys in `lib/deps.js`,
+  render helpers moved out of `mode/`, the shape class split from its defaults
+  (`shape/shape.js` and `shape/defaults.js`), and the «view» mode flattened to
+  `mode/viewbase.js` + `mode/view.js`.
+
+### Removed
+
+* `shape.align` was dropped. No layout has consumed alignment data since the
+  «css» mode was removed, so the option did nothing.
+* `svg.precision` was dropped. It was parsed and validated but never read —
+  it only ever fed the removed `background-position` CSS.
+
+### Fixed
+
+* The `mode.<mode>.example` option now throws an `ArgumentError` for values
+  other than `true` or an object. Such a value used to be silently turned into
+  `false`, so the requested example document was dropped without any notice.
+
 ## 3.1.0 — Parallel SVGO optimization, resilient shape skipping
 
 ### Added
@@ -172,11 +206,17 @@ Newer release notes are published on the GitHub release page: <https://github.co
 
 ### Hardened: matcher and view-mode coverage
 
-* toThrow now checks the expected error type, instance, message, or regex.
-  Add non-visual view-mode tests for fragment composition, sprite dimensions, .dims stylesheets, and dimension placeholders; coverage reaches 100% in mode/view.js and 98% in mode/viewbase.js.
+* `toThrow` now checks the expected error type, instance, message, or regex.
+* Non-visual view-mode tests cover fragment composition, sprite dimensions,
+  `.dims` stylesheets, and dimension placeholders; coverage reaches 100% in
+  `mode/view.js` and 98% in `mode/viewbase.js`.
+
 ### Documentation
-  Restore the README introduction and update examples to ESM.
-  Fix typos and outdated sprite filenames; improve mode docs and link the DeepWiki API reference.
+
+* Restore the README introduction and update examples to ESM.
+* Fix typos and outdated sprite filenames; improve mode docs and link the
+  DeepWiki API reference.
+
 ---
 
 ## 1.0.1 — Patch release (first publishable fix)
@@ -226,10 +266,6 @@ Newer release notes are published on the GitHub release page: <https://github.co
 * Normalize the `file` and `name` arguments of `SVGSpriter.prototype.add()` via
   `path.normalize()` so both values use the same path separators (fixes
   svg-sprite/svg-sprite#942); the now redundant `trimStart()` call on `name` was dropped
-
-
-
-
 
 # About
 

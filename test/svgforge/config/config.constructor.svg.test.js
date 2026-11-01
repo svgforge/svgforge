@@ -20,7 +20,6 @@ describe('testing svg SVGSpriterConfig.constructor', () => {
       namespaceClassnames: true,
       dimensionAttributes: true,
       rootAttributes: {},
-      precision: -1,
     };
 
     const config = new SVGSpriterConfig({svg: false});
@@ -68,30 +67,6 @@ describe('testing svg SVGSpriterConfig.constructor', () => {
     const config = new SVGSpriterConfig({svg: {rootAttributes: false}});
 
     assert.deepStrictEqual(config.svg.rootAttributes, {});
-  });
-
-  it('should set precision to -1 if not provided', () => {
-    const config = new SVGSpriterConfig();
-
-    assert.strictEqual(config.svg.precision, -1);
-  });
-
-  it('should set precision to -1 if provided falsy value', () => {
-    const config = new SVGSpriterConfig({svg: {precision: false}});
-
-    assert.strictEqual(config.svg.precision, -1);
-  });
-
-  it('should set precision to provided value', () => {
-    const config = new SVGSpriterConfig({svg: {precision: 10}});
-
-    assert.strictEqual(config.svg.precision, 10);
-  });
-
-  it('should set precision to -1 if provided value less than -1', () => {
-    const config = new SVGSpriterConfig({svg: {precision: -10}});
-
-    assert.strictEqual(config.svg.precision, -1);
   });
 
   describe('testing svg.transform', () => {
