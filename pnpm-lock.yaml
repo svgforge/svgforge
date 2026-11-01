@@ -27,8 +27,8 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0
       ventojs:
-        specifier: ^2.4.1
-        version: 2.4.1
+        specifier: ^2.4.2
+        version: 2.4.2
       vinyl:
         specifier: ^3.0.1
         version: 3.0.1
@@ -1741,8 +1741,8 @@ packages:
     resolution: {integrity: sha512-SCv6OOV6Xj2/3cXy3dGmADluJTNcL3o7hZAglNPTe+WYuEuvxgJzxPrSDLZhF+CwyQOubqgecjMmTJGMVLWjYQ==}
     engines: {node: ^22.22.2 || ^24.15.0 || >=26.0.0}
 
-  ventojs@2.4.1:
-    resolution: {integrity: sha512-6UrIusjh+2gCfSzomX9WXVe9bCC3eryOst3HmPb+ZhS8i+80FhZDiWuqlqwOqeKxobNz0GvcXwSQJrWfgA0CeQ==}
+  ventojs@2.4.2:
+    resolution: {integrity: sha512-8s/OVgVTiw8njyJRd98qVVcLKmZ7VHLw8zeBDji8TiC6k+myEBHok2QvZcRnKEmlF6BbFlc2887XAWaBY5Ep7Q==}
 
   vinyl@3.0.1:
     resolution: {integrity: sha512-0QwqXteBNXgnLCdWdvPQBX6FXRHtIH3VhJPTd5Lwn28tJXc34YqSCWUmkOvtJHBmB3gGoPtrOKk3Ts8/kEZ9aA==}
@@ -3709,7 +3709,7 @@ snapshots:
 
   validate-npm-package-name@8.0.0: {}
 
-  ventojs@2.4.1: {}
+  ventojs@2.4.2: {}
 
   vinyl@3.0.1:
     dependencies:

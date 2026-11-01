@@ -61,7 +61,7 @@
     "csso": "^5.0.5",
     "js-yaml": "^5.4.3",
     "svgo": "^4.1.0",
-    "ventojs": "^2.4.1",
+    "ventojs": "^2.4.2",
     "vinyl": "^3.0.1"
   },
   "peerDependencies": {
