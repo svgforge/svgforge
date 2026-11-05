@@ -9,8 +9,8 @@ import removeTmpPath from '../../test-utils/remove-temp-path.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-describe('svg-sprite: layouter fileSize data', () => {
-  const temporaryPath = path.join(paths.tmp, 'layouter-filesize');
+describe('svg-sprite: HTML example', () => {
+  const temporaryPath = path.join(paths.tmp, 'html-example');
   let fixtest = '';
 
   beforeAll(async () => {

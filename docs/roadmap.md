@@ -1,20 +1,8 @@
 # Roadmap
 
-Open items and postponed changes. Finished work is in `git log`, not here.
+## Planned changes for 4.0
 
-## Open now
-
-| Item | Notes |
-| --- | --- |
-| `lib/svgforge.js` | Mixes the public class with queueing, layout orchestration and stats |
-| `lib/svgforge.js` + `lib/svgforge/` | Entry-point/folder collision; candidate: `lib/index.js` |
-| `test/svgforge/layouter.test.js` | Tests template `fileSize` data, not the layouter |
-| JSDoc accuracy | Types are lint-checked for existence, not correctness (`@param {Array} files` for a map) |
-| xo `max-nested-calls` | Raised to 6 for the render and mode call chains; the default is 3. Revisit once the `.call(this)` delegation is replaced (4.x) |
-| xo `prefer-private-class-fields` | Off because base classes dispatch on overridable `_` members. Re-enable per file once modes use composition; `#` stays truly private |
-| xo `prefer-context-mock` | Off in `test/**` because the suite uses module-scope and shared mocks (`mock.fn`/`mock.method`) that a test context cannot own; revisit once tests own all mocks |
-
-## 4.x — Drop `vinyl`
+### Drop vinyl
 
 `vinyl` is used for two unrelated things: it carries the **input** shapes
 (`.add()`) and it is the **return type** of `.compile()` and `.getShapes()`.
@@ -25,10 +13,8 @@ working because a vinyl file already carries `base`, `path` and `contents`.
 The 3.2.0 CLI release drops its own `vinyl` declaration; the package stays
 installed as a transitive dependency of this library until this lands.
 
-### What is actually used
-
 Five construction sites; only `base`, `path`, `contents` and `relative` are read.
-The sites are named by role, so the entry-point split listed under Open above
+The sites are named by role, so the entry-point split planned for 4.0
 does not invalidate them.
 
 | Site | Use |
@@ -50,8 +36,6 @@ does not invalidate them.
 Unused, and not needed by a replacement: `stat`, `history`, `cwd`, `clone()`,
 `isBuffer()`, `isStream()`, `isNull()`, `isDirectory()`, `isSymbolic()`,
 `symlink`, `dirname`, `basename`, `stem`, `extname`.
-
-### Replacement
 
 One small class instead of the package:
 
@@ -75,8 +59,6 @@ export default class SpriteFile {
 `relative` is the only derived value; everything else is plain data. Consumers
 that write the files themselves (`fs.writeFileSync(file.path, file.contents)`,
 the documented example) are unaffected.
-
-### Why the break is worth it
 
 **The cross-module check disappears.** `_isVinylFile()` exists because
 `instanceof File` fails when the consumer has a second copy of `vinyl` — exactly
@@ -104,8 +86,6 @@ the package is a side effect of writing that check honestly.
 **Footprint.** 5 packages, ~52 KB unpacked: `vinyl` 23.9 KB, `clone` 15.9 KB,
 `replace-ext` 4.9 KB, `remove-trailing-separator` 4.2 KB, `teex` 4.8 KB.
 
-### Buffer vs. stream
-
 svgforge only ever needs a Buffer: SVGO and xmldom require the complete document,
 and a stream would have to be collected into one first. Measured with 213 SVGs
 from `default-icons/src/tango` (6.14 MB, Ø 29.5 KB), median of 7 runs:
@@ -119,7 +99,7 @@ Object construction, 200,000 iterations: vinyl `File` 8.0 µs/file vs. a plain
 object 3.8 µs/file — ~0.9 ms for the icon set, far below 0.1 % of a run. The
 change is not a performance win; it removes a dependency and a failure mode.
 
-### Breaking surface
+The public surface changes as follows:
 
 | Public surface | Today | After |
 | --- | --- | --- |
@@ -136,7 +116,7 @@ is internal (`SVGSprite*` classes are not public), so it is not part of the brea
 Not breaking: `.add()` still accepts vinyl files and vinyl-like objects, and the
 documented `fs.writeFileSync(file.path, file.contents)` pattern keeps working.
 
-### Implementation
+The implementation steps are:
 
 1. Add `lib/svgforge/file.js` with `SpriteFile` (above).
 2. Replace the five `new File(...)` sites; drop the `vinyl` imports.
@@ -151,9 +131,7 @@ documented `fs.writeFileSync(file.path, file.contents)` pattern keeps working.
 7. Remove `vinyl` from `package.json`, regenerate the lockfile, run `npm test` and
    `npm run lint`; changelog entry under "Changed (breaking)".
 
-## 4.x — `@resvg/resvg-js`
-
-### Optional peer dependency
+### Make `@resvg/resvg-js` optional
 
 Today it is a regular peer dependency, so npm and pnpm install it automatically.
 Making it optional breaks icon sets whose SVGs have neither `viewBox` nor
@@ -165,7 +143,7 @@ Making it optional breaks icon sets whose SVGs have neither `viewBox` nor
 - `svgforge-cli/package.json`: bump the dependency to `^4.0.0`
 - changelogs in both repos
 
-### Load it with a lazy `import()`
+### Load `@resvg/resvg-js` lazily
 
 `createRequire` is used today because a static `import()` would be visible to
 bundlers and pull the native binding into every import. A real `import()` makes
@@ -176,13 +154,40 @@ purpose.
 Call sites: `utils/calculate-svg-dimensions.js`, `shape/dimensions.js`,
 `svgforge-cli/bin/svgforge.js`, plus the resvg-related test files.
 
-## 4.x — Internal cleanups
+### Replace the `.call(this)` delegation
 
-- Replace the `.call(this)` delegation (`shape/shape.js` → `initSvg`/`dimensions`,
-  `mode/base.js` → `render/*`) with real methods, inheritance or composition.
-- Drop the `arguments.length` optional-argument detection in `lib/svgforge.js`.
-- Move the processing core to `async`/`await` (`lib/svgforge.js`, `utils/index.js`,
-  `transform/svgo-pool.js`) — the same change that unblocks the lazy `import()`.
+In `shape/shape.js` (`initSvg`/`dimensions`) and `mode/base.js` (`render/*`),
+replace the delegation with real methods, inheritance or composition.
+
+### Drop the `arguments.length` detection
+
+`lib/svgforge.js` detects optional arguments via `arguments.length`.
+
+### Move the processing core to `async`/`await`
+
+In `lib/svgforge.js`, `utils/index.js` and `transform/svgo-pool.js` — the same
+change that unblocks the lazy `import()`.
+
+### Split `lib/svgforge.js`
+
+It currently mixes the public class with queueing, layout orchestration and
+stats. Resolve the `lib/svgforge.js` / `lib/svgforge/` entry-point collision in
+the same move (candidate: `lib/index.js`).
+
+### Lower `max-nested-calls`
+
+Back to the default 3 once the `.call(this)` delegation is replaced; it is
+currently raised to 6.
+
+### Re-enable `prefer-private-class-fields`
+
+Per file, once the modes use composition. It is currently off because the base
+classes dispatch on overridable `_` members; `#` stays truly private.
+
+### Re-enable `prefer-context-mock`
+
+Once the tests own all their mocks. It is currently off in `test/**` because the
+suite uses module-scope and shared mocks (`mock.fn`/`mock.method`).
 
 ## Decisions
 
