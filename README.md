@@ -11,40 +11,11 @@ svgforge is a low-level [Node.js](https://nodejs.org/) module that **takes a bun
 * **symbol**: sprites using the **`<symbol>` element**, referenced via `<use href="#id">` (inline) or `href="sprite.svg#id"` (external) — the modern, more convenient variant,
 * **defs**: sprites using the **`<defs>` element**, the same technique as `<symbol>`, but with the `viewBox` duplicated on every `<use>`.
 
-You can explore the API with [DeepWiki](https://deepwiki.com/svgforge/svgforge), which can also help you create a configuration file or short script for building the icons.
+You can explore the API with [DeepWiki](https://deepwiki.com/svgforge/svgforge), which can also help you create a configuration file or short script for building the icons. There is also a Github page, with some [tutorials how to use svgforge](https://svgforge.github.io) and related projects.
 
-There is also a Github page, with some [tutorials how to use svgforge](https://svgforge.github.io) and related projects.
+**Compatibility with svg-sprite**
 
-## Changes compared to svg-sprite
-
-This is a fork of [svg-sprite](https://github.com/svg-sprite/svg-sprite) with lots of changes.
-
-The idea is to have it as a ***drop-in replacement of svg-sprite***, with the exception of the removed CSS preprocessor support and old school sprite technique.
-
-* Complete rewrite from CJS to ESM
-* All node dependencies are upgraded
-* You need Node.js version >= 24
-* Split package to `svgforge` and `svgforge-cli` for easier testing
-* Block deep imports: the `exports` map only exposes the main entry point, `./utils` and the legacy `./lib/svg-sprite/utils/index.js` alias — every other `lib/` path is blocked
-* Drop grunt and gulp (you can still use it with a few lines of code)
-* Replace glob with native [fs.glob](https://nodejs.org/api/fs.html#fspromisesglobpattern-options)
-* Remove SCSS, LESS and Stylus support, it was only useful for sprite generation.
-* Replace prettysize npm package with a small helper function (unmaintained)
-* Replace async npm package with native ES6 Promise API
-* Replace import-lazy npm package with native lazy imports.
-* Replace winston npm package with native logger.
-* Replace xpath with @xmldom/xmldom that is already installed (xpath uses insecure `eval`).
-* Replace cssom with css-tree because the package is not maintained anymore.
-* Replace lodash with native ES6 + utility functions
-* Replace mustache with ventojs templates.
-* **Remove support for the sprite technique** (CSS background position). I've found it antique and not required anymore and it simplifies the code a lot! If you want to use icons as `background-image` you can use the `stack` mode, and then: `background: url(icon.svg#ID)`. See here: https://css-tricks.com/svg-fragment-identifiers-work/#syntax-for-css
-* Improved example templates with copy id button for each icon, using a `twig`-like syntax.
-* Finally all tests are fixed with over 90% coverage and use [Node.js's native test runner](https://nodejs.org/api/test.html) instead of Jest
-* The CLI now has tests.
-
-It comes with a set of [Vento](https://vento.js.org) templates for creating stylesheets in good ol' [CSS](https://www.w3.org/Style/CSS/). Tweaking the templates or even adding your own **custom output format** is really easy, just as switching on the generation of an **HTML example document** along with your sprite.
-
-For an up-to-date list of browsers supporting [SVG fragment identifiers](https://caniuse.com/svg-fragment) in particular (required for `<defs>` and `<symbol>` sprites as well as SVG stacks) please refer to [caniuse.com](https://caniuse.com/).
+The code was originally based on [svg-sprite](https://github.com/svg-sprite/svg-sprite). The idea is to have it as a ***drop-in replacement of svg-sprite***, with a few exceptions listed in [Changes compared to svg-sprite](#changes-compared-to-svg-sprite).
 
 ## Table of contents
 
@@ -66,6 +37,7 @@ For an up-to-date list of browsers supporting [SVG fragment identifiers](https:/
 * [Command line usage](#command-line-usage)
 * [Known problems / To-do](#known-problems--to-do)
   * [Roadmap](docs/roadmap.md)
+* [Changes compared to svg-sprite](#changes-compared-to-svg-sprite)
 * [Changelog](CHANGELOG.md)
 * [Legal](#legal)
 
@@ -416,6 +388,32 @@ targeted at **4.x**.
 
 Please refer to the [Changelog.md](CHANGELOG.md) or the git commits for a complete release history.
 
+## Changes compared to svg-sprite
+
+This is a fork of [svg-sprite](https://github.com/svg-sprite/svg-sprite) 3.0.0rc3 with lots of changes.
+
+* Complete rewrite from CJS to ESM
+* All node dependencies are upgraded
+* You need Node.js version >= 24
+* Split package to `svgforge` and `svgforge-cli` for easier testing
+* Block deep imports: the `exports` map only exposes the main entry point, `./utils` and the legacy `./lib/svg-sprite/utils/index.js` alias — every other `lib/` path is blocked
+* Drop grunt and gulp (you can still use it with a few lines of code)
+* Replace glob with native [fs.glob](https://nodejs.org/api/fs.html#fspromisesglobpattern-options)
+* Remove SCSS, LESS and Stylus support, it was only useful for sprite generation.
+* Replace prettysize npm package with a small helper function (unmaintained)
+* Replace async npm package with native ES6 Promise API
+* Replace import-lazy npm package with native lazy imports.
+* Replace winston npm package with native logger.
+* Replace xpath with @xmldom/xmldom that is already installed (xpath uses insecure `eval`).
+* Replace cssom with css-tree because the package is not maintained anymore.
+* Replace lodash with native ES6 + utility functions
+* **Replace mustache with ventojs templates.**
+* **Remove support for the sprite technique** (CSS background position). I've found it antique and not required anymore and it simplifies the code a lot! If you want to use icons as `background-image` you can use the `stack` mode, and then: `background: url(icon.svg#ID)`. See here: https://css-tricks.com/svg-fragment-identifiers-work/#syntax-for-css
+* Improved example templates with copy id button for each icon, using a `twig`-like syntax.
+* Finally all tests are fixed with over 90% coverage and use [Node.js's native test runner](https://nodejs.org/api/test.html) instead of Jest
+* The CLI now has tests.
+
+It comes with a set of [Vento](https://vento.js.org) templates for creating stylesheets in good ol' [CSS](https://www.w3.org/Style/CSS/). Tweaking the templates or even adding your own **custom output format** is really easy, just as switching on the generation of an **HTML example document** along with your sprite.
 
 ## Legal
 
