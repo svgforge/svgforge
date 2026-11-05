@@ -11,22 +11,11 @@ Newer release notes are published on the GitHub release page: <https://github.co
 
 ### Changed
 
-* The test suite runs directly on `node:assert`, `node:test` and the native
-  `mock` API. The `jest-compat` / `harness` compatibility layer (`describe`,
-  `it`, `expect`, `createMock`, `spyOn`) is gone: every test file was ported,
-  the mode snapshots regenerated, and the four visual tests that need the
-  `@resvg/resvg-js` dimension fallback skip themselves when the package is not
-  installed. Coverage now reports `lib/` only.
-* Test helpers moved from `test/` to `test-utils/`. Node's test runner treats
-  every `.js` file under `test/` as a test file, so the helpers ran as twelve
-  extra test files on every run.
-* xo runs on its default rule set across the project. The remaining overrides
-  are documented in `xo.config.js`.
-* `lib/` was reorganised without API changes: a single mode registry
-  (`mode/registry.js`), named dependency-injection keys in `lib/deps.js`,
-  render helpers moved out of `mode/`, the shape class split from its defaults
-  (`shape/shape.js` and `shape/defaults.js`), and the «view» mode flattened to
-  `mode/viewbase.js` + `mode/view.js`.
+* The test suite runs on `node:assert`, `node:test` and the native `mock` API;
+  the `jest-compat` harness and its matchers are gone.
+* xo runs on its default rule set. Exceptions: the nested-call limit,
+  `_`-prefixed protected members and module-scope mocks in the test suite.
+* Internal modules and test helpers were reorganised without API changes.
 
 ### Removed
 
