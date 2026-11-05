@@ -8,7 +8,6 @@ on:
 
 env:
   FORCE_COLOR: 2
-  NODE: 24 # The Node.js version to publish from
   GH_OWNER: svgforge # GitHub account/org that hosts the packages
 
 permissions:
@@ -29,10 +28,9 @@ jobs:
           persist-credentials: false
 
       - name: Install pnpm and Node.js
-        uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024 # v3.0.0
+        uses: pnpm/setup@v3
         with:
           version: 12
-          runtime: node@${{ env.NODE }}
           cache: true
 
       - name: Install dependencies
