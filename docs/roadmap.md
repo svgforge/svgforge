@@ -2,17 +2,6 @@
 
 ## Planned changes for 4.0
 
-### Make `@resvg/resvg-js` optional
-
-Today it is a regular peer dependency, so npm and pnpm install it automatically.
-Making it optional breaks icon sets whose SVGs have neither `viewBox` nor
-`width`/`height`: those shapes are skipped unless the package is installed.
-
-- `package.json`: `peerDependenciesMeta['@resvg/resvg-js'].optional = true`
-- keep `autoInstallPeers: false` and `peerDependencyRules.ignoreMissing` in
-  the package workspace config
-- changelog entry
-
 ### Load `@resvg/resvg-js` lazily
 
 `createRequire` is used today because a static `import()` would be visible to
