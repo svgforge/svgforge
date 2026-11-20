@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Newer release notes are published on the GitHub release page: <https://github.com/svgforge/svgforge/releases>
 
+## Unreleased
+
+- Integrate the command line interface into the package (`svgforge` binary, CLI docs and tests).
+
 ## 3.2.0 — Native test suite, stricter example option
 
 ### Changed
