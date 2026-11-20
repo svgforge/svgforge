@@ -78,7 +78,7 @@
     }
   },
   "devDependencies": {
-    "eslint-plugin-jsdoc": "^64.5.4",
+    "eslint-plugin-jsdoc": "^65.4.11",
     "pixelmatch": "^7.2.0",
     "playwright-chromium": "^1.63.0",
     "pngjs": "^7.0.0",
