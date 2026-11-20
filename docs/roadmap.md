@@ -139,9 +139,8 @@ Making it optional breaks icon sets whose SVGs have neither `viewBox` nor
 
 - `package.json`: `peerDependenciesMeta['@resvg/resvg-js'].optional = true`
 - keep `autoInstallPeers: false` and `peerDependencyRules.ignoreMissing` in
-  `svgforge/` and `svgforge-cli/`
-- `svgforge-cli/package.json`: bump the dependency to `^4.0.0`
-- changelogs in both repos
+  the package workspace config
+- changelog entry
 
 ### Load `@resvg/resvg-js` lazily
 
@@ -152,7 +151,7 @@ A top-level `await import()` would load the optional package eagerly and defeat 
 purpose.
 
 Call sites: `utils/calculate-svg-dimensions.js`, `shape/dimensions.js`,
-`svgforge-cli/bin/svgforge.js`, plus the resvg-related test files.
+`bin/svgforge.js`, plus the resvg-related test files.
 
 ### Replace the `.call(this)` delegation
 

@@ -16,7 +16,7 @@ const xoConfig = [
       // this rule cannot be satisfied without breaking the mode class hierarchy.
       // Convention: `#` is truly private, `_` is protected.
       'unicorn/prefer-private-class-fields': 'off',
-      'jsdoc/no-undefined-types': ['error', {definedTypes: ['SVGSpriter', 'File', 'SVGShape', 'SVGSprite', 'playwright', 'HTMLElement', 'Document', 'Element']}],
+      'jsdoc/no-undefined-types': ['error', {definedTypes: ['SVGSpriter', 'File', 'SVGShape', 'SVGSprite', 'playwright', 'HTMLElement', 'Document', 'Element', 'Yargs']}],
       'jsdoc/check-values': ['error', {allowedLicenses: ['MIT https://github.com/svgforge/svgforge/blob/main/LICENSE']}],
     },
   },
@@ -46,6 +46,7 @@ const xoConfig = [
       '**/tmpl/**',
       '**/test/tmpl/**',
       '**/test/fixture/**',
+      '**/test/cli/fixtures/**',
     ],
   },
 ];
