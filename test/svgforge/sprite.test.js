@@ -3,7 +3,7 @@ import {Buffer} from 'node:buffer';
 import assert from 'node:assert/strict';
 import {describe, it, mock} from 'node:test';
 import {isDeepStrictEqual} from 'node:util';
-import File from 'vinyl';
+import SpriteFile from '../../lib/svgforge/file.js';
 import SVGSprite from '../../lib/svgforge/sprite.js';
 
 describe('testing SVGSprite', () => {
@@ -133,7 +133,7 @@ describe('testing SVGSprite', () => {
       const sprite = new SVGSprite(false, false, {}, false, []);
       mock.method(sprite, 'toString').mock.mockImplementationOnce(() => (TEST_CONTENT));
 
-      assert.deepStrictEqual(sprite.toFile(TEST_BASE, TEST_PATH), new File({
+      assert.deepStrictEqual(sprite.toFile(TEST_BASE, TEST_PATH), new SpriteFile({
         base: TEST_BASE,
         path: TEST_PATH,
         contents: Buffer.from(TEST_CONTENT),

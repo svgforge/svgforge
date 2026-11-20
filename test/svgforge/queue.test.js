@@ -9,7 +9,7 @@ import {
   mock,
 } from 'node:test';
 import {isDeepStrictEqual} from 'node:util';
-import File from 'vinyl';
+import SpriteFile from '../../lib/svgforge/file.js';
 import SVGSpriterQueue from '../../lib/svgforge/queue.js';
 import DimensionsCalculationError from '../../lib/svgforge/errors/dimensions-calculation-error.js';
 import {dependencyKeys, setDependency} from '../../lib/deps.js';
@@ -49,7 +49,7 @@ describe('testing Queue', () => {
     it('should debug info, add file to _files and emit "add" event', () => {
       const spriter = {debug: mock.fn()};
       const TEST_FILE_NAME = '/base/test.svg';
-      const TEST_FILE = new File({
+      const TEST_FILE = new SpriteFile({
         path: TEST_FILE_NAME,
         base: '/base/',
       });
@@ -205,7 +205,7 @@ describe('testing Queue', () => {
       });
 
       it('should not increase active call _spriter.error and emit "remove" event if error occured', async () => {
-        const TEST_FILE = new File({path: '/base/file', base: '/base/'});
+        const TEST_FILE = new SpriteFile({path: '/base/file', base: '/base/'});
         const TEST_ERROR_MESSAGE = 'error';
         queue._files = [1];
         queue.active = 2;
@@ -233,7 +233,7 @@ describe('testing Queue', () => {
       });
 
       it('should not increase active call _spriter.error and emit "remove" event if error occured and active is zero', async () => {
-        const TEST_FILE = new File({path: '/base/file', base: '/base/'});
+        const TEST_FILE = new SpriteFile({path: '/base/file', base: '/base/'});
         queue._files = [1];
         queue.active = 0;
         // `shift()` is stubbed here, so drain the queue explicitly: `empty`

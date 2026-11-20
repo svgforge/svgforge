@@ -11,7 +11,7 @@ import {
   mock,
 } from 'node:test';
 import {isDeepStrictEqual} from 'node:util';
-import File from 'vinyl';
+import SpriteFile from '../../../lib/svgforge/file.js';
 import getShape from '../../../lib/svgforge/shape/index.js';
 import SVGSpriter from '../../../lib/svgforge.js';
 import {dependencyKeys, setDependency} from '../../../lib/deps.js';
@@ -41,7 +41,7 @@ describe('testing SVGShape initialization', () => {
   it('should not throw an error and should call fixXMLString if fixXMLString is not throwing error', () => {
     mockFixXMLString.mock.mockImplementationOnce(() => (FIXED_TEST_SVG));
 
-    getShape(new File({
+    getShape(new SpriteFile({
       path: __dirname,
       contents: Buffer.from(TEST_SVG),
     }), spriter);
@@ -54,7 +54,7 @@ describe('testing SVGShape initialization', () => {
     });
 
     assert.throws(() => {
-      getShape(new File({
+      getShape(new SpriteFile({
         path: __dirname,
         contents: Buffer.from(TEST_SVG),
       }), spriter);
@@ -66,7 +66,7 @@ describe('testing SVGShape initialization', () => {
     const TEST_NON_SVG = '<div class="test">123</div>';
 
     assert.throws(() => {
-      getShape(new File({
+      getShape(new SpriteFile({
         path: __dirname,
         contents: Buffer.from(TEST_NON_SVG),
       }), spriter);
@@ -81,7 +81,7 @@ describe('testing SVGShape initialization', () => {
     for (const weatherFile of weatherFiles) {
       const svgFileBuffer = fs.readFileSync(path.join(cwd, weatherFile));
 
-      getShape(new File({
+      getShape(new SpriteFile({
         path: __dirname,
         contents: svgFileBuffer,
       }), spriter);

@@ -8,7 +8,7 @@ import {
   mock,
 } from 'node:test';
 import {isDeepStrictEqual} from 'node:util';
-import File from 'vinyl';
+import SpriteFile from '../../../lib/svgforge/file.js';
 import createShape from '../../../lib/svgforge/shape/index.js';
 import {dependencyKeys, setDependency} from '../../../lib/deps.js';
 
@@ -31,7 +31,7 @@ afterEach(() => {
 
 describe('testing _initSVG()', () => {
   it('should call fixXMLString if passed svg is not normal', () => {
-    const TEST_FILE = new File({
+    const TEST_FILE = new SpriteFile({
       contents: Buffer.from('s'),
       path: '/test_base/test_path',
       base: '/test_base/',
@@ -55,7 +55,7 @@ describe('testing _initSVG()', () => {
   });
 
   it('should call fixXMLString and throw error if passed svg is not normal', () => {
-    const TEST_FILE = new File({
+    const TEST_FILE = new SpriteFile({
       contents: Buffer.from('s'),
       path: '/test_base/test_path',
       base: '/test_base/',
@@ -81,7 +81,7 @@ describe('testing _initSVG()', () => {
   });
 
   it('should call fixXMLString and throw error if passed svg is not normal and fixXMLString thrown error', () => {
-    const TEST_FILE = new File({
+    const TEST_FILE = new SpriteFile({
       contents: Buffer.from('s'),
       path: '/test_base/test_path',
       base: '/test_base/',
@@ -108,7 +108,7 @@ describe('testing _initSVG()', () => {
   });
 
   it('should not call fixXMLString if passed svg is normal', () => {
-    const TEST_FILE = new File({
+    const TEST_FILE = new SpriteFile({
       contents: Buffer.from('<svg></svg>'),
       path: '/test_base/test_path',
       base: '/test_base/',
@@ -134,7 +134,7 @@ describe('testing _initSVG()', () => {
       '<!ENTITY name1 "value1">',
       '<!ENTITY name2 "value2">',
     ];
-    const TEST_FILE = new File({
+    const TEST_FILE = new SpriteFile({
       contents: Buffer.from(`<svg><!DOCTYPE ${TEST_ENTITIES.join('\n')}>&name1;</svg>`),
       path: '/test_base/test_path',
       base: '/test_base/',
@@ -156,7 +156,7 @@ describe('testing _initSVG()', () => {
   });
 
   it('should throw error if bad svg parsed', () => {
-    const TEST_FILE = new File({
+    const TEST_FILE = new SpriteFile({
       contents: Buffer.from('<<ddfasdfasdf>>'),
       path: '/test_base/test_path',
       base: '/test_base/',
@@ -181,7 +181,7 @@ describe('testing _initSVG()', () => {
     const TEST_WIDTH = 200;
     const TEST_HEIGHT = 100;
 
-    const TEST_FILE = new File({
+    const TEST_FILE = new SpriteFile({
       contents: Buffer.from(`<svg width="${TEST_WIDTH}" height="${TEST_HEIGHT}"></svg>`),
       path: '/test_base/test_path',
       base: '/test_base/',
@@ -204,7 +204,7 @@ describe('testing _initSVG()', () => {
   });
 
   it('should set width, height and viewBox to false', () => {
-    const TEST_FILE = new File({
+    const TEST_FILE = new SpriteFile({
       contents: Buffer.from('<svg></svg>'),
       path: '/test_base/test_path',
       base: '/test_base/',
@@ -228,7 +228,7 @@ describe('testing _initSVG()', () => {
   });
 
   it('should set expected viewBox', () => {
-    const TEST_FILE = new File({
+    const TEST_FILE = new SpriteFile({
       contents: Buffer.from('<svg viewBox="0 1 2 3 4 5 20d ten"></svg>'),
       path: '/test_base/test_path',
       base: '/test_base/',
@@ -250,7 +250,7 @@ describe('testing _initSVG()', () => {
   });
 
   it('should fill viewBox', () => {
-    const TEST_FILE = new File({
+    const TEST_FILE = new SpriteFile({
       contents: Buffer.from('<svg viewBox="0 1"></svg>'),
       path: '/test_base/test_path',
       base: '/test_base/',
@@ -272,7 +272,7 @@ describe('testing _initSVG()', () => {
   });
 
   it('should set title and description to null', () => {
-    const TEST_FILE = new File({
+    const TEST_FILE = new SpriteFile({
       contents: Buffer.from('<svg></svg>'),
       path: '/test_base/test_path',
       base: '/test_base/',
@@ -286,7 +286,7 @@ describe('testing _initSVG()', () => {
   });
 
   it('should set title and description accordingly to svg', () => {
-    const TEST_FILE = new File({
+    const TEST_FILE = new SpriteFile({
       contents: Buffer.from('<svg><title>test title</title><desc>test description</desc></svg>'),
       path: '/test_base/test_path',
       base: '/test_base/',

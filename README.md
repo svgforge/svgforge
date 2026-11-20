@@ -111,7 +111,7 @@ for (const mode of Object.values(result)) {
 
 ```
 
-As you can see, big parts of the above are dealing with disk I/O by writing the resulting [vinyl](https://github.com/gulpjs/vinyl) files to disk yourself.
+As you can see, big parts of the above are dealing with disk I/O by writing the resulting file objects to disk yourself.
 
 
 ## Configuration basics
@@ -323,7 +323,7 @@ Relative destination paths refer to their ancestors as shown in the following sc
 
 By default, stylesheet resources are generated directly into the respective **mode's base directory**.
 
-> "Oh wait! Didn't you say that *svgforge* doesn't access the file system? So why do you need output directories at all?" — Well, good point. *svgforge* uses [vinyl](https://github.com/gulpjs/vinyl) file objects to pass along virtual resources and to specify where they **are intended to be located**. This is especially important for relative file paths (e.g. the path of an SVG sprite as used by a CSS stylesheet).
+> "Oh wait! Didn't you say that *svgforge* doesn't access the file system? So why do you need output directories at all?" — Well, good point. *svgforge* uses file objects to pass along virtual resources and to specify where they **are intended to be located**. This is especially important for relative file paths (e.g. the path of an SVG sprite as used by a CSS stylesheet).
 
 
 #### CSS resources and the sprite location
