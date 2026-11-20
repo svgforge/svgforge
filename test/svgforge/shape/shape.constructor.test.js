@@ -5,12 +5,12 @@ import path from 'node:path';
 import {Buffer} from 'node:buffer';
 import assert from 'node:assert/strict';
 import {describe, it, mock} from 'node:test';
-import File from 'vinyl';
+import SpriteFile from '../../../lib/svgforge/file.js';
 import createShape from '../../../lib/svgforge/shape/index.js';
 
 describe('testing Shape.constructor', () => {
   describe('testing constructor', () => {
-    const TEST_FILE = new File({
+    const TEST_FILE = new SpriteFile({
       contents: Buffer.from('<svg>TEST CONTENT</svg>'),
       path: '/test_base/test_path',
       base: '/test_base/',
@@ -74,7 +74,7 @@ describe('testing Shape.constructor', () => {
         it('default generator should keep folder names from relative path', () => {
           const baseFolder = `${path.sep}my${path.sep}full${path.sep}path`;
           const fullPath = `${path.sep}my${path.sep}full${path.sep}path${path.sep}folder${path.sep}test_path.f.svg`;
-          const TEST_FILE_WITH_FOLDERS = new File({
+          const TEST_FILE_WITH_FOLDERS = new SpriteFile({
             contents: Buffer.from('<svg>TEST CONTENT</svg>'),
             base: baseFolder,
             path: fullPath,

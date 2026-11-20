@@ -61,7 +61,7 @@ describe('testing shapes', () => {
       assert.ok(result instanceof Object);
       assert.ok(Array.isArray(result.shapes));
 
-      const dom = new DOMParser().parseFromString(result.shapes[0]._contents.toString(), 'text/xml');
+      const dom = new DOMParser().parseFromString(result.shapes[0].contents.toString(), 'text/xml');
 
       assert.strictEqual(dom.documentElement.getAttribute('height'), dimension.height.toString());
       assert.strictEqual(dom.documentElement.getAttribute('width'), dimension.width.toString());

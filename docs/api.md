@@ -99,23 +99,22 @@ spriter.on('shape-skipped', ({file, error}) => {
 
 #### SVGSpriter.add(file [, name, svg ])
 
-**Registration of an SVG file** — Before compilation, you'll need to register one or more SVG files for processing. As *svgforge* doesn't read the files from the disk itself, you'll have to pass both the path and the file contents explicitly. Alternatively, you may pass a [vinyl](https://github.com/gulpjs/vinyl) file object as the first argument to `.add()`, which comes in handy when piping resources from one process to another. Please [see below](#example-using-glob-and-vinyl) for an example.
+**Registration of an SVG file** — Before compilation, you'll need to register one or more SVG files for processing. As *svgforge* doesn't read the files from the disk itself, you'll have to pass both the path and the file contents explicitly. Alternatively, you may pass a file object (`{base, path, contents}` with `contents` as a `Buffer`) as the first argument to `.add()`, which comes in handy when piping resources from one process to another. Please [see below](#example-using-glob-and-file-objects) for an example.
 
 It is important to know that the spriter **optimizes the SVG files as soon as you register them**, not just when you [compile your sprite](#svgspritercompile-config--callback-). This way it is possible to call the `.compile()` method several times, possibly passing in different render configurations without the need of repeating the optimization steps.
 
 ##### Arguments
 
-1. **file** `{String|File}` — Absolute path to the SVG file or a [vinyl](https://github.com/gulpjs/vinyl) file object carrying all the necessary values (the following arguments are ignored then).
-2. **name** `{String}` *(ignored with vinyl file)* — The "local" part of the file path, possibly including subdirectories which will get traversed to CSS selectors using the `shape.id.separator` [configuration option](configuration.md#shape-ids). You will want to pay attention to this when recursively adding whole directories of SVG files (e.g. via [glob](#example-using-glob-and-vinyl)). When `name` is empty, *svgforge* will use the basename of the `file` argument. As an example, setting `name` to `"deeply/nested/asset.svg"` while giving `"/path/to/my/deeply/nested/asset.svg"` for `file` will translate to the CSS selector `"deeply--nested--asset"`.
-3. **svg** `{String}` *(ignored with vinyl file)*: SVG file content.
+1. **file** `{String|object}` — Absolute path to the SVG file or a file object carrying all the necessary values (the following arguments are ignored then).
+2. **name** `{String}` *(ignored when a file object is passed)* — The "local" part of the file path, possibly including subdirectories which will get traversed to CSS selectors using the `shape.id.separator` [configuration option](configuration.md#shape-ids). You will want to pay attention to this when recursively adding whole directories of SVG files (e.g. via [glob](#example-using-glob-and-file-objects)). When `name` is empty, *svgforge* will use the basename of the `file` argument. As an example, setting `name` to `"deeply/nested/asset.svg"` while giving `"/path/to/my/deeply/nested/asset.svg"` for `file` will translate to the CSS selector `"deeply--nested--asset"`.
+3. **svg** `{String}` *(ignored when a file object is passed)* — SVG file content.
 
-##### Example using [glob](https://github.com/isaacs/node-glob) and [vinyl](https://github.com/gulpjs/vinyl)
+##### Example using [glob](https://github.com/isaacs/node-glob) and file objects
 
 ```js
 import fs from 'node:fs';
 import path from 'node:path';
 import SVGSpriter from '@svgforge/svgforge';
-import File from 'vinyl';
 
 const spriter = new SVGSpriter({
   dest: 'out',
@@ -133,12 +132,12 @@ const cwd = path.resolve('assets');
 const files = fs.globSync('**/*.svg', { cwd }).sort().reverse();
 
 for (const file of files) {
-  // Create and add a vinyl file instance for each SVG
-  spriter.add(new File({
+  // Create and add a file object for each SVG
+  spriter.add({
     path: path.join(cwd, file), // Absolute path to the SVG file
     base: cwd, // Base path (see `name` argument)
     contents: fs.readFileSync(path.join(cwd, file)) // SVG file contents
-  }));
+  });
 }
 
 spriter.compile((error, result, data) => {
@@ -186,16 +185,16 @@ The spriter is instructed to create a symbol sprite along with the accompanying 
 ```js
 {
   symbol: {
-    sprite: <File "symbol/svg/sprite.symbol.svg" <Buffer 3c 3f 78 ...>>,
-    css: <File "symbol/sprite.css" <Buffer 2e 73 76 ...>>,
-    example: <File "symbol/sprite.symbol.html" <Buffer 3c 21 44 ...>>
+    sprite: { base, path: "symbol/svg/sprite.symbol.svg", contents: <Buffer 3c 3f 78 ...> },
+    css: { base, path: "symbol/sprite.css", contents: <Buffer 2e 73 76 ...> },
+    example: { base, path: "symbol/sprite.symbol.html", contents: <Buffer 3c 21 44 ...> }
   }
 }
 ```
 
 For each configured output mode (`symbol` in the example), the `result` object holds an item containing the resources generated for this particular mode. There is always a `sprite` resource (obviously) and possibly an `example` resource for the demo HTML document (if configured). For the output modes with stylesheet rendering (the [defs, symbol, view and stack modes](configuration.md#defs--symbol-mode)), there are additional items named after the configured [rendering configurations](configuration.md#rendering-configurations) (`css` in the example).
 
-Please note that the resources are always returned as [vinyl](https://github.com/gulpjs/vinyl) files. Have a look above for an [example of how to write these files to disk](#example-using-glob-and-vinyl).
+The resources are returned as file objects with `base`, `path`, `contents` and `relative` properties. Have a look above for an [example of how to write these files to disk](#example-using-glob-and-file-objects).
 
 #### SVGSpriter.compileAsync([ config ,])
 
@@ -245,7 +244,7 @@ try {
 1. **dest** `{String}` — Base directory for the SVG files in case they will be written to disk.
 2. **callback** `{Function}`: Callback triggered when the shapes are available, getting called with two arguments:
   * **error** `{Error}` — Error message in case the shape access has failed.
-  * **result** `{Array}` — Array of [vinyl](https://github.com/gulpjs/vinyl) carrying the intermediate SVGs.
+  * **result** `{Array}` — Array of file objects carrying the intermediate SVGs.
 
 ##### Shape access example
 

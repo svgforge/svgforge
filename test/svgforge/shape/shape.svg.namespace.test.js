@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {describe, it, mock} from 'node:test';
 import {isDeepStrictEqual} from 'node:util';
 import {DOMParser} from '@xmldom/xmldom';
-import File from 'vinyl';
+import SpriteFile from '../../../lib/svgforge/file.js';
 import createShape from '../../../lib/svgforge/shape/index.js';
 import NotPermittedError from '../../../lib/svgforge/errors/not-permitted-error.js';
 import {dependencyKeys, setDependency} from '../../../lib/deps.js';
@@ -23,7 +23,7 @@ const TEST_SPRITER = {
   },
   verbose: mock.fn(),
 };
-const TEST_FILE = new File({
+const TEST_FILE = new SpriteFile({
   contents: Buffer.from('<svg></svg>'),
   path: '/test_base/test_path',
   base: '/test_base/',

@@ -13,7 +13,7 @@ import {
   mock,
 } from 'node:test';
 import {isDeepStrictEqual} from 'node:util';
-import File from 'vinyl';
+import SpriteFile from '../../../lib/svgforge/file.js';
 import SVGSpriteBase from '../../../lib/svgforge/mode/base.js';
 import ArgumentError from '../../../lib/svgforge/errors/argument-error.js';
 import {dependencyKeys, setDependency, resetDependencies} from '../../../lib/deps.js';
@@ -289,12 +289,12 @@ describe('testings SVGSpriteBase', () => {
       assert.deepStrictEqual(TEST_SPRITER.verbose.mock.calls[0].arguments, ['Created «%s» stylesheet resource', 'svg']);
       assert.deepStrictEqual(TEST_SPRITER.verbose.mock.calls[1].arguments, ['Created «%s» stylesheet resource', 'png']);
       assert.deepStrictEqual(TEST_FILES, {
-        svg: new File({
+        svg: new SpriteFile({
           base: TEST_SPRITER.config.dest,
           path: path.join(TEST_CONFIG.dest, 'sprite.svg'),
           contents: Buffer.from('first'),
         }),
-        png: new File({
+        png: new SpriteFile({
           base: TEST_SPRITER.config.dest,
           path: path.join(TEST_CONFIG.dest, 'sprite.png'),
           contents: Buffer.from('second'),
@@ -336,7 +336,7 @@ describe('testings SVGSpriteBase', () => {
 
       assert.ok(testFn.mock.calls.some(call => isDeepStrictEqual(call.arguments, [null, base.data])), 'expected a matching call');
       assert.deepStrictEqual(TEST_FILES, {
-        example: new File({
+        example: new SpriteFile({
           base: TEST_SPRITER.config.dest,
           path: TEST_CONFIG.example.dest,
           contents: Buffer.from('test example'),

@@ -3,8 +3,8 @@ import {Buffer} from 'node:buffer';
 import assert from 'node:assert/strict';
 import {describe, it, mock} from 'node:test';
 import {isDeepStrictEqual} from 'node:util';
-import File from 'vinyl';
 import {XMLSerializer} from '@xmldom/xmldom';
+import SpriteFile from '../../../lib/svgforge/file.js';
 import createShape from '../../../lib/svgforge/shape/index.js';
 
 const TEST_SPRITER = {
@@ -18,7 +18,7 @@ const TEST_SPRITER = {
   },
   verbose: mock.fn(),
 };
-const TEST_FILE = new File({
+const TEST_FILE = new SpriteFile({
   contents: Buffer.from('<svg></svg>'),
   path: '/test_base/test_path',
   base: '/test_base/',
@@ -84,7 +84,7 @@ describe('testing getSVG()', () => {
   });
 
   it('should substitute ID references in href attributes', () => {
-    const shape = createShape(new File({
+    const shape = createShape(new SpriteFile({
       base: TEST_FILE.base,
       path: TEST_FILE.path,
       cwd: TEST_FILE.cwd,
@@ -113,7 +113,7 @@ describe('testing getSVG()', () => {
   });
 
   it('should substitute ID references in xlink:href attributes', () => {
-    const shape = createShape(new File({
+    const shape = createShape(new SpriteFile({
       base: TEST_FILE.base,
       path: TEST_FILE.path,
       cwd: TEST_FILE.cwd,
