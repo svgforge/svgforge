@@ -11,6 +11,7 @@ Newer release notes are published on the GitHub release page: <https://github.co
 
 - Integrate the command line interface into the package (`svgforge` binary, CLI docs and tests).
 - Replace vinyl file objects with plain file objects in the public API and remove the `vinyl` dependency (breaking).
+- Make `@resvg/resvg-js` an optional peer dependency; install it explicitly to enable the dimension fallback for SVGs without `viewBox` or `width`/`height` (breaking).
 
 ## 3.2.0 — Native test suite, stricter example option
 
