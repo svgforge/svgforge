@@ -5,7 +5,7 @@
   "contributors": [
     "Joschi Kuphal <joschi@kuphal.net> (https://jkphl.is)"
   ],
-  "description": "SVG sprites & stacks galore \u2014 A low-level Node.js module that takes a bunch of SVG files, optimizes them and bakes them into SVG sprites of several types along with suitable stylesheet resources (e.g. CSS)",
+  "description": "SVG sprites & stacks galore \u2014 A low-level Node.js module and CLI that takes a bunch of SVG files, optimizes them and bakes them into SVG sprites of several types along with suitable stylesheet resources (e.g. CSS)",
   "homepage": "https://github.com/svgforge/svgforge",
   "repository": {
     "type": "git",
@@ -30,11 +30,15 @@
     "html",
     "vector",
     "rwd",
-    "retina"
+    "retina",
+    "cli"
   ],
   "type": "module",
   "engines": {
     "node": ">=24"
+  },
+  "bin": {
+    "svgforge": "./bin/svgforge.js"
   },
   "main": "lib/svgforge.js",
   "exports": {
@@ -43,6 +47,7 @@
     "./lib/svg-sprite/utils/index.js": "./lib/svgforge/utils/index.js"
   },
   "files": [
+    "bin",
     "lib",
     "tmpl"
   ],
@@ -62,7 +67,8 @@
     "js-yaml": "^5.4.3",
     "svgo": "^4.1.0",
     "ventojs": "^2.4.1",
-    "vinyl": "^3.0.1"
+    "vinyl": "^3.0.1",
+    "yargs": "^18.2.0"
   },
   "peerDependencies": {
     "@resvg/resvg-js": "^2.6.2"

@@ -2,9 +2,7 @@
 
 [![npm version][npm-image]][npm-url] [![Build Status][ci-image]][ci-url] [![Coverage Status][coveralls-image]][coveralls-url] [![npm downloads][npm-downloads]][npm-url] [![Socket][socket-image]][socket-url]
 
-**If you need only a CLI, there's a separate project [svgforge-cli](https://github.com/svgforge/svgforge-cli)** — you only have to install the CLI, but the documentation here may still be relevant.
-
-svgforge is a low-level [Node.js](https://nodejs.org/) module that **takes a bunch of [SVG](https://www.w3.org/TR/SVG/) files**, optimizes them and bakes them into **SVG sprites** of several types:
+svgforge is a low-level [Node.js](https://nodejs.org/) module and CLI that **takes a bunch of [SVG](https://www.w3.org/TR/SVG/) files**, optimizes them and bakes them into **SVG sprites** of several types:
 
 * **view**: tiled sprites with **pre-defined `<view>` elements**, useful for foreground images via [SVG fragment identifiers](https://css-tricks.com/svg-fragment-identifiers-work/),
 * **stack**: [SVG stacks](https://simurai.com/blog/2012/04/02/svg-stacks), also usable as CSS `background-image` via fragment identifiers,
@@ -359,19 +357,19 @@ In order to improve accessibility, *svgforge* can read meta data from a YAML fil
 
 ## Command line usage
 
-The command line interface has been split out into the separate [`svgforge-cli`](https://github.com/svgforge/svgforge-cli) package. Install it globally to get the `svgforge` command:
+This package includes the `svgforge` CLI. After installing the package, run:
 
 ```bash
-npm install @svgforge/svgforge-cli -g
+svgforge --help
 ```
 
-A typical example could look like this:
+A typical example:
 
 ```bash
 svgforge --symbol --symbol-render-css --symbol-example --dest=out assets/*.svg
 ```
 
-Please refer to the [CLI guide](https://github.com/svgforge/svgforge-cli/docs/command-line.md) for further details.
+See the [command line reference](docs/command-line.md) for all options.
 
 
 ## Known problems / To-do
