@@ -27,8 +27,8 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0
       ventojs:
-        specifier: ^2.4.1
-        version: 2.4.1
+        specifier: ^2.4.2
+        version: 2.4.2
       yargs:
         specifier: ^18.2.0
         version: 18.2.0
@@ -1718,8 +1718,8 @@ packages:
     resolution: {integrity: sha512-SCv6OOV6Xj2/3cXy3dGmADluJTNcL3o7hZAglNPTe+WYuEuvxgJzxPrSDLZhF+CwyQOubqgecjMmTJGMVLWjYQ==}
     engines: {node: ^22.22.2 || ^24.15.0 || >=26.0.0}
 
-  ventojs@2.4.1:
-    resolution: {integrity: sha512-6UrIusjh+2gCfSzomX9WXVe9bCC3eryOst3HmPb+ZhS8i+80FhZDiWuqlqwOqeKxobNz0GvcXwSQJrWfgA0CeQ==}
+  ventojs@2.4.2:
+    resolution: {integrity: sha512-8s/OVgVTiw8njyJRd98qVVcLKmZ7VHLw8zeBDji8TiC6k+myEBHok2QvZcRnKEmlF6BbFlc2887XAWaBY5Ep7Q==}
 
   vscode-css-languageservice@6.3.10:
     resolution: {integrity: sha512-eq5N9Er3fC4vA9zd9EFhyBG90wtCCuXgRSpAndaOgXMh1Wgep5lBgRIeDgjZBW9pa+332yC9+49cZMW8jcL3MA==}
@@ -3676,7 +3676,7 @@ snapshots:
 
   validate-npm-package-name@8.0.0: {}
 
-  ventojs@2.4.1: {}
+  ventojs@2.4.2: {}
 
   vscode-css-languageservice@6.3.10:
     dependencies:
