@@ -18,7 +18,7 @@ import process from 'node:process';
 import {fileURLToPath} from 'node:url';
 import {load} from 'js-yaml';
 import yargs from 'yargs';
-import SVGSpriter from '../lib/svgforge.js';
+import createSpriter from '../lib/svgforge.js';
 import {
   deepMerge,
   isObject,
@@ -555,7 +555,7 @@ async function main() {
   removeExcessiveExamples(config, argv);
   loadVariables(config);
 
-  const spriter = new SVGSpriter(config);
+  const spriter = createSpriter(config);
 
   // Register the progress bar before adding shapes: the spriter starts
   // processing the queue immediately on add(), so the bar has to listen
@@ -606,11 +606,17 @@ async function main() {
     // Detect relative patterns to preserve directory structure in the shape
     // identifiers (e.g. "nested/leaf.svg" -> "nested--leaf")
     const isRelative = !path.isAbsolute(filePattern) && !filePattern.startsWith('../');
-    const stat = fs.lstatSync(file);
     let basename;
+    let linkTarget;
 
-    if (stat.isSymbolicLink()) {
-      basename = path.basename(fs.readlinkSync(file));
+    try {
+      linkTarget = fs.readlinkSync(file);
+    } catch {
+      linkTarget = undefined;
+    }
+
+    if (linkTarget !== undefined) {
+      basename = path.basename(linkTarget);
     } else if (baseDepth > 0) {
       // Strip the base directory marked by "/./" from the shape identifier
       basename = filePattern.split('/').filter(Boolean).slice(baseDepth).join('/');
