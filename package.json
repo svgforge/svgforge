@@ -5,7 +5,7 @@
   "contributors": [
     "Joschi Kuphal <joschi@kuphal.net> (https://jkphl.is)"
   ],
-  "description": "SVG sprites & stacks galore \u2014 A low-level Node.js module and CLI that takes a bunch of SVG files, optimizes them and bakes them into SVG sprites of several types along with suitable stylesheet resources (e.g. CSS)",
+  "description": "SVG icon stack builder — A low-level Node.js module + cli that takes a collection of SVG files, optimizes them, and assembles them into reusable icon assets with matching stylesheet resources.",
   "homepage": "https://github.com/svgforge/svgforge",
   "repository": {
     "type": "git",
@@ -64,9 +64,9 @@
     "css-selector-parser": "^3.3.0",
     "css-tree": "^3.2.1",
     "csso": "^5.0.5",
-    "js-yaml": "^5.4.3",
+    "js-yaml": "^5.5.0",
     "svgo": "^4.1.0",
-    "ventojs": "^2.4.1",
+    "ventojs": "^2.4.2",
     "yargs": "^18.2.0"
   },
   "peerDependencies": {
@@ -78,9 +78,9 @@
     }
   },
   "devDependencies": {
-    "eslint-plugin-jsdoc": "^64.5.4",
-    "pixelmatch": "^7.2.0",
-    "playwright-chromium": "^1.63.0",
+    "eslint-plugin-jsdoc": "^65.5.1",
+    "pixelmatch": "^8.0.0",
+    "playwright-chromium": "^1.65.1",
     "pngjs": "^7.0.0",
     "xo": "^5.0.1"
   }
