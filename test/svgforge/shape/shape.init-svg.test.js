@@ -19,18 +19,18 @@ const TEST_SPRITER = {
       align: {},
     },
   },
-  verbose: mock.fn(),
+  verbose: mock.fn(), // eslint-disable-line node-test/prefer-context-mock -- module-scope mock
 };
 
-const mockFixXMLString = mock.fn();
+const mockFixXMLString = mock.fn(); // eslint-disable-line node-test/prefer-context-mock -- module-scope shared mock
 setDependency(dependencyKeys.fixXmlString, mockFixXMLString);
 
-afterEach(() => {
+afterEach(t => {
   mockFixXMLString.mock.resetCalls();
 });
 
 describe('testing _initSVG()', () => {
-  it('should call fixXMLString if passed svg is not normal', () => {
+  it('should call fixXMLString if passed svg is not normal', t => {
     const TEST_FILE = new SpriteFile({
       contents: Buffer.from('s'),
       path: '/test_base/test_path',
@@ -44,7 +44,7 @@ describe('testing _initSVG()', () => {
           align: {},
         },
       },
-      verbose: mock.fn(),
+      verbose: t.mock.fn(),
     };
 
     mockFixXMLString.mock.mockImplementationOnce(() => ('<svg></svg>'));
@@ -54,7 +54,7 @@ describe('testing _initSVG()', () => {
     assert.ok(mockFixXMLString.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['s'])), 'expected a matching call');
   });
 
-  it('should call fixXMLString and throw error if passed svg is not normal', () => {
+  it('should call fixXMLString and throw error if passed svg is not normal', t => {
     const TEST_FILE = new SpriteFile({
       contents: Buffer.from('s'),
       path: '/test_base/test_path',
@@ -68,7 +68,7 @@ describe('testing _initSVG()', () => {
           align: {},
         },
       },
-      verbose: mock.fn(),
+      verbose: t.mock.fn(),
     };
 
     mockFixXMLString.mock.mockImplementationOnce(() => ('<'));
@@ -80,7 +80,7 @@ describe('testing _initSVG()', () => {
     assert.ok(mockFixXMLString.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['s'])), 'expected a matching call');
   });
 
-  it('should call fixXMLString and throw error if passed svg is not normal and fixXMLString thrown error', () => {
+  it('should call fixXMLString and throw error if passed svg is not normal and fixXMLString thrown error', t => {
     const TEST_FILE = new SpriteFile({
       contents: Buffer.from('s'),
       path: '/test_base/test_path',
@@ -94,7 +94,7 @@ describe('testing _initSVG()', () => {
           align: {},
         },
       },
-      verbose: mock.fn(),
+      verbose: t.mock.fn(),
     };
 
     mockFixXMLString.mock.mockImplementation(() => {
@@ -107,7 +107,7 @@ describe('testing _initSVG()', () => {
     assert.ok(mockFixXMLString.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['s'])), 'expected a matching call');
   });
 
-  it('should not call fixXMLString if passed svg is normal', () => {
+  it('should not call fixXMLString if passed svg is normal', t => {
     const TEST_FILE = new SpriteFile({
       contents: Buffer.from('<svg></svg>'),
       path: '/test_base/test_path',
@@ -121,7 +121,7 @@ describe('testing _initSVG()', () => {
           align: {},
         },
       },
-      verbose: mock.fn(),
+      verbose: t.mock.fn(),
     };
 
     createShape(TEST_FILE, spriter);
@@ -129,7 +129,7 @@ describe('testing _initSVG()', () => {
     assert.strictEqual(mockFixXMLString.mock.callCount(), 0);
   });
 
-  it('should fill entities', () => {
+  it('should fill entities', t => {
     const TEST_ENTITIES = [
       '<!ENTITY name1 "value1">',
       '<!ENTITY name2 "value2">',
@@ -147,7 +147,7 @@ describe('testing _initSVG()', () => {
           align: {},
         },
       },
-      verbose: mock.fn(),
+      verbose: t.mock.fn(),
     };
 
     const shape = createShape(TEST_FILE, spriter);
@@ -155,7 +155,7 @@ describe('testing _initSVG()', () => {
     assert.strictEqual(shape.svg.current.replace('\n', ''), '<svg><!DOCTYPE <!ENTITY name1 "value1"><!ENTITY name2 "value2">>value1</svg>');
   });
 
-  it('should throw error if bad svg parsed', () => {
+  it('should throw error if bad svg parsed', t => {
     const TEST_FILE = new SpriteFile({
       contents: Buffer.from('<<ddfasdfasdf>>'),
       path: '/test_base/test_path',
@@ -169,7 +169,7 @@ describe('testing _initSVG()', () => {
           align: {},
         },
       },
-      verbose: mock.fn(),
+      verbose: t.mock.fn(),
     };
 
     assert.throws(() => {
@@ -177,7 +177,7 @@ describe('testing _initSVG()', () => {
     }, {message: 'Invalid SVG file (error)'});
   });
 
-  it('should set width and height', () => {
+  it('should set width and height', t => {
     const TEST_WIDTH = 200;
     const TEST_HEIGHT = 100;
 
@@ -194,7 +194,7 @@ describe('testing _initSVG()', () => {
           align: {},
         },
       },
-      verbose: mock.fn(),
+      verbose: t.mock.fn(),
     };
 
     const shape = createShape(TEST_FILE, spriter);
@@ -203,7 +203,7 @@ describe('testing _initSVG()', () => {
     assert.strictEqual(shape.height, TEST_HEIGHT);
   });
 
-  it('should set width, height and viewBox to false', () => {
+  it('should set width, height and viewBox to false', t => {
     const TEST_FILE = new SpriteFile({
       contents: Buffer.from('<svg></svg>'),
       path: '/test_base/test_path',
@@ -217,7 +217,7 @@ describe('testing _initSVG()', () => {
           align: {},
         },
       },
-      verbose: mock.fn(),
+      verbose: t.mock.fn(),
     };
 
     const shape = createShape(TEST_FILE, spriter);
@@ -227,7 +227,7 @@ describe('testing _initSVG()', () => {
     assert.strictEqual(shape.viewBox, false);
   });
 
-  it('should set expected viewBox', () => {
+  it('should set expected viewBox', t => {
     const TEST_FILE = new SpriteFile({
       contents: Buffer.from('<svg viewBox="0 1 2 3 4 5 20d ten"></svg>'),
       path: '/test_base/test_path',
@@ -241,7 +241,7 @@ describe('testing _initSVG()', () => {
           align: {},
         },
       },
-      verbose: mock.fn(),
+      verbose: t.mock.fn(),
     };
 
     const shape = createShape(TEST_FILE, spriter);
@@ -249,7 +249,7 @@ describe('testing _initSVG()', () => {
     assert.deepStrictEqual(shape.viewBox, [0, 1, 2, 3, 4, 5, 20, NaN]);
   });
 
-  it('should fill viewBox', () => {
+  it('should fill viewBox', t => {
     const TEST_FILE = new SpriteFile({
       contents: Buffer.from('<svg viewBox="0 1"></svg>'),
       path: '/test_base/test_path',
@@ -263,7 +263,7 @@ describe('testing _initSVG()', () => {
           align: {},
         },
       },
-      verbose: mock.fn(),
+      verbose: t.mock.fn(),
     };
 
     const shape = createShape(TEST_FILE, spriter);
@@ -271,7 +271,7 @@ describe('testing _initSVG()', () => {
     assert.deepStrictEqual(shape.viewBox, [0, 1, 0, 0]);
   });
 
-  it('should set title and description to null', () => {
+  it('should set title and description to null', t => {
     const TEST_FILE = new SpriteFile({
       contents: Buffer.from('<svg></svg>'),
       path: '/test_base/test_path',
@@ -285,7 +285,7 @@ describe('testing _initSVG()', () => {
     assert.strictEqual(shape.description, null);
   });
 
-  it('should set title and description accordingly to svg', () => {
+  it('should set title and description accordingly to svg', t => {
     const TEST_FILE = new SpriteFile({
       contents: Buffer.from('<svg><title>test title</title><desc>test description</desc></svg>'),
       path: '/test_base/test_path',

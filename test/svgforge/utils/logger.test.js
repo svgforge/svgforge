@@ -11,15 +11,15 @@ import {createLogger} from '../../../lib/svgforge/utils/logger.js';
 describe('testing createLogger()', () => {
   let stdoutWriteSpy;
 
-  afterEach(() => {
-    mock.restoreAll();
+  afterEach(t => {
+    t.mock.restoreAll();
   });
 
   const spyStdout = () => {
-    stdoutWriteSpy = mock.method(process.stdout, 'write', () => true);
+    stdoutWriteSpy = mock.method(process.stdout, 'write', () => true); // eslint-disable-line node-test/prefer-context-mock -- module-scope mock
   };
 
-  it('should write messages at or above the configured level to stdout', () => {
+  it('should write messages at or above the configured level to stdout', t => {
     spyStdout();
     const logger = createLogger({level: 'info'});
 
@@ -30,7 +30,7 @@ describe('testing createLogger()', () => {
     assert.match(stdoutWriteSpy.mock.calls[0].arguments[0], /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3} - info: Hello world\n$/u);
   });
 
-  it('should write error and warn messages', () => {
+  it('should write error and warn messages', t => {
     spyStdout();
     const logger = createLogger({level: 'debug'});
 
@@ -42,7 +42,7 @@ describe('testing createLogger()', () => {
     assert.strictEqual(stdoutWriteSpy.mock.callCount(), 4);
   });
 
-  it('should expose a winston-compatible surface', () => {
+  it('should expose a winston-compatible surface', t => {
     const logger = createLogger({level: 'verbose'});
 
     assert.strictEqual(logger.level, 'verbose');
@@ -52,7 +52,7 @@ describe('testing createLogger()', () => {
     assert.strictEqual(typeof logger.info, 'function');
   });
 
-  it('should not write anything when silent', () => {
+  it('should not write anything when silent', t => {
     spyStdout();
     const logger = createLogger({level: 'debug', silent: true});
 
@@ -62,7 +62,7 @@ describe('testing createLogger()', () => {
     assert.strictEqual(stdoutWriteSpy.mock.callCount(), 0);
   });
 
-  it('should route explicit log() calls through emit', () => {
+  it('should route explicit log() calls through emit', t => {
     spyStdout();
     const logger = createLogger({level: 'warn'});
 

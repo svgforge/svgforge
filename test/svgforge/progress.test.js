@@ -1,8 +1,8 @@
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
-import {describe, it, mock} from 'node:test';
-import SVGSpriter from '../../lib/svgforge.js';
+import {describe, it} from 'node:test';
+import SVGSpriter from '../../lib/index.js';
 import {addFixtureFiles} from '../../test-utils/add-files.js';
 import {constants} from '../../test-utils/fixture-configs.js';
 import {paths} from '../../test-utils/constants.js';
@@ -14,11 +14,11 @@ const TEST_CONFIG = constants.DEFAULT;
 const temporaryPath = path.join(paths.tmp, 'progress');
 
 describe('progress events', () => {
-  it('should emit one progress event per processed shape with processed/total', async () => {
+  it('should emit one progress event per processed shape with processed/total', async t => {
     await removeTmpPath(temporaryPath);
 
     const spriter = new SVGSpriter({dest: temporaryPath});
-    const progress = mock.fn();
+    const progress = t.mock.fn();
     spriter.on('progress', progress);
 
     addFixtureFiles(spriter, TEST_CONFIG.files, TEST_CONFIG.cwd);
@@ -48,11 +48,11 @@ describe('progress events', () => {
     assert.strictEqual(last.total, expectedTotal);
   });
 
-  it('should not emit progress when no shapes are added', async () => {
+  it('should not emit progress when no shapes are added', async t => {
     await removeTmpPath(temporaryPath);
 
     const spriter = new SVGSpriter({dest: temporaryPath});
-    const progress = mock.fn();
+    const progress = t.mock.fn();
     spriter.on('progress', progress);
 
     await new Promise((resolve, reject) => {

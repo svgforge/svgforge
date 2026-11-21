@@ -8,7 +8,7 @@ import createShape from '../../../lib/svgforge/shape/index.js';
 import NotPermittedError from '../../../lib/svgforge/errors/not-permitted-error.js';
 import {dependencyKeys, setDependency} from '../../../lib/deps.js';
 
-const mockMinifyBlock = mock.fn(() => ({css: ''}));
+const mockMinifyBlock = mock.fn(() => ({css: ''})); // eslint-disable-line node-test/prefer-context-mock -- module-scope shared mock
 setDependency(dependencyKeys.csso, {minifyBlock: mockMinifyBlock});
 
 const TEST_SPRITER = {
@@ -21,7 +21,7 @@ const TEST_SPRITER = {
       doctypeDeclaration: '',
     },
   },
-  verbose: mock.fn(),
+  verbose: mock.fn(), // eslint-disable-line node-test/prefer-context-mock -- module-scope mock
 };
 const TEST_FILE = new SpriteFile({
   contents: Buffer.from('<svg></svg>'),
@@ -53,7 +53,7 @@ describe('testing setNamespace()', () => {
     return shape;
   };
 
-  it('should raise error if shape is not ready', () => {
+  it('should raise error if shape is not ready', t => {
     const shape = makeShape(true, false, true);
     shape.svg.ready = false;
 
@@ -63,9 +63,9 @@ describe('testing setNamespace()', () => {
   });
 
   describe('if namespaceIds', () => {
-    it('should namespace all IDs and substitute ID references', () => {
+    it('should namespace all IDs and substitute ID references', t => {
       const shape = makeShape(true, false, false);
-      mock.method(shape, '_replaceIdAndClassnameReferences').mock.mockImplementation(value => value);
+      t.mock.method(shape, '_replaceIdAndClassnameReferences').mock.mockImplementation(value => value);
       const TEST_NAMESPACE = 'test-namespace';
       shape.dom = parse(`<svg xmlns="${SVG_NAMESPACE}" xmlns:xlink="${XLINK_NAMESPACE}" aria-labelledby="a test">
         <g id="a"><use href="#a"/><use href="data:keep"/><path fill="#a"/><use xlink:href="#a"/><use xlink:href="data:also-keep"/></g>
@@ -97,9 +97,9 @@ describe('testing setNamespace()', () => {
   });
 
   describe('with namespaceClassnames', () => {
-    it('should namespace all class names', () => {
+    it('should namespace all class names', t => {
       const shape = makeShape(false, false, true);
-      mock.method(shape, '_replaceIdAndClassnameReferences').mock.mockImplementation(() => undefined);
+      t.mock.method(shape, '_replaceIdAndClassnameReferences').mock.mockImplementation(() => undefined);
       const TEST_NAMESPACE = 'ns';
       shape.dom = parse(`<svg xmlns="${SVG_NAMESPACE}"><g class="1 2 3 4 5  6 "/></svg>`);
 
@@ -112,7 +112,7 @@ describe('testing setNamespace()', () => {
     });
   });
 
-  it('should return early if already namespaced', () => {
+  it('should return early if already namespaced', t => {
     const shape = makeShape(true, true, true);
 
     shape.setNamespace('123');
@@ -120,7 +120,7 @@ describe('testing setNamespace()', () => {
     assert.strictEqual(shape._namespaced, true);
   });
 
-  it('should convert xlink:href attributes even without namespaceIds and namespaceClassnames', () => {
+  it('should convert xlink:href attributes even without namespaceIds and namespaceClassnames', t => {
     const shape = makeShape(false, false, false);
     shape.dom = parse(`<svg xmlns="${SVG_NAMESPACE}" xmlns:xlink="${XLINK_NAMESPACE}"><use xlink:href="#id"/></svg>`);
 
@@ -135,7 +135,7 @@ describe('testing setNamespace()', () => {
 });
 
 describe('testing resetNamespace()', () => {
-  it('should not change _namespaced if it is already not namespaced', () => {
+  it('should not change _namespaced if it is already not namespaced', t => {
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     shape._namespaced = false;
     shape.resetNamespace();
@@ -143,7 +143,7 @@ describe('testing resetNamespace()', () => {
     assert.strictEqual(shape._namespaced, false);
   });
 
-  it('should not change _namespaced if this.spriter.config.svg.namespaceIDs is falsy', () => {
+  it('should not change _namespaced if this.spriter.config.svg.namespaceIDs is falsy', t => {
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     shape.spriter.config.svg.namespaceIDs = false;
     shape._namespaced = true;
@@ -152,7 +152,7 @@ describe('testing resetNamespace()', () => {
     assert.strictEqual(shape._namespaced, true);
   });
 
-  it('should change _namespaced if it is namespaced and this.spriter.config.svg.namespaceIDs is truthy', () => {
+  it('should change _namespaced if it is namespaced and this.spriter.config.svg.namespaceIDs is truthy', t => {
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     shape.spriter.config.svg.namespaceIDs = true;
     shape._namespaced = true;

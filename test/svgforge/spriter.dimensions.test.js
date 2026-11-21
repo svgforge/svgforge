@@ -6,12 +6,12 @@ import assert from 'node:assert/strict';
 import {describe, it, mock} from 'node:test';
 import {isDeepStrictEqual} from 'node:util';
 import {DOMParser} from '@xmldom/xmldom';
-import SVGSpriter from '../../lib/svgforge.js';
+import SVGSpriter from '../../lib/index.js';
 import {dependencyKeys, setDependency} from '../../lib/deps.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const mockCalc = mock.fn();
+const mockCalc = mock.fn(); // eslint-disable-line node-test/prefer-context-mock -- module-scope shared mock
 setDependency(dependencyKeys.svgDimensions, mockCalc);
 
 const expectations = [{
@@ -68,7 +68,7 @@ describe('testing shapes', () => {
     });
   }
 
-  it('should skip a shape whose dimensions cannot be calculated instead of emitting NaN viewBox values', async () => {
+  it('should skip a shape whose dimensions cannot be calculated instead of emitting NaN viewBox values', async t => {
     const spriter = new SVGSpriter({
       shape: {
         dest: 'svg',

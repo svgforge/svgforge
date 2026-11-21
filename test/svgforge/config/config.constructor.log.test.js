@@ -15,15 +15,15 @@ describe('testing log', () => {
     transports: [{
       level: 'info',
     }],
-    log: mock.fn(),
-    debug: mock.fn(),
-    info: mock.fn(),
-    verbose: mock.fn(),
-    warn: mock.fn(),
-    error: mock.fn(),
+    log: mock.fn(), // eslint-disable-line node-test/prefer-context-mock -- module-scope mock
+    debug: mock.fn(), // eslint-disable-line node-test/prefer-context-mock -- module-scope mock
+    info: mock.fn(), // eslint-disable-line node-test/prefer-context-mock -- module-scope mock
+    verbose: mock.fn(), // eslint-disable-line node-test/prefer-context-mock -- module-scope mock
+    warn: mock.fn(), // eslint-disable-line node-test/prefer-context-mock -- module-scope mock
+    error: mock.fn(), // eslint-disable-line node-test/prefer-context-mock -- module-scope mock
   });
 
-  it('should keep a logger if it is passed as config.log', () => {
+  it('should keep a logger if it is passed as config.log', t => {
     const TEST_LOGGER = getLogger();
     const config = new SVGSpriterConfig({
       log: TEST_LOGGER,
@@ -32,11 +32,11 @@ describe('testing log', () => {
     assert.deepStrictEqual(config.log, TEST_LOGGER);
   });
 
-  it('should call debug 6 times and verbose 1 time if shape has no meta and align', () => {
+  it('should call debug 6 times and verbose 1 time if shape has no meta and align', t => {
     const TEST_LOGGER = getLogger();
 
-    mock.method(TEST_LOGGER, 'debug');
-    mock.method(TEST_LOGGER, 'verbose');
+    t.mock.method(TEST_LOGGER, 'debug');
+    t.mock.method(TEST_LOGGER, 'verbose');
 
     // eslint-disable-next-line no-new
     new SVGSpriterConfig({
@@ -60,7 +60,7 @@ describe('testing log', () => {
     beforeAll(() => {
       // Suppressing console
       console._stdout = {
-        write: mock.fn(),
+        write: mock.fn(), // eslint-disable-line node-test/prefer-context-mock -- module-scope mock
       };
     });
 
@@ -82,7 +82,7 @@ describe('testing log', () => {
       });
     }
 
-    it('non-silent with info level if passed truthy value', () => {
+    it('non-silent with info level if passed truthy value', t => {
       const config = new SVGSpriterConfig({
         log: true,
       });
@@ -93,7 +93,7 @@ describe('testing log', () => {
       assert.strictEqual(config.log.transports[0].silent, false);
     });
 
-    it('silent with info level if passed falsy value', () => {
+    it('silent with info level if passed falsy value', t => {
       const config = new SVGSpriterConfig({
         log: false,
       });

@@ -4,7 +4,7 @@
 import path from 'node:path';
 import {Buffer} from 'node:buffer';
 import assert from 'node:assert/strict';
-import {describe, it, mock} from 'node:test';
+import {describe, it} from 'node:test';
 import SpriteFile from '../../../lib/svgforge/file.js';
 import createShape from '../../../lib/svgforge/shape/index.js';
 
@@ -17,13 +17,13 @@ describe('testing Shape.constructor', () => {
       cwd: '/',
     });
 
-    it('should set expected initial values', () => {
+    it('should set expected initial values', t => {
       const TEST_SPRITER = {
         config: {
           shape: {meta: {}},
           id: {},
         },
-        verbose: mock.fn(),
+        verbose: t.mock.fn(),
       };
       const shape = createShape(TEST_FILE, TEST_SPRITER);
 
@@ -37,7 +37,7 @@ describe('testing Shape.constructor', () => {
     });
 
     describe('config', () => {
-      it('should set config from passed spriter.config', () => {
+      it('should set config from passed spriter.config', t => {
         const TEST_SPRITER = {
           config: {
             shape: {
@@ -45,7 +45,7 @@ describe('testing Shape.constructor', () => {
             },
             id: {},
           },
-          verbose: mock.fn(),
+          verbose: t.mock.fn(),
         };
         const shape = createShape(TEST_FILE, TEST_SPRITER);
 
@@ -53,7 +53,7 @@ describe('testing Shape.constructor', () => {
       });
 
       describe('testing generator', () => {
-        it('should set default generator if provided generator is not a string', () => {
+        it('should set default generator if provided generator is not a string', t => {
           const TEST_SPRITER = {
             config: {
               shape: {
@@ -63,7 +63,7 @@ describe('testing Shape.constructor', () => {
                 meta: {},
               },
             },
-            verbose: mock.fn(),
+            verbose: t.mock.fn(),
           };
           const shape = createShape(TEST_FILE, TEST_SPRITER);
 
@@ -71,7 +71,7 @@ describe('testing Shape.constructor', () => {
           assert.strictEqual(shape.config.id.generator('test 1.svg'), 'test_1');
         });
 
-        it('default generator should keep folder names from relative path', () => {
+        it('default generator should keep folder names from relative path', t => {
           const baseFolder = `${path.sep}my${path.sep}full${path.sep}path`;
           const fullPath = `${path.sep}my${path.sep}full${path.sep}path${path.sep}folder${path.sep}test_path.f.svg`;
           const TEST_FILE_WITH_FOLDERS = new SpriteFile({
@@ -89,14 +89,14 @@ describe('testing Shape.constructor', () => {
                 meta: {},
               },
             },
-            verbose: mock.fn(),
+            verbose: t.mock.fn(),
           };
           const shape = createShape(TEST_FILE_WITH_FOLDERS, TEST_SPRITER);
 
           assert.strictEqual(shape.config.id.generator(TEST_FILE_WITH_FOLDERS.relative, TEST_FILE_WITH_FOLDERS), 'folder--test_path.f');
         });
 
-        it('should set generator if provided generator is a string', () => {
+        it('should set generator if provided generator is a string', t => {
           const TEST_SPRITER = {
             config: {
               shape: {
@@ -106,7 +106,7 @@ describe('testing Shape.constructor', () => {
                 meta: {},
               },
             },
-            verbose: mock.fn(),
+            verbose: t.mock.fn(),
           };
           const shape = createShape(TEST_FILE, TEST_SPRITER);
 
@@ -114,7 +114,7 @@ describe('testing Shape.constructor', () => {
           assert.strictEqual(shape.config.id.generator('test 1.svg'), 'generatortest_1');
         });
 
-        it('should set generator if provided generator is a string with %s', () => {
+        it('should set generator if provided generator is a string with %s', t => {
           const TEST_SPRITER = {
             config: {
               shape: {
@@ -124,7 +124,7 @@ describe('testing Shape.constructor', () => {
                 meta: {},
               },
             },
-            verbose: mock.fn(),
+            verbose: t.mock.fn(),
           };
           const shape = createShape(TEST_FILE, TEST_SPRITER);
 
@@ -132,7 +132,7 @@ describe('testing Shape.constructor', () => {
           assert.strictEqual(shape.config.id.generator('test 1.svg'), 'test_1-test');
         });
 
-        it('should set generator if provided generator with proper separator', () => {
+        it('should set generator if provided generator with proper separator', t => {
           const TEST_SPRITER = {
             config: {
               shape: {
@@ -143,7 +143,7 @@ describe('testing Shape.constructor', () => {
                 meta: {},
               },
             },
-            verbose: mock.fn(),
+            verbose: t.mock.fn(),
           };
           const shape = createShape(TEST_FILE, TEST_SPRITER);
 
@@ -151,7 +151,7 @@ describe('testing Shape.constructor', () => {
           assert.strictEqual(shape.config.id.generator('test 1.svg'), 'test_1-test');
         });
 
-        it('should set generator if provided generator without proper separator', () => {
+        it('should set generator if provided generator without proper separator', t => {
           const TEST_SPRITER = {
             config: {
               shape: {
@@ -162,7 +162,7 @@ describe('testing Shape.constructor', () => {
                 meta: {},
               },
             },
-            verbose: mock.fn(),
+            verbose: t.mock.fn(),
           };
           const shape = createShape(TEST_FILE, TEST_SPRITER);
 
@@ -173,7 +173,7 @@ describe('testing Shape.constructor', () => {
     });
 
     describe('testing meta', () => {
-      it('should set exact meta if provided meta has generated id', () => {
+      it('should set exact meta if provided meta has generated id', t => {
         const TEST_SPRITER = {
           config: {
             shape: {
@@ -185,14 +185,14 @@ describe('testing Shape.constructor', () => {
               },
             },
           },
-          verbose: mock.fn(),
+          verbose: t.mock.fn(),
         };
         const shape = createShape(TEST_FILE, TEST_SPRITER);
 
         assert.strictEqual(shape.meta, 'TEST_META');
       });
 
-      it('should set exact meta if provided meta has relative name', () => {
+      it('should set exact meta if provided meta has relative name', t => {
         const TEST_SPRITER = {
           config: {
             shape: {
@@ -204,7 +204,7 @@ describe('testing Shape.constructor', () => {
               },
             },
           },
-          verbose: mock.fn(),
+          verbose: t.mock.fn(),
         };
         const shape = createShape(TEST_FILE, TEST_SPRITER);
 

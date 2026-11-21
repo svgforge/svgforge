@@ -13,7 +13,7 @@ const TEST_SPRITER = {
       align: {},
     },
   },
-  verbose: mock.fn(),
+  verbose: mock.fn(), // eslint-disable-line node-test/prefer-context-mock -- module-scope mock
 };
 const TEST_FILE = new SpriteFile({
   contents: Buffer.from('<svg></svg>'),
@@ -23,7 +23,7 @@ const TEST_FILE = new SpriteFile({
 });
 
 describe('testing getDimensions()', () => {
-  it('should return expected width, height', () => {
+  it('should return expected width, height', t => {
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     shape.width = 100;
     shape.height = 200;
@@ -36,7 +36,7 @@ describe('testing getDimensions()', () => {
 });
 
 describe('testing setDimensions()', () => {
-  it('should set expected width, height', () => {
+  it('should set expected width, height', t => {
     const TEST_WIDTH = 200;
     const TEST_HEIGHT = 100;
     const shape = createShape(TEST_FILE, TEST_SPRITER);
@@ -51,33 +51,33 @@ describe('testing setDimensions()', () => {
 });
 
 describe('testing getViewbox()', () => {
-  it('should set viewbox if it has not', () => {
+  it('should set viewbox if it has not', t => {
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     shape.viewBox = null;
     shape.width = null;
     shape.height = null;
 
-    mock.method(shape, 'setViewbox').mock.mockImplementationOnce(() => ('TEST'));
+    t.mock.method(shape, 'setViewbox').mock.mockImplementationOnce(() => ('TEST'));
 
     shape.getViewbox();
 
     assert.ok(shape.setViewbox.mock.calls.some(call => isDeepStrictEqual(call.arguments, [0, 0, null, null])), 'expected a matching call');
   });
 
-  it('should set viewbox with provided values', () => {
+  it('should set viewbox with provided values', t => {
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     shape.viewBox = null;
     shape.width = null;
     shape.height = null;
 
-    mock.method(shape, 'setViewbox').mock.mockImplementationOnce(() => ('TEST'));
+    t.mock.method(shape, 'setViewbox').mock.mockImplementationOnce(() => ('TEST'));
 
     shape.getViewbox(10, 200);
 
     assert.ok(shape.setViewbox.mock.calls.some(call => isDeepStrictEqual(call.arguments, [0, 0, 10, 200])), 'expected a matching call');
   });
 
-  it('should should return viewBox', () => {
+  it('should should return viewBox', t => {
     const TEST_VIEWBOX = 'test viewbox';
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     shape.viewBox = TEST_VIEWBOX;
@@ -87,7 +87,7 @@ describe('testing getViewbox()', () => {
 });
 
 describe('testing setViewbox()', () => {
-  it('should set accordingly if first param is array', () => {
+  it('should set accordingly if first param is array', t => {
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     const expected = [0, 1, 2, 3, 4, 23, NaN];
 
@@ -96,7 +96,7 @@ describe('testing setViewbox()', () => {
     assert.strictEqual(shape.dom.documentElement.getAttribute('viewBox'), expected.join(' '));
   });
 
-  it('should fill with zeros if first param is empty array', () => {
+  it('should fill with zeros if first param is empty array', t => {
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     const expected = [0, 0, 0, 0];
 
@@ -105,7 +105,7 @@ describe('testing setViewbox()', () => {
     assert.strictEqual(shape.dom.documentElement.getAttribute('viewBox'), expected.join(' '));
   });
 
-  it('should accordingly to passed params', () => {
+  it('should accordingly to passed params', t => {
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     const expected = [0, 1, 2, 3];
 

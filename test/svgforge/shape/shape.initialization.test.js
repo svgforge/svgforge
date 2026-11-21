@@ -13,13 +13,13 @@ import {
 import {isDeepStrictEqual} from 'node:util';
 import SpriteFile from '../../../lib/svgforge/file.js';
 import getShape from '../../../lib/svgforge/shape/index.js';
-import SVGSpriter from '../../../lib/svgforge.js';
+import SVGSpriter from '../../../lib/index.js';
 import {dependencyKeys, setDependency} from '../../../lib/deps.js';
 import ArgumentError from '../../../lib/svgforge/errors/argument-error.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const mockFixXMLString = mock.fn();
+const mockFixXMLString = mock.fn(); // eslint-disable-line node-test/prefer-context-mock -- module-scope shared mock
 setDependency(dependencyKeys.fixXmlString, mockFixXMLString);
 
 const TEST_SVG = `<svg viewBox="0 0
@@ -29,7 +29,7 @@ const FIXED_TEST_SVG = '<svg viewBox="0 0 16 16"></svg>';
 describe('testing SVGShape initialization', () => {
   let spriter;
 
-  beforeEach(() => {
+  beforeEach(t => {
     mockFixXMLString.mock.resetCalls();
     spriter = new SVGSpriter({
       shape: {
@@ -38,7 +38,7 @@ describe('testing SVGShape initialization', () => {
     });
   });
 
-  it('should not throw an error and should call fixXMLString if fixXMLString is not throwing error', () => {
+  it('should not throw an error and should call fixXMLString if fixXMLString is not throwing error', t => {
     mockFixXMLString.mock.mockImplementationOnce(() => (FIXED_TEST_SVG));
 
     getShape(new SpriteFile({
@@ -48,7 +48,7 @@ describe('testing SVGShape initialization', () => {
     assert.ok(mockFixXMLString.mock.calls.some(call => isDeepStrictEqual(call.arguments, [TEST_SVG])), 'expected a matching call');
   });
 
-  it('should throw error and should call fixXMLString if fixXMLString is throwing error', () => {
+  it('should throw error and should call fixXMLString if fixXMLString is throwing error', t => {
     mockFixXMLString.mock.mockImplementation(() => {
       throw new Error('some error');
     });
@@ -62,7 +62,7 @@ describe('testing SVGShape initialization', () => {
     assert.ok(mockFixXMLString.mock.calls.some(call => isDeepStrictEqual(call.arguments, [TEST_SVG])), 'expected a matching call');
   });
 
-  it('should throw an error and should call fixXMLString on non-svg files', () => {
+  it('should throw an error and should call fixXMLString on non-svg files', t => {
     const TEST_NON_SVG = '<div class="test">123</div>';
 
     assert.throws(() => {
@@ -74,7 +74,7 @@ describe('testing SVGShape initialization', () => {
     assert.ok(mockFixXMLString.mock.calls.some(call => isDeepStrictEqual(call.arguments, [TEST_NON_SVG])), 'expected a matching call');
   });
 
-  it('should not throw an error and should not call fixXMLString on actual valid svg files', () => {
+  it('should not throw an error and should not call fixXMLString on actual valid svg files', t => {
     const cwd = path.join(__dirname, '../../fixture/svg/single');
     const weatherFiles = fs.globSync('**/weather*.svg', {cwd}).toSorted((a, b) => b.localeCompare(a));
 
