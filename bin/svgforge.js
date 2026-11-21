@@ -230,17 +230,15 @@ function writeFiles(files) {
  @param {() => void} finishProgress Finishes the progress bar
  @returns {Promise<number>} Promise resolving to the number of written files
  */
-function compile(spriter, finishProgress) {
-  return new Promise((resolve, reject) => {
-    spriter.compile((error, result) => {
-      finishProgress();
-      if (error) {
-        reject(error);
-      } else {
-        resolve(writeFiles(result));
-      }
-    });
-  });
+async function compile(spriter, finishProgress) {
+  try {
+    const {result} = await spriter.compile();
+    finishProgress();
+    return writeFiles(result);
+  } catch (error) {
+    finishProgress();
+    throw error;
+  }
 }
 
 /**
@@ -637,10 +635,10 @@ async function main() {
       files: written,
       dest: config.dest ?? '.',
       elapsedMs: Date.now() - startedAt,
-      concurrency: spriter._limit,
+      concurrency: spriter.limit,
       resvg: await isResvgAvailable(),
-      dimensionSkipped: spriter._dimensionSkipped ?? 0,
-      errorSkipped: spriter._errorSkipped ?? 0,
+      dimensionSkipped: spriter.dimensionSkipped,
+      errorSkipped: spriter.errorSkipped,
       cliVersion: version,
     });
   } catch (error) {

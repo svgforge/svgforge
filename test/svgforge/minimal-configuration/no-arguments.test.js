@@ -22,7 +22,7 @@ describe('svg-sprite: with no arguments', () => {
   });
 
   it('with no SVG files has an empty result', async () => {
-    const {result, data} = await spriter.compileAsync();
+    const {result, data} = await spriter.compile();
 
     assert.ok(result instanceof Object);
     assert.ok(Object.hasOwn(result, 'shapes'));
@@ -34,7 +34,7 @@ describe('svg-sprite: with no arguments', () => {
 
   it(`with ${weather.length} SVG files returns ${weather.length} optimized shapes`, async () => {
     addFixtureFiles(spriter, weather, cwdWeather);
-    const {result, data} = await spriter.compileAsync();
+    const {result, data} = await spriter.compile();
 
     assert.ok(result instanceof Object);
     assert.ok(Object.hasOwn(result, 'shapes'));
@@ -47,7 +47,7 @@ describe('svg-sprite: with no arguments', () => {
   it(`with ${weather.length} SVG files with relative paths returns ${weather.length} optimized shapes`, async () => {
     addRelativeFixtureFiles(spriter, weather, cwdWeather);
 
-    const {result, data} = await spriter.compileAsync();
+    const {result, data} = await spriter.compile();
 
     assert.ok(result instanceof Object);
     assert.ok(Object.hasOwn(result, 'shapes'));

@@ -54,7 +54,7 @@ for (const {name, testConfigKey} of [
 
       spriter = new SVGSpriter({dest: temporaryPath});
       addFixtureFiles(spriter, testConfig.files, testConfig.cwd);
-      const {result, data: cssData} = await spriter.compileAsync({
+      const {result, data: cssData} = await spriter.compile({
         stack: {
           sprite: `svg/stack${testConfig.namespace}.svg`, render: {
             css: true,
@@ -109,7 +109,7 @@ describe('without viewbox', () => {
 
     spriter = new SVGSpriter({dest: temporaryPath});
     addFixtureFiles(spriter, testConfig.files, testConfig.cwd);
-    const {result, data: cssData} = await spriter.compileAsync({
+    const {result, data: cssData} = await spriter.compile({
       stack: {
         sprite: `svg/stack${testConfig.namespace}.svg`, render: {
           css: true,

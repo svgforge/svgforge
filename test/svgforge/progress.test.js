@@ -24,9 +24,7 @@ describe('progress events', () => {
     addFixtureFiles(spriter, TEST_CONFIG.files, TEST_CONFIG.cwd);
     const expectedTotal = TEST_CONFIG.files.length;
 
-    await new Promise((resolve, reject) => {
-      spriter.compile(error => error ? reject(error) : resolve());
-    });
+    await spriter.compile();
 
     assert.strictEqual(progress.mock.callCount(), expectedTotal);
 
@@ -55,9 +53,7 @@ describe('progress events', () => {
     const progress = t.mock.fn();
     spriter.on('progress', progress);
 
-    await new Promise((resolve, reject) => {
-      spriter.compile(error => error ? reject(error) : resolve());
-    });
+    await spriter.compile();
 
     assert.strictEqual(progress.mock.callCount(), 0);
   });

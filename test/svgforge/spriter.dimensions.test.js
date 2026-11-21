@@ -52,7 +52,7 @@ describe('testing shapes', () => {
 
       spriter.add(svgFilePath, svg, Buffer.from(TEST_SVG));
 
-      const {result} = await spriter.compileAsync();
+      const {result} = await spriter.compile();
 
       // Shape transformations may complete asynchronously (e.g. worker-thread
       // optimization), so assert on the dimension call only after processing.
@@ -86,7 +86,7 @@ describe('testing shapes', () => {
     const svgFilePath = path.join(__dirname, '../fixture/svg/special/without-dims/46x46.svg');
     spriter.add(svgFilePath, '46x46.svg', Buffer.from(TEST_SVG));
 
-    const {result} = await spriter.compileAsync();
+    const {result} = await spriter.compile();
 
     assert.ok(result instanceof Object);
     assert.deepStrictEqual(result.shapes, []);

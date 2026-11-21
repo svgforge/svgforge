@@ -11,7 +11,13 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 import {before as beforeAll, describe, it} from 'node:test';
-import SVGSpriter from '../../lib/index.js';
+import SVGSpriter, {
+  createSpriter as createSpriterFactory,
+  ArgumentError,
+  DimensionsCalculationError,
+  NotPermittedError,
+  XmlFixingError,
+} from '../../lib/index.js';
 import {addFixtureFiles} from '../../test-utils/add-files.js';
 import {paths} from '../../test-utils/constants.js';
 import removeTmpPath from '../../test-utils/remove-temp-path.js';
@@ -33,23 +39,6 @@ const createSpriter = (mode = {}) => {
   return spriter;
 };
 
-/**
- Compile and resolve the callback result
-
- @param {SVGSpriter} spriter Spriter instance
- @param {...unknown} arguments_ Arguments passed to compile, without the callback
- @returns {Promise<{result: object, data: object}>} Compilation result
- */
-const compileWithCallback = (spriter, ...arguments_) => new Promise((resolve, reject) => {
-  spriter.compile(...arguments_, (error, result, data) => {
-    if (error) {
-      reject(error);
-    } else {
-      resolve({result, data});
-    }
-  });
-});
-
 describe('public API', () => {
   beforeAll(async () => {
     await removeTmpPath(temporaryPath);
@@ -60,12 +49,20 @@ describe('public API', () => {
       assert.strictEqual(typeof SVGSpriter, 'function');
     });
 
+    it('exposes named exports for the factory and error classes', () => {
+      assert.strictEqual(typeof createSpriterFactory, 'function');
+      assert.strictEqual(ArgumentError.name, 'ArgumentError');
+      assert.strictEqual(DimensionsCalculationError.name, 'DimensionsCalculationError');
+      assert.strictEqual(NotPermittedError.name, 'NotPermittedError');
+      assert.strictEqual(XmlFixingError.name, 'XmlFixingError');
+    });
+
     it('creates a spriter when called with new, as documented', () => {
       const spriter = new SVGSpriter({dest: temporaryPath});
 
       assert.strictEqual(typeof spriter.add, 'function');
       assert.strictEqual(typeof spriter.compile, 'function');
-      assert.strictEqual(typeof spriter.compileAsync, 'function');
+      // CompileAsync removed in 4.0; compile() returns a Promise.
       assert.strictEqual(typeof spriter.getShapes, 'function');
     });
 
@@ -75,20 +72,20 @@ describe('public API', () => {
 
       assert.strictEqual(typeof spriter.add, 'function');
       assert.strictEqual(typeof spriter.compile, 'function');
-      assert.strictEqual(typeof spriter.compileAsync, 'function');
+      // CompileAsync removed in 4.0; compile() returns a Promise.
       assert.strictEqual(typeof spriter.getShapes, 'function');
     });
   });
 
-  describe('compile() overloads', () => {
-    it('accepts (config, callback)', async () => {
-      const {result} = await compileWithCallback(createSpriter(), {symbol: {}});
+  describe('compile()', () => {
+    it('returns a Promise resolving to {result, data}', async () => {
+      const {result} = await createSpriter().compile({symbol: {}});
 
       assert.deepStrictEqual(Object.keys(result), ['symbol']);
     });
 
-    it('accepts (callback) and uses the configured modes', async () => {
-      const {result} = await compileWithCallback(createSpriter({symbol: {}}));
+    it('uses configured modes when called without config', async () => {
+      const {result} = await createSpriter({symbol: {}}).compile();
 
       assert.deepStrictEqual(Object.keys(result), ['symbol']);
     });
@@ -99,7 +96,7 @@ describe('public API', () => {
         spriter.once('compiled', () => resolve(true));
       });
 
-      await compileWithCallback(spriter);
+      await spriter.compile();
 
       assert.strictEqual(await compiled, true);
     });
@@ -108,7 +105,7 @@ describe('public API', () => {
   describe('output modes', () => {
     it('compiles every supported mode in one run', async () => {
       const spriter = createSpriter();
-      const {result} = await spriter.compileAsync({
+      const {result} = await spriter.compile({
         view: {},
         defs: {},
         symbol: {},

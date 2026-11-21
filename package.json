@@ -41,15 +41,26 @@
     "svgforge": "./bin/svgforge.js"
   },
   "main": "lib/index.js",
+  "types": "./types/index.d.ts",
   "exports": {
-    ".": "./lib/index.js",
-    "./utils": "./lib/svgforge/utils/index.js",
-    "./lib/svg-sprite/utils/index.js": "./lib/svgforge/utils/index.js"
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./utils": {
+      "types": "./types/utils.d.ts",
+      "default": "./lib/svgforge/utils/index.js"
+    },
+    "./lib/svg-sprite/utils/index.js": {
+      "types": "./types/utils.d.ts",
+      "default": "./lib/svgforge/utils/index.js"
+    }
   },
   "files": [
     "bin",
     "lib",
-    "tmpl"
+    "tmpl",
+    "types"
   ],
   "scripts": {
     "lint": "xo",

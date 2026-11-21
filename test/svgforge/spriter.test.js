@@ -180,7 +180,7 @@ describe('testing transform', () => {
       contents: fs.readFileSync(testSvgPath),
     }));
 
-    await spriter.compileAsync({css: true});
+    await spriter.compile({css: true});
 
     assert.ok(testTransformFunction.mock.calls.some(call => isDeepStrictEqual(call.arguments, [])), 'expected a matching call');
   });

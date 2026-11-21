@@ -48,6 +48,31 @@ const xoConfig = [
     },
   },
   {
+    name: 'svgforge/typescript-declarations',
+    files: ['**/*.d.ts'],
+    rules: {
+      '@typescript-eslint/naming-convention': [
+        'error',
+        {
+          selector: 'typeLike',
+          format: ['StrictPascalCase'],
+          filter: {
+            regex: '^SVG',
+            match: false,
+          },
+        },
+        {
+          selector: 'typeLike',
+          format: ['PascalCase'],
+          filter: {
+            regex: '^SVG',
+            match: true,
+          },
+        },
+      ],
+    },
+  },
+  {
     name: 'svgforge/ignore-non-code',
     ignores: [
       '**/*.md',

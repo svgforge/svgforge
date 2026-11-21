@@ -23,7 +23,7 @@ async function renderExample(mode, modeConfig) {
   const spriter = new SVGSpriter({dest: temporaryPath});
   addFixtureFiles(spriter, TEST_CONFIG.files, TEST_CONFIG.cwd);
 
-  const {result} = await spriter.compileAsync({
+  const {result} = await spriter.compile({
     [mode]: {
       sprite: `svg/sprite.${mode}.svg`,
       example: true,
