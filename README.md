@@ -63,7 +63,7 @@ Crafting a sprite with *svgforge* typically follows these steps:
 
 1. You [create an instance of the SVGSpriter](docs/api.md#svgspriter-config-), passing a main configuration object to the constructor.
 2. You [register a couple of SVG source files](docs/api.md#svgspriteraddfile--name-svg-) for processing.
-3. You [trigger the compilation process](docs/api.md#svgspritercompile-config--callback-) and receive the generated files (sprite, CSS, example documents etc.).
+3. You [trigger the compilation process](docs/api.md#svgspritercompile-config-) and receive the generated files (sprite, CSS, example documents etc.).
 
 The procedure is the very same for all supported sprite types («modes»).
 
@@ -99,7 +99,7 @@ spriter.add(
 );
 
 // 3. Compile the sprite asynchronously
-const { result } = await spriter.compileAsync();
+const {result} = await spriter.compile();
 
 // Write generated files to disk
 for (const mode of Object.values(result)) {
@@ -376,10 +376,7 @@ See the [command line reference](docs/command-line.md) for all options.
 
 * SVGO does not minify element IDs when there are `<style>` or `<script>` elements contained in the file
 
-See [`docs/roadmap.md`](docs/roadmap.md) for open items and postponed changes —
-for example making the optional [`@resvg/resvg-js`](https://www.npmjs.com/package/@resvg/resvg-js)
-dimension fallback an optional peer dependency, which is a breaking change and therefore
-targeted at **4.x**.
+See [`docs/roadmap.md`](docs/roadmap.md) for open 4.0 release candidates and decisions.
 
 
 ## Changelog
@@ -393,7 +390,7 @@ This is a fork of [svg-sprite](https://github.com/svg-sprite/svg-sprite) 3.0.0rc
 * Complete rewrite from CJS to ESM
 * All node dependencies are upgraded
 * You need Node.js version >= 24
-* Split package to `svgforge` and `svgforge-cli` for easier testing
+* Integrated the CLI into the main package (`svgforge` binary ships with `@svgforge/svgforge`)
 * Block deep imports: the `exports` map only exposes the main entry point, `./utils` and the legacy `./lib/svg-sprite/utils/index.js` alias — every other `lib/` path is blocked
 * Drop grunt and gulp (you can still use it with a few lines of code)
 * Replace glob with native [fs.glob](https://nodejs.org/api/fs.html#fspromisesglobpattern-options)
@@ -410,6 +407,8 @@ This is a fork of [svg-sprite](https://github.com/svg-sprite/svg-sprite) 3.0.0rc
 * Improved example templates with copy id button for each icon, using a `twig`-like syntax.
 * Finally all tests are fixed with over 90% coverage and use [Node.js's native test runner](https://nodejs.org/api/test.html) instead of Jest
 * The CLI now has tests.
+* 4.0 API cleanup: `compile()`/`getShapes()` are Promise-only (callback form and `compileAsync` removed), vinyl file objects replaced by plain file objects, and `@resvg/resvg-js` is an optional peer dependency.
+* 4.0 DX: named exports (`createSpriter`, `SVGSpriter`, error classes), public stats getters (`limit`, `dimensionSkipped`, `errorSkipped`), and TypeScript declarations.
 
 It comes with a set of [Vento](https://vento.js.org) templates for creating stylesheets in good ol' [CSS](https://www.w3.org/Style/CSS/). Tweaking the templates or even adding your own **custom output format** is really easy, just as switching on the generation of an **HTML example document** along with your sprite.
 

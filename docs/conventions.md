@@ -46,7 +46,7 @@ the row layout of `<view>` lives in `mode/view-layout.js`.
 - `#` for genuinely private members.
 - `_` for members a base class dispatches (`_init`, `_layout`, `_buildSVG`), for
   members another module calls, and for `_limit`, `_dimensionSkipped` and
-  `_errorSkipped`, which `svgforge-cli` reads.
+  `_errorSkipped`, which the CLI reads.
 
 ## Dependency injection
 

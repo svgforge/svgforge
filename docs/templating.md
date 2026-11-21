@@ -7,7 +7,7 @@ This file is part of the documentation of *svgforge* — a free low-level Node.j
 
 ### Sprite & shape variables
 
-For each sprite generation process, a data object is constructed that is passed to the [Vento](https://vento.js.org) templating engine for rendering the different resources. You can access these templating values via the `data` argument passed to the [compile() callback](api.md#svgspritercompile-config--callback-). Example:
+For each sprite generation process, a data object is constructed that is passed to the [Vento](https://vento.js.org) templating engine for rendering the different resources. You can access these templating values via the `data` property returned by [`compile()`](api.md#svgspritercompile-config-). Example:
 
 ```js
 {

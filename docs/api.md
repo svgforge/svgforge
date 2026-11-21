@@ -5,13 +5,14 @@ This file is part of the documentation of *svgforge* — a free low-level Node.j
 
 ## Standard API
 
-*svgforge* comes with four public methods:
+*svgforge* provides these public methods:
 
 * [SVGSpriter([ config ])](#svgspriter-config-) — The spriter's constructor (always the entry point)
 * [SVGSpriter.add(file [, name, svg ])](#svgspriteraddfile--name-svg-) — Registering source SVG files
-* [SVGSpriter.compile([ config ,] callback )](#svgspritercompile-config--callback-) — Triggering the sprite compilation
-* [SVGSpriter.compileAsync([ config ,])](#svgspritercompileasync-config-) — Triggering the sprite compilation
-* [SVGSpriter.getShapes(dest , callback)](#svgspritergetshapes-dest--callback-) — Accessing the intermediate SVG resources
+* [SVGSpriter.compile([ config ])](#svgspritercompile-config-) — Triggering the sprite compilation
+* [SVGSpriter.getShapes([ dest ])](#svgspritergetshapes-dest-) — Accessing the intermediate SVG resources
+
+The package default-exports `createSpriter` (also `new`-compatible). Named exports are available for `createSpriter`, `SVGSpriter`, and error classes (`ArgumentError`, `DimensionsCalculationError`, `NotPermittedError`, `XmlFixingError`).
 
 To understand these methods' roles and interactions, please have a look at the following basic example first.
 
@@ -53,15 +54,15 @@ spriter.add(
 
 // 3. Trigger the (asynchronous) compilation process
 // ====================================================================
-spriter.compile((error, result, data) => {
-  // Run through all files that have been created for the `symbol` mode
-  for (const type of Object.values(result.symbol)) {
-    // Recursively create directories as needed
-    fs.mkdirSync(path.dirname(type.path), { recursive: true });
-    // Write the generated resource to disk
-    fs.writeFileSync(type.path, type.contents);
-  }
-});
+const {result} = await spriter.compile();
+
+// Run through all files that have been created for the `symbol` mode
+for (const type of Object.values(result.symbol)) {
+  // Recursively create directories as needed
+  fs.mkdirSync(path.dirname(type.path), {recursive: true});
+  // Write the generated resource to disk
+  fs.writeFileSync(type.path, type.contents);
+}
 ```
 
 #### SVGSpriter([ config ])
@@ -70,7 +71,7 @@ spriter.compile((error, result, data) => {
 
 ##### Arguments
 
-1. **config** `{Object}` *(default: `{}`)* — [Main configuration](configuration.md) for the spriting process. As all configuration properties are optional, you may provide an empty object here or omit the argument altogether (no output files will be created then, but the [added SVG files](#svgspriteraddfile--name-svg-) will be optimized nevertheless). The `mode` configuration properties may also be specified when calling the `.compile()` method ([see below](#svgspritercompile-config--callback-)).
+1. **config** `{Object}` *(default: `{}`)* — [Main configuration](configuration.md) for the spriting process. As all configuration properties are optional, you may provide an empty object here or omit the argument altogether (no output files will be created then, but the [added SVG files](#svgspriteraddfile--name-svg-) will be optimized nevertheless). The `mode` configuration properties may also be specified when calling the `.compile()` method ([see below](#svgspritercompile-config-)).
 
 #### Spriter events
 
@@ -101,7 +102,7 @@ spriter.on('shape-skipped', ({file, error}) => {
 
 **Registration of an SVG file** — Before compilation, you'll need to register one or more SVG files for processing. As *svgforge* doesn't read the files from the disk itself, you'll have to pass both the path and the file contents explicitly. Alternatively, you may pass a file object (`{base, path, contents}` with `contents` as a `Buffer`) as the first argument to `.add()`, which comes in handy when piping resources from one process to another. Please [see below](#example-using-glob-and-file-objects) for an example.
 
-It is important to know that the spriter **optimizes the SVG files as soon as you register them**, not just when you [compile your sprite](#svgspritercompile-config--callback-). This way it is possible to call the `.compile()` method several times, possibly passing in different render configurations without the need of repeating the optimization steps.
+It is important to know that the spriter **optimizes the SVG files as soon as you register them**, not just when you [compile your sprite](#svgspritercompile-config-). This way it is possible to call the `.compile()` method several times, possibly passing in different render configurations without the need of repeating the optimization steps.
 
 ##### Arguments
 
@@ -140,44 +141,43 @@ for (const file of files) {
   });
 }
 
-spriter.compile((error, result, data) => {
-    for (const type of Object.values(result.symbol)) {
-      fs.mkdirSync(path.dirname(type.path), { recursive: true });
-      fs.writeFileSync(type.path, type.contents);
-    }
-  });
+const {result} = await spriter.compile();
+for (const type of Object.values(result.symbol)) {
+  fs.mkdirSync(path.dirname(type.path), {recursive: true});
+  fs.writeFileSync(type.path, type.contents);
+}
 ```
 
-#### SVGSpriter.compile([ config ,] callback )
+#### SVGSpriter.compile([ config ])
 
-**Sprite compilation** — Triggers an asynchronous sprite compilation process. You may pass in an optional [output mode configuration](configuration.md#output-modes) object as the first argument in order to set the output parameters for that very run. You may call `.compile()` multiple times, allowing for several different sprites being generated by the same spriter instance. For each run, the callback will be triggered independently, giving you access to the resources that were generated.
+**Sprite compilation** — Triggers an asynchronous sprite compilation process and returns a `Promise`. You may pass in an optional [output mode configuration](configuration.md#output-modes) object to set the output parameters for that run. You may call `.compile()` multiple times, allowing for several different sprites to be generated by the same spriter instance.
 
 ##### Arguments
 
 1. **config** `{Object}` *(optional)* — Configuration object setting the [output mode parameters](configuration.md#output-modes) for a single compilation run. If omitted, the `mode` property of the [main configuration](configuration.md) used for the [constructor](#svgspriter-config-) will be used.
-2. **callback** `{Function}` — Callback triggered when the compilation has finished, getting three arguments:
-  * **error** `{Error}` — Error message in case the compilation has failed
-  * **result** `{Object}` — Directory of generated resources ([see below](#compilation-example))
-  * **data** `{Object}` — Templating variables passed to [Vento](https://vento.js.org) for rendering the resources (see [sprite & shape variables](templating.md#sprite--shape-variables) for details)
+
+##### Returns
+
+Promise resolving to an object with:
+
+* **result** `{Object}` — Directory of generated resources ([see below](#compilation-example))
+* **data** `{Object}` — Templating variables passed to [Vento](https://vento.js.org) for rendering the resources (see [sprite & shape variables](templating.md#sprite--shape-variables) for details)
 
 ##### Compilation example
 
 Depending on the particular mode and render configuration, quite a lot of resources might be generated during a single compilation run. To understand the way *svgforge* returns these resources, please have a look at the following example:
 
 ```js
-spriter.compile(
-  {
-    symbol: {
-      render: {
-        css: true
-      },
-      example: true
-    }
-  },
-  (error, result, data) => {
-    console.log(result);
+const {result} = await spriter.compile({
+  symbol: {
+    render: {
+      css: true
+    },
+    example: true
   }
-);
+});
+
+console.log(result);
 ```
 
 The spriter is instructed to create a symbol sprite along with the accompanying stylesheet resource in CSS format and an example HTML document demonstrating the use of the sprite. The output will look something like this (shortened for brevity):
@@ -196,55 +196,17 @@ For each configured output mode (`symbol` in the example), the `result` object h
 
 The resources are returned as file objects with `base`, `path`, `contents` and `relative` properties. Have a look above for an [example of how to write these files to disk](#example-using-glob-and-file-objects).
 
-#### SVGSpriter.compileAsync([ config ,])
-
-**Sprite async compilation** — Simple Promise wrapper on [SVGSpriter.compile](#svgspritercompile-config--callback-).
-
-##### Arguments
-
-**config** `{Object}` *(optional)* — Configuration object (same as in [SVGSpriter.compile](#svgspritercompile-config--callback-))
-
-##### Returns
-
-Promise
-
-* **Compilation Result** `{Object}` Object containing fields:
-  * **result** `{Object}` — Same as in [SVGSpriter.compile](#svgspritercompile-config--callback-)
-  * **data** `{Object}` — Same as in [SVGSpriter.compile](#svgspritercompile-config--callback-)
-
-##### Throws
-
-**error** `{Error}` — Error message in case the compilation has failed
-
-##### Async compilation example
-
-```js
-try {
-  const { result, data } = await spriter.compileAsync({
-    symbol: {
-      render: {
-        css: true
-      },
-      example: true
-    }
-  });
-
-  console.log(result, data);
-} catch (error) {
-  console.error(error);
-}
-```
-
-#### SVGSpriter.getShapes( dest , callback )
+#### SVGSpriter.getShapes([ dest ])
 
 **Accessing the intermediate SVG resources** — Sometimes you may want to access the single transformed/optimized SVG files that *svgforge* produces in an intermediate step. Depending on the [configured shape transformations](configuration.md#shape-transformations) (e.g. SVG optimization with [SVGO](https://github.com/svg/svgo)), *svgforge* will need some time for transforming the files, which is why accessing them must be an asynchronous task.
 
 ##### Arguments
 
-1. **dest** `{String}` — Base directory for the SVG files in case they will be written to disk.
-2. **callback** `{Function}`: Callback triggered when the shapes are available, getting called with two arguments:
-  * **error** `{Error}` — Error message in case the shape access has failed.
-  * **result** `{Array}` — Array of file objects carrying the intermediate SVGs.
+1. **dest** `{String}` *(optional)* — Base directory for the SVG files in case they will be written to disk.
+
+##### Returns
+
+Promise resolving to an array of file objects carrying the intermediate SVGs.
 
 ##### Shape access example
 
@@ -252,10 +214,9 @@ try {
 import fs from 'node:fs';
 import path from 'node:path';
 
-spriter.getShapes(path.resolve('tmp/svg'), (error, result) => {
-  result.forEach(file => {
-    fs.mkdirSync(path.dirname(file.path), { recursive: true });
-    fs.writeFileSync(file.path, file.contents);
-  });
-});
+const files = await spriter.getShapes(path.resolve('tmp/svg'));
+for (const file of files) {
+  fs.mkdirSync(path.dirname(file.path), {recursive: true});
+  fs.writeFileSync(file.path, file.contents);
+}
 ```
