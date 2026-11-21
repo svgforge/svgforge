@@ -3,7 +3,7 @@ import path from 'node:path';
 import {globSync} from 'node:fs';
 import assert from 'node:assert/strict';
 import {beforeEach, describe, it} from 'node:test';
-import SVGSpriter from '../../../lib/svgforge.js';
+import SVGSpriter from '../../../lib/index.js';
 import {addFixtureFiles, addRelativeFixtureFiles} from '../../../test-utils/add-files.js';
 import {paths} from '../../../test-utils/constants.js';
 

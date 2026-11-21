@@ -16,7 +16,7 @@ const TEST_SPRITER = {
       doctypeDeclaration: '',
     },
   },
-  verbose: mock.fn(),
+  verbose: mock.fn(), // eslint-disable-line node-test/prefer-context-mock -- module-scope mock
 };
 const TEST_FILE = new SpriteFile({
   contents: Buffer.from('<svg></svg>'),
@@ -26,26 +26,26 @@ const TEST_FILE = new SpriteFile({
 });
 
 describe('testing getSVG()', () => {
-  it('should clone the node', () => {
+  it('should clone the node', t => {
     const shape = createShape(TEST_FILE, TEST_SPRITER);
-    mock.method(shape.dom.documentElement, 'cloneNode');
+    t.mock.method(shape.dom.documentElement, 'cloneNode');
 
     shape.getSVG();
 
     assert.ok(shape.dom.documentElement.cloneNode.mock.calls.some(call => isDeepStrictEqual(call.arguments, [true])), 'expected a matching call');
   });
 
-  it('should return serialized string with declarations if inline is true', () => {
+  it('should return serialized string with declarations if inline is true', t => {
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_NODE = shape.dom.createElementNS(shape.DEFAULT_SVG_NAMESPACE, 'svg');
-    mock.method(shape, '_stripInlineNamespaceDeclarations').mock.mockImplementationOnce(() => (TEST_NODE));
+    t.mock.method(shape, '_stripInlineNamespaceDeclarations').mock.mockImplementationOnce(() => (TEST_NODE));
 
     assert.strictEqual(shape.getSVG(true), new XMLSerializer().serializeToString(TEST_NODE));
   });
 
-  it('should call transform if it is a function', () => {
+  it('should call transform if it is a function', t => {
     const shape = createShape(TEST_FILE, TEST_SPRITER);
-    const testFn = mock.fn();
+    const testFn = t.mock.fn();
 
     shape.getSVG(false, testFn);
 
@@ -53,15 +53,15 @@ describe('testing getSVG()', () => {
     assert.strictEqual(typeof testFn.mock.calls[0].arguments[0], 'object');
   });
 
-  it('should return serialized xml if inline is true', () => {
+  it('should return serialized xml if inline is true', t => {
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_NODE = shape.dom.createElementNS(shape.DEFAULT_SVG_NAMESPACE, 'svg');
-    mock.method(shape, '_stripInlineNamespaceDeclarations').mock.mockImplementationOnce(() => (TEST_NODE));
+    t.mock.method(shape, '_stripInlineNamespaceDeclarations').mock.mockImplementationOnce(() => (TEST_NODE));
 
     assert.strictEqual(shape.getSVG(true), new XMLSerializer().serializeToString(TEST_NODE));
   });
 
-  it('should add declarations if provided', () => {
+  it('should add declarations if provided', t => {
     const TEST_XML_DECLARATION = 'TEST XML DECLARATION';
     const TEST_DOCTYPE_DECLARATION = 'TEST DOCTYPE DECLARATION';
     const shape = createShape(TEST_FILE, {
@@ -74,7 +74,7 @@ describe('testing getSVG()', () => {
           xmlDeclaration: true,
         },
       },
-      verbose: mock.fn(),
+      verbose: t.mock.fn(),
     });
     shape.doctypeDeclaration = TEST_DOCTYPE_DECLARATION;
     shape.xmlDeclaration = TEST_XML_DECLARATION;
@@ -83,7 +83,7 @@ describe('testing getSVG()', () => {
     assert.ok(shape.getSVG().includes(TEST_XML_DECLARATION));
   });
 
-  it('should substitute ID references in href attributes', () => {
+  it('should substitute ID references in href attributes', async t => {
     const shape = createShape(new SpriteFile({
       base: TEST_FILE.base,
       path: TEST_FILE.path,
@@ -104,15 +104,15 @@ describe('testing getSVG()', () => {
           view: true,
         },
       },
-      verbose: mock.fn(),
+      verbose: t.mock.fn(),
     });
-    shape.complement(mock.fn());
+    await shape.complement();
     shape.setNamespace('ns-');
 
     assert.strictEqual(shape.getSVG(), '<svg xmlns="http://www.w3.org/2000/svg" id="someprefix-ns-abc" height="100" width="100" viewBox="0 0 100 100"><use href="#someprefix-ns-abc"/></svg>');
   });
 
-  it('should substitute ID references in xlink:href attributes', () => {
+  it('should substitute ID references in xlink:href attributes', async t => {
     const shape = createShape(new SpriteFile({
       base: TEST_FILE.base,
       path: TEST_FILE.path,
@@ -133,9 +133,9 @@ describe('testing getSVG()', () => {
           view: true,
         },
       },
-      verbose: mock.fn(),
+      verbose: t.mock.fn(),
     });
-    shape.complement(mock.fn());
+    await shape.complement();
     shape.setNamespace('ns-');
 
     assert.strictEqual(shape.getSVG(), '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="someprefix-ns-abc" height="100" width="100" viewBox="0 0 100 100"><use href="#someprefix-ns-abc"/></svg>');
@@ -143,12 +143,12 @@ describe('testing getSVG()', () => {
 });
 
 describe('testing _stripInlineNamespaceDeclarations()', () => {
-  it('should deal with nsMap if passed', () => {
+  it('should deal with nsMap if passed', t => {
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_ELEMENT = {
       childNodes: [],
     };
-    const testFn = mock.fn(() => (false));
+    const testFn = t.mock.fn(() => (false));
     const MOCK_NS_MAP = {
       '': {},
       xlink: {},
@@ -168,12 +168,12 @@ describe('testing _stripInlineNamespaceDeclarations()', () => {
     assert.strictEqual(testFn.mock.callCount(), 2);
   });
 
-  it('should remove xmlns if it exists', () => {
+  it('should remove xmlns if it exists', t => {
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_ELEMENT = {
       attributes: {
-        getNamedItem: mock.fn(() => ({value: shape.DEFAULT_SVG_NAMESPACE})),
-        removeNamedItem: mock.fn(),
+        getNamedItem: t.mock.fn(() => ({value: shape.DEFAULT_SVG_NAMESPACE})),
+        removeNamedItem: t.mock.fn(),
       },
       childNodes: [],
     };
@@ -183,12 +183,12 @@ describe('testing _stripInlineNamespaceDeclarations()', () => {
     assert.ok(TEST_ELEMENT.attributes.removeNamedItem.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['xmlns'])), 'expected a matching call');
   });
 
-  it('should remove xmlns:xlink if it not exists in nsMap', () => {
+  it('should remove xmlns:xlink if it not exists in nsMap', t => {
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_ELEMENT = {
       attributes: {
-        getNamedItem: mock.fn(() => ({value: shape.XLINK_NAMESPACE})),
-        removeNamedItem: mock.fn(),
+        getNamedItem: t.mock.fn(() => ({value: shape.XLINK_NAMESPACE})),
+        removeNamedItem: t.mock.fn(),
       },
       childNodes: [],
     };
@@ -198,12 +198,12 @@ describe('testing _stripInlineNamespaceDeclarations()', () => {
     assert.ok(TEST_ELEMENT.attributes.removeNamedItem.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['xmlns:xlink'])), 'expected a matching call');
   });
 
-  it('should remove xmlns:xlink if it exists in nsMap', () => {
+  it('should remove xmlns:xlink if it exists in nsMap', t => {
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_ELEMENT = {
       attributes: {
-        getNamedItem: mock.fn(() => ({value: shape.XLINK_NAMESPACE})),
-        removeNamedItem: mock.fn(),
+        getNamedItem: t.mock.fn(() => ({value: shape.XLINK_NAMESPACE})),
+        removeNamedItem: t.mock.fn(),
       },
       childNodes: [],
     };
@@ -213,7 +213,7 @@ describe('testing _stripInlineNamespaceDeclarations()', () => {
     assert.ok(TEST_ELEMENT.attributes.removeNamedItem.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['xmlns:xlink'])), 'expected a matching call');
   });
 
-  it('should call _stripInlineNamespaceDeclarations() for each child element', () => {
+  it('should call _stripInlineNamespaceDeclarations() for each child element', t => {
     let isMethodMocked = false;
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_CHILD_1 = {nodeType: 1};
@@ -222,8 +222,8 @@ describe('testing _stripInlineNamespaceDeclarations()', () => {
     const TEST_ELEMENT = {
       _nsMap: {TEST_NS_MAP: true},
       attributes: {
-        getNamedItem: mock.fn(() => ({value: shape.XLINK_NAMESPACE})),
-        removeNamedItem: mock.fn(),
+        getNamedItem: t.mock.fn(() => ({value: shape.XLINK_NAMESPACE})),
+        removeNamedItem: t.mock.fn(),
       },
       childNodes: {
         0: TEST_CHILD_1,
@@ -233,7 +233,7 @@ describe('testing _stripInlineNamespaceDeclarations()', () => {
         item(i) {
           if (!isMethodMocked) {
             isMethodMocked = true; // Mocking the other calls
-            mock.method(shape, '_stripInlineNamespaceDeclarations').mock.mockImplementation(() => undefined);
+            t.mock.method(shape, '_stripInlineNamespaceDeclarations').mock.mockImplementation(() => undefined);
           }
 
           return this[i];
@@ -252,12 +252,12 @@ describe('testing _stripInlineNamespaceDeclarations()', () => {
 });
 
 describe('testing setSVG()', () => {
-  it('should set attributes to svg and call _initSVG()', () => {
+  it('should set attributes to svg and call _initSVG()', t => {
     const shape = createShape(TEST_FILE, TEST_SPRITER);
     const TEST_SVG = 'TEST_svg';
     const TEST_RESULT = {TEST: 'result'};
 
-    mock.method(shape, '_initSVG').mock.mockImplementationOnce(() => (TEST_RESULT));
+    t.mock.method(shape, '_initSVG').mock.mockImplementationOnce(() => (TEST_RESULT));
 
     assert.strictEqual(shape.setSVG(TEST_SVG), TEST_RESULT);
     assert.strictEqual(shape.svg.current, TEST_SVG);
@@ -267,7 +267,7 @@ describe('testing setSVG()', () => {
 });
 
 describe('testing _round()', () => {
-  it('should return expected result', () => {
+  it('should return expected result', t => {
     const shape = createShape(TEST_FILE, TEST_SPRITER);
 
     shape._precision = 0.1;

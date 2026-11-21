@@ -2,7 +2,7 @@
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import {describe, it} from 'node:test';
-import SVGSpriter from '../../../lib/svgforge.js';
+import SVGSpriter from '../../../lib/index.js';
 import {paths} from '../../../test-utils/constants.js';
 
 describe('testing font face preserving', () => {

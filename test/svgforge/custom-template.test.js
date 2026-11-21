@@ -2,7 +2,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 import {describe, it} from 'node:test';
-import SVGSpriter from '../../lib/svgforge.js';
+import SVGSpriter from '../../lib/index.js';
 import {addFixtureFiles} from '../../test-utils/add-files.js';
 import {constants} from '../../test-utils/fixture-configs.js';
 import {paths} from '../../test-utils/constants.js';

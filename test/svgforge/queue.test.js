@@ -16,19 +16,19 @@ import {dependencyKeys, setDependency} from '../../lib/deps.js';
 
 /* eslint-disable max-nested-callbacks -- Mock implementations of the queued shape/process callbacks are intentionally nested to model the async event flow under test. */
 
-const mockShape = mock.fn();
+const mockShape = mock.fn(); // eslint-disable-line node-test/prefer-context-mock -- module-scope shared mock
 setDependency(dependencyKeys.queueShape, mockShape);
 
 describe('testing Queue', () => {
   describe('testing constructor()', () => {
-    it('should be instance of EventEmitter', () => {
-      const queue = new SVGSpriterQueue({debug: mock.fn()});
+    it('should be instance of EventEmitter', t => {
+      const queue = new SVGSpriterQueue({debug: t.mock.fn()});
 
       assert.ok(queue instanceof EventEmitter);
     });
 
-    it('should set initial values and debug to console', () => {
-      const spriter = {debug: mock.fn()};
+    it('should set initial values and debug to console', t => {
+      const spriter = {debug: t.mock.fn()};
       const queue = new SVGSpriterQueue(spriter);
 
       assert.strictEqual(queue._spriter, spriter);
@@ -37,8 +37,8 @@ describe('testing Queue', () => {
       assert.ok(spriter.debug.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['Created processing queue instance'])), 'expected a matching call');
     });
 
-    it('should add events', () => {
-      const queue = new SVGSpriterQueue({debug: mock.fn()});
+    it('should add events', t => {
+      const queue = new SVGSpriterQueue({debug: t.mock.fn()});
 
       assert.strictEqual(queue.listenerCount('add'), 1);
       assert.strictEqual(queue.listenerCount('remove'), 1);
@@ -46,8 +46,8 @@ describe('testing Queue', () => {
   });
 
   describe('testing add()', () => {
-    it('should debug info, add file to _files and emit "add" event', () => {
-      const spriter = {debug: mock.fn()};
+    it('should debug info, add file to _files and emit "add" event', t => {
+      const spriter = {debug: t.mock.fn()};
       const TEST_FILE_NAME = '/base/test.svg';
       const TEST_FILE = new SpriteFile({
         path: TEST_FILE_NAME,
@@ -55,7 +55,7 @@ describe('testing Queue', () => {
       });
       const queue = new SVGSpriterQueue(spriter);
 
-      mock.method(queue, 'emit');
+      t.mock.method(queue, 'emit');
 
       queue.add(TEST_FILE);
 
@@ -71,25 +71,25 @@ describe('testing Queue', () => {
 
     const TEST_SHAPE = {id: 'test-shape'};
 
-    beforeEach(() => {
+    beforeEach(t => {
       spriter = {
-        debug: mock.fn(),
-        error: mock.fn(),
-        warn: mock.fn(),
+        debug: t.mock.fn(),
+        error: t.mock.fn(),
+        warn: t.mock.fn(),
         _shapes: [],
       };
       queue = new SVGSpriterQueue(spriter);
     });
 
-    it('should add shape to spriter', () => {
+    it('should add shape to spriter', t => {
       queue.remove(null, TEST_SHAPE);
 
       assert.deepStrictEqual(spriter._shapes, [TEST_SHAPE]);
     });
 
-    it('should not add shape to spriter, log the error and announce the skip if processing fails', () => {
+    it('should not add shape to spriter, log the error and announce the skip if processing fails', t => {
       const TEST_ERROR = new Error('test');
-      const onSkipped = mock.fn();
+      const onSkipped = t.mock.fn();
       queue.on('shape-skipped', onSkipped);
       queue.remove(TEST_ERROR, TEST_SHAPE);
 
@@ -99,9 +99,9 @@ describe('testing Queue', () => {
       assert.ok(onSkipped.mock.calls.some(call => isDeepStrictEqual(call.arguments, [{file: TEST_SHAPE.id, error: TEST_ERROR}])), 'expected a matching call');
     });
 
-    it('should not add shape to spriter, log a warning with the install hint and count the skip if dimension calculation failed', () => {
+    it('should not add shape to spriter, log a warning with the install hint and count the skip if dimension calculation failed', t => {
       const TEST_ERROR = new DimensionsCalculationError('not installed — run `npm install @resvg/resvg-js`');
-      const onSkipped = mock.fn();
+      const onSkipped = t.mock.fn();
       queue.on('shape-skipped', onSkipped);
       queue.remove(TEST_ERROR, TEST_SHAPE);
 
@@ -111,26 +111,26 @@ describe('testing Queue', () => {
       assert.ok(onSkipped.mock.calls.some(call => isDeepStrictEqual(call.arguments, [{file: TEST_SHAPE.id, error: TEST_ERROR}])), 'expected a matching call');
     });
 
-    it('should emit "remove" if active count is more than 1', () => {
+    it('should emit "remove" if active count is more than 1', t => {
       queue.active = 2;
-      mock.method(queue, 'emit');
+      t.mock.method(queue, 'emit');
       queue.remove(null, TEST_SHAPE);
 
       assert.ok(queue.emit.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['remove'])), 'expected a matching call');
     });
 
-    it('should emit "empty" if active count is 1', () => {
+    it('should emit "empty" if active count is 1', t => {
       queue.active = 1;
-      mock.method(queue, 'emit');
+      t.mock.method(queue, 'emit');
       queue.remove(null, TEST_SHAPE);
 
       assert.ok(queue.emit.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['empty'])), 'expected a matching call');
     });
 
-    it('should emit "remove" while another file is still waiting (limit 1)', () => {
+    it('should emit "remove" while another file is still waiting (limit 1)', t => {
       queue.active = 1;
       queue._files = [1];
-      mock.method(queue, 'emit');
+      t.mock.method(queue, 'emit');
       queue.remove(null, TEST_SHAPE);
 
       assert.strictEqual(queue.active, 0);
@@ -143,78 +143,74 @@ describe('testing Queue', () => {
     let spriter;
     let queue;
 
-    beforeEach(() => {
+    beforeEach(t => {
       spriter = {
-        debug: mock.fn(),
+        debug: t.mock.fn(),
         _limit: 10,
-        error: mock.fn(),
-        warn: mock.fn(),
-        _transformShape: mock.fn((shape, cb) => cb(null)),
+        error: t.mock.fn(),
+        warn: t.mock.fn(),
+        _transformShape: t.mock.fn(async () => {}),
       };
       queue = new SVGSpriterQueue(spriter);
     });
 
-    it('should not do anything if files is empty', () => {
+    it('should not do anything if files is empty', t => {
       queue._files = [];
       // eslint-disable-next-line node-test/prefer-mock-method -- `mock.method` rejects arrays.
-      queue._files.shift = mock.fn();
+      queue._files.shift = t.mock.fn();
       queue.process();
 
       assert.strictEqual(queue._files.shift.mock.callCount(), 0);
     });
 
-    it('should not do anything if active is exceeding limit', () => {
+    it('should not do anything if active is exceeding limit', t => {
       queue._files = [1];
       queue.active = 11;
       // eslint-disable-next-line node-test/prefer-mock-method -- `mock.method` rejects arrays.
-      queue._files.shift = mock.fn();
+      queue._files.shift = t.mock.fn();
       queue.process();
 
       assert.strictEqual(queue._files.shift.mock.callCount(), 0);
     });
 
     describe('testing positive case', () => {
-      it('should increase active count call spriter._transformShape and shape.complement and then', async () => {
+      it('should increase active count call spriter._transformShape and shape.complement and then', async t => {
         const TEST_FILE = 'file';
         const TEST_SHAPE = {
-          complement: mock.fn(fn => {
-            fn(TEST_SHAPE);
-          }),
+          complement: t.mock.fn(async () => {}),
         };
-        const testFn = mock.fn();
+        const testFn = t.mock.fn();
         queue._files = [1];
         queue.active = 2;
         // eslint-disable-next-line node-test/prefer-mock-method -- `mock.method` rejects arrays.
-        queue._files.shift = mock.fn(() => (TEST_FILE));
+        queue._files.shift = t.mock.fn(() => (TEST_FILE));
         mockShape.mock.mockImplementation(() => TEST_SHAPE);
 
-        mock.method(queue, 'remove').mock.mockImplementation(() => {
+        t.mock.method(queue, 'remove').mock.mockImplementation(() => {
           testFn();
         });
 
         queue.process();
-        await new Promise(setImmediate); // Await all async code to finish (async.waterfall)
+        await new Promise(setImmediate); // Await all async code to finish
 
         assert.strictEqual(queue.active, 3);
         assert.strictEqual(spriter._transformShape.mock.callCount(), 1);
         assert.strictEqual(spriter._transformShape.mock.calls[0].arguments[0], TEST_SHAPE);
-        assert.strictEqual(typeof spriter._transformShape.mock.calls[0].arguments[1], 'function');
         assert.strictEqual(TEST_SHAPE.complement.mock.callCount(), 1);
-        assert.strictEqual(typeof TEST_SHAPE.complement.mock.calls[0].arguments[0], 'function');
         assert.ok(testFn.mock.calls.some(call => isDeepStrictEqual(call.arguments, [])), 'expected a matching call');
       });
 
-      it('should not increase active call _spriter.error and emit "remove" event if error occured', async () => {
+      it('should not increase active call _spriter.error and emit "remove" event if error occured', async t => {
         const TEST_FILE = new SpriteFile({path: '/base/file', base: '/base/'});
         const TEST_ERROR_MESSAGE = 'error';
         queue._files = [1];
         queue.active = 2;
         // eslint-disable-next-line node-test/prefer-mock-method -- `mock.method` rejects arrays.
-        queue._files.shift = mock.fn(() => (TEST_FILE));
+        queue._files.shift = t.mock.fn(() => (TEST_FILE));
         // Replacing `emit` (instead of spying) keeps event listeners from
         // re-entering `process()` through the constructor's `remove` listener.
         // eslint-disable-next-line node-test/prefer-mock-method -- spy would re-enter process().
-        queue.emit = mock.fn();
+        queue.emit = t.mock.fn();
         mockShape.mock.mockImplementation(() => {
           throw new Error(TEST_ERROR_MESSAGE);
         });
@@ -232,21 +228,21 @@ describe('testing Queue', () => {
         assert.ok(queue.emit.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['remove'])), 'expected a matching call');
       });
 
-      it('should not increase active call _spriter.error and emit "remove" event if error occured and active is zero', async () => {
+      it('should not increase active call _spriter.error and emit "remove" event if error occured and active is zero', async t => {
         const TEST_FILE = new SpriteFile({path: '/base/file', base: '/base/'});
         queue._files = [1];
         queue.active = 0;
         // `shift()` is stubbed here, so drain the queue explicitly: `empty`
         // may only be emitted once no file is waiting anymore.
         // eslint-disable-next-line node-test/prefer-mock-method -- `mock.method` rejects arrays.
-        queue._files.shift = mock.fn(() => {
+        queue._files.shift = t.mock.fn(() => {
           queue._files.length = 0;
           return TEST_FILE;
         });
         // Replacing `emit` (instead of spying) keeps event listeners from
         // re-entering `process()` through the constructor's `remove` listener.
         // eslint-disable-next-line node-test/prefer-mock-method -- spy would re-enter process().
-        queue.emit = mock.fn();
+        queue.emit = t.mock.fn();
         mockShape.mock.mockImplementation(() => {
           throw new Error('test');
         });

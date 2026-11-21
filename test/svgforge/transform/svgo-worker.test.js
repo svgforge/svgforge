@@ -46,27 +46,27 @@ const createSpriter = () => ({
       transports: [],
     },
   },
-  error: mock.fn(),
-  debug: mock.fn(),
+  error: mock.fn(), // eslint-disable-line node-test/prefer-context-mock -- module-scope mock
+  debug: mock.fn(), // eslint-disable-line node-test/prefer-context-mock -- module-scope mock
 });
 
 const createShape = () => ({
   name: 'shape',
-  setSVG: mock.fn(),
-  getSVG: mock.fn(() => (TEST_SVG)),
+  setSVG: mock.fn(), // eslint-disable-line node-test/prefer-context-mock -- module-scope mock
+  getSVG: mock.fn(() => (TEST_SVG)), // eslint-disable-line node-test/prefer-context-mock -- module-scope mock
 });
 
 const runTransform = (shape, config, spriter) => new Promise(resolve => {
   svgoTransform(shape, config, spriter, resolve);
 });
 
-afterEach(async () => {
+afterEach(async t => {
   resetDependencies();
   await terminateWorkers();
 });
 
 describe('testing isSerializable', () => {
-  it('should accept plain objects, arrays and primitives', () => {
+  it('should accept plain objects, arrays and primitives', t => {
     assert.strictEqual(isSerializable({plugins: [{name: 'preset-default', params: {overrides: {a: false}}}]}), true);
     assert.strictEqual(isSerializable(['a', 1, null]), true);
     assert.strictEqual(isSerializable('string'), true);
@@ -74,7 +74,7 @@ describe('testing isSerializable', () => {
     assert.strictEqual(isSerializable(undefined), true);
   });
 
-  it('should reject functions, symbols and class instances', () => {
+  it('should reject functions, symbols and class instances', t => {
     const customPlugin = () => {};
     assert.strictEqual(isSerializable(customPlugin), false);
     assert.strictEqual(isSerializable({fn: customPlugin}), false);
@@ -83,7 +83,7 @@ describe('testing isSerializable', () => {
     assert.strictEqual(isSerializable(/regex/u), false);
   });
 
-  it('should accept cyclic plain objects', () => {
+  it('should accept cyclic plain objects', t => {
     const cyclic = {nested: {}};
     cyclic.nested.self = cyclic;
     assert.strictEqual(isSerializable(cyclic), true);
@@ -91,8 +91,8 @@ describe('testing isSerializable', () => {
 });
 
 describe('testing svgoTransform with the worker pool', () => {
-  it('should dispatch optimization to a worker and apply the result', async () => {
-    const workerOptimize = mock.fn(optimizeInWorker);
+  it('should dispatch optimization to a worker and apply the result', async t => {
+    const workerOptimize = t.mock.fn(optimizeInWorker);
     setDependency(dependencyKeys.svgoPoolOptimize, workerOptimize);
     const shape = createShape();
     const spriter = createSpriter();
@@ -105,16 +105,16 @@ describe('testing svgoTransform with the worker pool', () => {
     assert.ok(shape.setSVG.mock.calls.some(call => isDeepStrictEqual(call.arguments, [realOptimize(TEST_SVG, DEFAULT_CONFIG).data])), 'expected a matching call');
   });
 
-  it('should fall back to the main thread when the optimizer is replaced', () => {
-    const mockOptimize = mock.fn(() => ({data: 'optimized'}));
+  it('should fall back to the main thread when the optimizer is replaced', async t => {
+    const mockOptimize = t.mock.fn(() => ({data: 'optimized'}));
     setDependency(dependencyKeys.svgoOptimize, mockOptimize);
-    const workerOptimize = mock.fn();
+    const workerOptimize = t.mock.fn();
     setDependency(dependencyKeys.svgoPoolOptimize, workerOptimize);
     const shape = createShape();
     const spriter = createSpriter();
-    const callback = mock.fn();
+    const callback = t.mock.fn();
 
-    svgoTransform(shape, {}, spriter, callback);
+    await svgoTransform(shape, {}, spriter, callback);
 
     assert.ok(mockOptimize.mock.calls.some(call => isDeepStrictEqual(call.arguments, [TEST_SVG, DEFAULT_CONFIG])), 'expected a matching call');
     assert.strictEqual(workerOptimize.mock.callCount(), 0);
@@ -122,8 +122,8 @@ describe('testing svgoTransform with the worker pool', () => {
     assert.ok(callback.mock.calls.some(call => isDeepStrictEqual(call.arguments, [null])), 'expected a matching call');
   });
 
-  it('should fall back to the main thread for non-serializable configs', async () => {
-    const workerOptimize = mock.fn();
+  it('should fall back to the main thread for non-serializable configs', async t => {
+    const workerOptimize = t.mock.fn();
     setDependency(dependencyKeys.svgoPoolOptimize, workerOptimize);
     const shape = createShape();
     const spriter = createSpriter();
@@ -137,9 +137,9 @@ describe('testing svgoTransform with the worker pool', () => {
     assert.ok(shape.setSVG.mock.calls.some(call => isDeepStrictEqual(call.arguments, [realOptimize(TEST_SVG, DEFAULT_CONFIG).data])), 'expected a matching call');
   });
 
-  it('should report worker failures through the callback', async () => {
+  it('should report worker failures through the callback', async t => {
     const TEST_ERROR = new Error('worker boom');
-    const workerOptimize = mock.fn(() => (Promise.reject(TEST_ERROR)));
+    const workerOptimize = t.mock.fn(() => (Promise.reject(TEST_ERROR)));
     setDependency(dependencyKeys.svgoPoolOptimize, workerOptimize);
     const shape = createShape();
     const spriter = createSpriter();
@@ -152,7 +152,7 @@ describe('testing svgoTransform with the worker pool', () => {
 });
 
 describe('testing the real SVGO worker', () => {
-  it('should optimize an SVG on a worker identically to the main thread', async () => {
+  it('should optimize an SVG on a worker identically to the main thread', async t => {
     const workerResult = await optimizeInWorker(TEST_SVG, DEFAULT_CONFIG);
     assert.strictEqual(workerResult.data, realOptimize(TEST_SVG, DEFAULT_CONFIG).data);
   });

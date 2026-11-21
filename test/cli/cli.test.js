@@ -606,7 +606,7 @@ describe('svgforge-cli', () => {
       // installed; the test environment runs the development install without
       // it, so the test self-skips if resvg is installed manually.
       const {isResvgAvailable} = await import('@svgforge/svgforge/utils');
-      if (isResvgAvailable()) {
+      if (await isResvgAvailable()) {
         return;
       }
 

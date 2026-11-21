@@ -11,7 +11,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 import {before as beforeAll, describe, it} from 'node:test';
-import SVGSpriter from '../../lib/svgforge.js';
+import SVGSpriter from '../../lib/index.js';
 import {addFixtureFiles} from '../../test-utils/add-files.js';
 import {paths} from '../../test-utils/constants.js';
 import removeTmpPath from '../../test-utils/remove-temp-path.js';

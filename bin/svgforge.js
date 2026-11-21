@@ -18,7 +18,7 @@ import process from 'node:process';
 import {fileURLToPath} from 'node:url';
 import {load} from 'js-yaml';
 import yargs from 'yargs';
-import createSpriter from '../lib/svgforge.js';
+import createSpriter from '../lib/index.js';
 import {
   deepMerge,
   isObject,
@@ -638,7 +638,7 @@ async function main() {
       dest: config.dest ?? '.',
       elapsedMs: Date.now() - startedAt,
       concurrency: spriter._limit,
-      resvg: isResvgAvailable(),
+      resvg: await isResvgAvailable(),
       dimensionSkipped: spriter._dimensionSkipped ?? 0,
       errorSkipped: spriter._errorSkipped ?? 0,
       cliVersion: version,
