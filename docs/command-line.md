@@ -15,9 +15,13 @@ Options:
       --version                     Show version number  [boolean]
       --help                        Display this help information  [boolean]
   -D, --dest                        Main output directory (base path)  [default: "."]
-  -C, --config                      Path to external JSON config file
+  -C, --config                      Path to external JSON or JS/ESM config file
   -l, --log                         Logging verbosity ("info", "verbose" or "debug")
   -q, --quiet                       Suppress all output except errors  [boolean] [default: false]
+      --json                        Write the summary report as JSON to stdout  [boolean] [default: false]
+      --dry-run                     Compile sprites but do not write files to disk  [boolean] [default: false]
+      --watch                       Watch input files and rebuild on changes  [boolean] [default: false]
+      --ignore                      Comma-separated glob patterns to exclude from input files
       --shape-id-separator          Separator for traversing a directory structure into a shape ID  [default: "--"]
       --shape-id-generator          ID generation callback [via CLI only template strings]  [default: "%s"]
       --shape-id-pseudo             Separator for CSS pseudo classes  [default: "~"]
@@ -52,6 +56,8 @@ Options:
       --vx, --view-example          Whether to render an example HTML document  [boolean] [default: false]
       --view-example-template       HTML document Vento template (relative to svgforge basedir)  [default: "tmpl/view/sprite.vto"]
       --view-example-dest           HTML document destination (relative to the --view-dest)  [default: "sprite.view.html"]
+      --view-manifest               Whether to write a JSON manifest file  [boolean] [default: false]
+      --view-manifest-dest          Manifest destination (relative to the --view-dest)  [default: "sprite.view.manifest.json"]
   -d, --defs                        Activates the «defs» mode  [boolean] [default: false]
       --defs-dest                   Mode specific output directory  [default: "defs"]
       --defs-prefix                 CSS selector prefix for all shapes (including placeholders)  [default: ".svg-%s"]
@@ -68,6 +74,8 @@ Options:
       --dx, --defs-example          Whether to render an example HTML document  [boolean] [default: false]
       --defs-example-template       HTML document Vento template (relative to svgforge basedir)  [default: "tmpl/defs/sprite.vto"]
       --defs-example-dest           HTML document destination (relative to the --defs-dest)  [default: "sprite.defs.html"]
+      --defs-manifest               Whether to write a JSON manifest file  [boolean] [default: false]
+      --defs-manifest-dest          Manifest destination (relative to the --defs-dest)  [default: "sprite.defs.manifest.json"]
   -s, --symbol                      Activates the «symbol» mode  [boolean] [default: false]
       --symbol-dest                 Mode specific output directory  [default: "symbol"]
       --symbol-prefix               CSS selector prefix for all shapes (including placeholders)  [default: ".svg-%s"]
@@ -84,6 +92,8 @@ Options:
       --sx, --symbol-example        Whether to render an example HTML document  [boolean] [default: false]
       --symbol-example-template     HTML document Vento template (relative to svgforge basedir)  [default: "tmpl/symbol/sprite.vto"]
       --symbol-example-dest         HTML document destination (relative to the --symbol-dest)  [default: "sprite.symbol.html"]
+      --symbol-manifest             Whether to write a JSON manifest file  [boolean] [default: false]
+      --symbol-manifest-dest        Manifest destination (relative to the --symbol-dest)  [default: "sprite.symbol.manifest.json"]
   -S, --stack                       Activates the «stack» mode  [boolean] [default: false]
       --stack-dest                  Mode specific output directory  [default: "stack"]
       --stack-prefix                CSS selector prefix for all shapes (including placeholders)  [default: ".svg-%s"]
@@ -100,6 +110,8 @@ Options:
       --Sx, --stack-example         Whether to render an example HTML document  [boolean] [default: false]
       --stack-example-template      HTML document Vento template (relative to svgforge basedir)  [default: "tmpl/stack/sprite.vto"]
       --stack-example-dest          HTML document destination (relative to the --stack-dest)  [default: "sprite.stack.html"]
+      --stack-manifest              Whether to write a JSON manifest file  [boolean] [default: false]
+      --stack-manifest-dest         Manifest destination (relative to the --stack-dest)  [default: "sprite.stack.manifest.json"]
       --variables                   Path to external JSON file with Vento variable definitions
 
 Examples:
