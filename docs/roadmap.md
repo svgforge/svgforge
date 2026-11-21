@@ -1,9 +1,5 @@
 # Roadmap
 
-## Planned for 4.0
-
-No remaining roadmap items.
-
 ## Decisions
 
 - File and class names stay as they are; the `svg-sprite` prefix is documented in
