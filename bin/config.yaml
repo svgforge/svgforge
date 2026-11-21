@@ -33,6 +33,10 @@ watch:
   default: false
   map: watch
 
+ignore:
+  description: Comma-separated glob patterns to exclude from input files
+  map: ignore
+
 shape:
   id:
     separator:

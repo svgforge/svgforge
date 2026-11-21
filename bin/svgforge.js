@@ -553,8 +553,17 @@ async function main() {
         .map(file => ({baseDepth, file}));
     });
     const excludedInputRoots = getExcludedInputRoots(config);
-    const isExcludedFile = file => excludedInputRoots.some(root => file === root || file.startsWith(root + path.sep));
-    const inputFiles = matchedFiles.filter(({file}) => !isExcludedFile(path.resolve(file)));
+    const ignorePatterns = typeof config.ignore === 'string'
+      ? config.ignore.split(',').map(p => p.trim()).filter(Boolean)
+      : (Array.isArray(config.ignore) ? config.ignore : []);
+    const isIgnored = file => ignorePatterns.some(pattern =>
+      (typeof path.matchesGlob === 'function' ? path.matchesGlob(file, pattern) : file.includes(pattern)));
+    const isExcludedFile = file => {
+      const resolved = path.resolve(file);
+      return excludedInputRoots.some(root => resolved === root || resolved.startsWith(root + path.sep)) || isIgnored(file);
+    };
+
+    const inputFiles = matchedFiles.filter(({file}) => !isExcludedFile(file));
     return {matchedFiles, inputFiles, isExcludedFile};
   };
 

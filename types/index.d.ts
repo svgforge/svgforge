@@ -120,6 +120,7 @@ export type ShapeConfig = {
   dimension?: ShapeDimensionConfig;
   spacing?: ShapeSpacingConfig;
   accessibility?: ShapeAccessibilityConfig;
+  dedupe?: boolean;
   transform?: Array<string | Record<string, unknown> | ((shape: unknown, sprite: unknown, callback?: (error: Error | undefined) => void) => void | Promise<void>)>;
   meta?: string | Record<string, {title?: string; description?: string}>;
   sort?: (shape1: {id: string}, shape2: {id: string}) => number;
