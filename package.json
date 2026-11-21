@@ -47,10 +47,6 @@
       "types": "./types/index.d.ts",
       "default": "./lib/index.js"
     },
-    "./utils": {
-      "types": "./types/utils.d.ts",
-      "default": "./lib/svgforge/utils/index.js"
-    },
     "./lib/svg-sprite/utils/index.js": {
       "types": "./types/utils.d.ts",
       "default": "./lib/svgforge/utils/index.js"

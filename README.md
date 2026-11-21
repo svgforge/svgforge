@@ -53,8 +53,7 @@ only used for an edge case: SVGs that have **neither** a `viewBox` **nor**
 `width`/`height` attributes — which is unusual, as SVG tools almost always write a
 `viewBox`. Those shapes get their dimensions from rendering the image; if the package is
 unavailable, they are skipped with a logged warning naming the install command
-(`npm install @resvg/resvg-js`). `isResvgAvailable()` (exported from the `utils` entry
-point) reports whether the fallback is available.
+(`npm install @resvg/resvg-js`). `isResvgAvailable()` (exported from `@svgforge/svgforge`) reports whether the fallback is available.
 
 
 ## Getting started
@@ -372,6 +371,28 @@ svgforge --symbol --symbol-render-css --symbol-example --dest=out assets/*.svg
 See the [command line reference](docs/command-line.md) for all options.
 
 
+## Migrating to 4.0
+
+4.0 is a breaking release. The main migration steps:
+
+- **Node.js**: requires Node `>=24` and is ESM-only.
+- **Compile API**: `compile()` and `getShapes()` return Promises. Callback arguments and `compileAsync()` were removed.
+
+  ```js
+  // Before
+  spriter.compile(config, (error, result, data) => { /* ... */ });
+
+  // After
+  const {result, data} = await spriter.compile(config);
+  const shapes = await spriter.getShapes();
+  ```
+
+- **File objects**: plain `{base, path, contents}` objects replace vinyl. `contents` is a `Buffer`.
+- **Optional resvg**: install `@resvg/resvg-js` explicitly if you rely on the dimension fallback for SVGs without `width`/`height`/`viewBox`. Missing dimensions are skipped with a warning; check `spriter.dimensionSkipped` or the `shape-skipped` event.
+- **CLI**: the `svgforge` binary ships with `@svgforge/svgforge`; no separate CLI package is required for normal use.
+- **Exports**: default export remains the `createSpriter` factory (also `new`-compatible). Named exports are available: `createSpriter`, `SVGSpriter`, and error classes. TypeScript declarations ship with the package.
+- **Legacy alias**: `./lib/svg-sprite/utils/index.js` remains available in 4.0 for migration compatibility.
+
 ## Known problems / To-do
 
 * SVGO does not minify element IDs when there are `<style>` or `<script>` elements contained in the file
@@ -391,7 +412,7 @@ This is a fork of [svg-sprite](https://github.com/svg-sprite/svg-sprite) 3.0.0rc
 * All node dependencies are upgraded
 * You need Node.js version >= 24
 * Integrated the CLI into the main package (`svgforge` binary ships with `@svgforge/svgforge`)
-* Block deep imports: the `exports` map only exposes the main entry point, `./utils` and the legacy `./lib/svg-sprite/utils/index.js` alias — every other `lib/` path is blocked
+* Block deep imports: the `exports` map only exposes the main entry point and the legacy `./lib/svg-sprite/utils/index.js` alias — every other `lib/` path is blocked
 * Drop grunt and gulp (you can still use it with a few lines of code)
 * Replace glob with native [fs.glob](https://nodejs.org/api/fs.html#fspromisesglobpattern-options)
 * Remove SCSS, LESS and Stylus support, it was only useful for sprite generation.

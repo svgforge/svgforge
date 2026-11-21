@@ -605,7 +605,7 @@ describe('svgforge-cli', () => {
       // The warning path only exists while the optional package is not
       // installed; the test environment runs the development install without
       // it, so the test self-skips if resvg is installed manually.
-      const {isResvgAvailable} = await import('@svgforge/svgforge/utils');
+      const {isResvgAvailable} = await import('../../lib/svgforge/utils/index.js');
       if (await isResvgAvailable()) {
         return;
       }
