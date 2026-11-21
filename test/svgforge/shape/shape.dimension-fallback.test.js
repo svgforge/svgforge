@@ -1,8 +1,8 @@
 import {Buffer} from 'node:buffer';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {describe, it, mock} from 'node:test';
-import SVGSpriter from '../../../lib/svgforge.js';
+import {describe, it} from 'node:test';
+import SVGSpriter from '../../../lib/index.js';
 import DimensionsCalculationError from '../../../lib/svgforge/errors/dimensions-calculation-error.js';
 import {isResvgAvailable} from '../../../lib/svgforge/utils/calculate-svg-dimensions.js';
 
@@ -16,7 +16,7 @@ describe('dimension fallback without @resvg/resvg-js', () => {
     // is not installed. The package is no longer a dev dependency, so this
     // test runs by default; it skips in environments that installed it
     // manually on top of the dev dependencies.
-    if (isResvgAvailable()) {
+    if (await isResvgAvailable()) {
       t.skip('requires a build without @resvg/resvg-js');
       return;
     }
@@ -32,10 +32,10 @@ describe('dimension fallback without @resvg/resvg-js', () => {
     });
 
     // Capture the warning the queue emits for the skipped shape
-    mock.method(spriter, 'warn');
+    t.mock.method(spriter, 'warn');
 
     // The queue also signals the skip as a structured event on the spriter
-    const onSkipped = mock.fn();
+    const onSkipped = t.mock.fn();
     spriter.on('shape-skipped', onSkipped);
 
     const svgFilePath = path.join(__dirname, '../../fixture/svg/special/without-dims/46x46.svg');

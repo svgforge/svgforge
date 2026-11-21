@@ -20,17 +20,18 @@ import {dependencyKeys, setDependency, resetDependencies} from '../../../lib/dep
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-afterEach(() => {
-  mock.restoreAll();
+afterEach(t => {
+  t.mock.restoreAll();
   resetDependencies();
 });
 
 describe('testings SVGSpriteBase', () => {
   const TEST_MODE_NAME = 'base';
   const getClassAndInitFn = () => {
-    const initFn = mock.fn();
+    const initFn = mock.fn(); // eslint-disable-line node-test/prefer-context-mock -- module-scope mock
     return {
       cls: class TestMode extends SVGSpriteBase {
+        // eslint-disable-next-line unicorn/prefer-private-class-fields -- overrides protected base method
         _init() {
           initFn();
         }
@@ -44,7 +45,7 @@ describe('testings SVGSpriteBase', () => {
   };
 
   describe('testing constructor', () => {
-    it('should set default values', () => {
+    it('should set default values', t => {
       const TEST_SPRITER = {
         config: {
           dest: '.',
@@ -52,7 +53,7 @@ describe('testings SVGSpriteBase', () => {
             spacing: [],
           },
         },
-        debug: mock.fn(),
+        debug: t.mock.fn(),
       };
       const TEST_CONFIG = {
         dest: '.',
@@ -81,7 +82,7 @@ describe('testings SVGSpriteBase', () => {
     });
 
     describe('testing render', () => {
-      it('should update config.render as expected', () => {
+      it('should update config.render as expected', t => {
         const TEST_SPRITER = {
           config: {
             dest: '.',
@@ -89,7 +90,7 @@ describe('testings SVGSpriteBase', () => {
               spacing: [],
             },
           },
-          debug: mock.fn(),
+          debug: t.mock.fn(),
         };
         const TEST_CONFIG = {
           dest: '.',
@@ -116,10 +117,11 @@ describe('testings SVGSpriteBase', () => {
 
         const {cls} = getClassAndInitFn();
         const base = new cls(TEST_SPRITER, TEST_CONFIG, TEST_DATA, '');
+        const commonTmplDir = path.dirname(path.dirname(path.dirname(__dirname)));
 
         assert.partialDeepStrictEqual(base.config.render, {
           png: {
-            template: path.resolve(path.dirname(path.dirname(path.dirname(__dirname))), 'tmpl/common/sprite.png.vto'),
+            template: path.resolve(commonTmplDir, 'tmpl/common/sprite.png.vto'),
             dest: path.join(TEST_CONFIG.dest, 'sprite.png'),
           },
           jpg: {
@@ -128,11 +130,11 @@ describe('testings SVGSpriteBase', () => {
           },
           bmp: {
             dest: path.resolve(TEST_CONFIG.dest, 'dest.bmp'),
-            template: path.resolve(path.dirname(path.dirname(path.dirname(__dirname))), 'tmpl/common/sprite.bmp.vto'),
+            template: path.resolve(commonTmplDir, 'tmpl/common/sprite.bmp.vto'),
           },
           webp: {
             dest: path.resolve(TEST_CONFIG.dest, 'here.webp'),
-            template: path.resolve(path.dirname(path.dirname(path.dirname(__dirname))), 'tmpl/common/sprite.webp.vto'),
+            template: path.resolve(commonTmplDir, 'tmpl/common/sprite.webp.vto'),
           },
         });
         assert.strictEqual(base._cssDest, TEST_CONFIG.dest);
@@ -141,7 +143,7 @@ describe('testings SVGSpriteBase', () => {
   });
 
   describe('testing _initData()', () => {
-    it('should log', () => {
+    it('should log', t => {
       const TEST_SPRITER = {
         config: {
           dest: '.',
@@ -149,7 +151,7 @@ describe('testings SVGSpriteBase', () => {
             spacing: [],
           },
         },
-        debug: mock.fn(),
+        debug: t.mock.fn(),
       };
       const TEST_CONFIG = {
         dest: '.',
@@ -168,7 +170,7 @@ describe('testings SVGSpriteBase', () => {
     });
 
     describe('if example passed', () => {
-      it('should create default config if truthy value passed', () => {
+      it('should create default config if truthy value passed', t => {
         const TEST_SPRITER = {
           config: {
             dest: '.',
@@ -176,7 +178,7 @@ describe('testings SVGSpriteBase', () => {
               spacing: [],
             },
           },
-          debug: mock.fn(),
+          debug: t.mock.fn(),
         };
         const TEST_CONFIG = {
           dest: '.',
@@ -188,15 +190,17 @@ describe('testings SVGSpriteBase', () => {
 
         const {cls} = getClassAndInitFn();
         const base = new cls(TEST_SPRITER, TEST_CONFIG, TEST_DATA, '');
+        const tmplRoot = path.dirname(path.dirname(path.dirname(__dirname)));
+        const exampleTemplate = path.resolve(tmplRoot, path.join('tmpl', TEST_MODE_NAME, 'sprite.vto'));
 
         assert.deepStrictEqual(base.config.example, {
-          template: path.resolve(path.dirname(path.dirname(path.dirname(__dirname))), path.join('tmpl', TEST_MODE_NAME, 'sprite.vto')),
+          template: exampleTemplate,
           dest: path.join(TEST_CONFIG.dest, `sprite.${TEST_MODE_NAME}.html`),
         });
         assert.strictEqual(base.data.example, 'sprite.svg');
       });
 
-      it('should follow passed config', () => {
+      it('should follow passed config', t => {
         const TEST_SPRITER = {
           config: {
             dest: '.',
@@ -204,7 +208,7 @@ describe('testings SVGSpriteBase', () => {
               spacing: [],
             },
           },
-          debug: mock.fn(),
+          debug: t.mock.fn(),
         };
         const TEST_CONFIG = {
           dest: '.',
@@ -229,7 +233,7 @@ describe('testings SVGSpriteBase', () => {
       });
     });
 
-    it('should reject an example value that is neither true nor an object', () => {
+    it('should reject an example value that is neither true nor an object', t => {
       const TEST_SPRITER = {
         config: {
           dest: '.',
@@ -237,7 +241,7 @@ describe('testings SVGSpriteBase', () => {
             spacing: [],
           },
         },
-        debug: mock.fn(),
+        debug: t.mock.fn(),
       };
       const TEST_CONFIG = {
         dest: '.',
@@ -253,7 +257,7 @@ describe('testings SVGSpriteBase', () => {
   });
 
   describe('testing _buildCSSResources', () => {
-    it('should transform passed files', async () => {
+    it('should transform passed files', async t => {
       const TEST_SPRITER = {
         config: {
           dest: '.',
@@ -262,8 +266,8 @@ describe('testings SVGSpriteBase', () => {
           },
         },
         _limit: 100,
-        debug: mock.fn(),
-        verbose: mock.fn(),
+        debug: t.mock.fn(),
+        verbose: t.mock.fn(),
       };
       const TEST_CONFIG = {
         dest: '.',
@@ -275,16 +279,12 @@ describe('testings SVGSpriteBase', () => {
       const base = new cls(TEST_SPRITER, TEST_CONFIG, {}, '');
 
       const TEST_FILES = {};
-      const testFn = mock.fn();
       const outputs = ['first', 'second'];
-      const renderTemplateMock = mock.fn(async () => outputs.shift() ?? '');
+      const renderTemplateMock = t.mock.fn(async () => outputs.shift() ?? '');
       setDependency(dependencyKeys.templateRender, renderTemplateMock);
 
-      base._buildCSSResources(TEST_FILES, testFn);
+      await base._buildCSSResources(TEST_FILES);
 
-      await new Promise(setImmediate);
-
-      assert.ok(testFn.mock.calls.some(call => isDeepStrictEqual(call.arguments, [null, [undefined, undefined]])), 'expected a matching call');
       assert.strictEqual(TEST_SPRITER.verbose.mock.callCount(), 2);
       assert.deepStrictEqual(TEST_SPRITER.verbose.mock.calls[0].arguments, ['Created «%s» stylesheet resource', 'svg']);
       assert.deepStrictEqual(TEST_SPRITER.verbose.mock.calls[1].arguments, ['Created «%s» stylesheet resource', 'png']);
@@ -304,7 +304,7 @@ describe('testings SVGSpriteBase', () => {
   });
 
   describe('testing _buildHTMLExample()', () => {
-    it('should add example in files', async () => {
+    it('should add example in files', async t => {
       const TEST_SPRITER = {
         config: {
           dest: '.',
@@ -313,8 +313,8 @@ describe('testings SVGSpriteBase', () => {
           },
         },
         _limit: 100,
-        debug: mock.fn(),
-        verbose: mock.fn(),
+        debug: t.mock.fn(),
+        verbose: t.mock.fn(),
       };
       const TEST_CONFIG = {
         dest: '.',
@@ -326,15 +326,12 @@ describe('testings SVGSpriteBase', () => {
       };
       const {cls} = getClassAndInitFn();
       const base = new cls(TEST_SPRITER, TEST_CONFIG, {}, '');
-      const testFn = mock.fn();
       const TEST_FILES = {};
 
-      setDependency(dependencyKeys.templateRender, mock.fn(async () => ('test example')));
-      base._buildHTMLExample(TEST_FILES, testFn);
+      setDependency(dependencyKeys.templateRender, t.mock.fn(async () => ('test example')));
+      const result = await base._buildHTMLExample(TEST_FILES);
 
-      await new Promise(setImmediate);
-
-      assert.ok(testFn.mock.calls.some(call => isDeepStrictEqual(call.arguments, [null, base.data])), 'expected a matching call');
+      assert.strictEqual(result, base.data);
       assert.deepStrictEqual(TEST_FILES, {
         example: new SpriteFile({
           base: TEST_SPRITER.config.dest,
@@ -347,39 +344,39 @@ describe('testings SVGSpriteBase', () => {
   });
 
   describe('testing _addUnit()', () => {
-    it('should add unit to number if number is not zero', () => {
+    it('should add unit to number if number is not zero', t => {
       assert.strictEqual(SVGSpriteBase.prototype._addUnit(1, 'px'), '1px');
     });
 
-    it('should not add anything if number is zero', () => {
+    it('should not add anything if number is zero', t => {
       assert.strictEqual(SVGSpriteBase.prototype._addUnit(0, 'px'), '0');
     });
   });
 
   describe('testing declaration()', () => {
-    it('should return local declaration if exists', () => {
+    it('should return local declaration if exists', t => {
       const TEST_DECLARATION = 'test declaration';
 
       assert.strictEqual(SVGSpriteBase.prototype.declaration(true, TEST_DECLARATION), TEST_DECLARATION);
     });
 
-    it('should return empty string if local declaration is falsy', () => {
+    it('should return empty string if local declaration is falsy', t => {
       assert.strictEqual(SVGSpriteBase.prototype.declaration(true, false), '');
     });
 
-    it('should return global if provided', () => {
+    it('should return global if provided', t => {
       const TEST_DECLARATION = 'test declaration';
 
       assert.strictEqual(SVGSpriteBase.prototype.declaration(`${TEST_DECLARATION} `), TEST_DECLARATION);
     });
 
-    it('should return empty string if global declaration is not provided', () => {
+    it('should return empty string if global declaration is not provided', t => {
       assert.strictEqual(SVGSpriteBase.prototype.declaration(), '');
     });
   });
 
   describe('testing _addCacheBusting()', () => {
-    it('should add busting', () => {
+    it('should add busting', t => {
       const TEST_SPRITER = {
         config: {
           dest: '.',
@@ -388,8 +385,8 @@ describe('testings SVGSpriteBase', () => {
           },
         },
         _limit: 100,
-        debug: mock.fn(),
-        verbose: mock.fn(),
+        debug: t.mock.fn(),
+        verbose: t.mock.fn(),
       };
       const TEST_CONFIG = {
         dest: '.',

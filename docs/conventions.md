@@ -9,7 +9,7 @@ How `lib/` is organised. Read this before adding a file or a mode.
   `ArgumentError` → `argument-error.js`.
 - Only exported names count. An unexported `defaultConfig` does not name a file.
 - One primary class or function per file; supporting constants live beside it.
-- `index.js` only as a module face with a reason: `lib/svgforge.js`,
+- `index.js` only as a module face with a reason: `lib/index.js`,
   `lib/svgforge/utils/index.js` (public subpath), `lib/svgforge/shape/index.js`
   (factory for the shape subsystem).
 

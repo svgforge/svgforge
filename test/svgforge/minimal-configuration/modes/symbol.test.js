@@ -9,7 +9,7 @@ import {
   it,
 } from 'node:test';
 import {renderTemplate} from '../../../../lib/svgforge/utils/template.js';
-import SVGSpriter from '../../../../lib/svgforge.js';
+import SVGSpriter from '../../../../lib/index.js';
 import {isResvgAvailable} from '../../../../lib/svgforge/utils/index.js';
 import {addFixtureFiles} from '../../../../test-utils/add-files.js';
 import writeFiles from '../../../../test-utils/write-files.js';
@@ -35,7 +35,7 @@ for (const {name, testConfigKey} of [
     // fallback. Without it the shapes are skipped, so the visual expectations
     // only make sense while the fallback is installed (the skip warning itself
     // is covered by shape.dimension-fallback.test.js).
-    const requiresDimensionFallback = testConfigKey === 'WITHOUT_DIMS' && !isResvgAvailable();
+    let requiresDimensionFallback = false;
 
     const temporaryPath = path.join(paths.tmp, `symbol${testConfig.namespace}`);
 
@@ -44,6 +44,7 @@ for (const {name, testConfigKey} of [
     let data;
 
     beforeAll(async () => {
+      requiresDimensionFallback = testConfigKey === 'WITHOUT_DIMS' && !(await isResvgAvailable());
       if (requiresDimensionFallback) {
         return;
       }

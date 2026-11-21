@@ -2,7 +2,7 @@ import path from 'node:path';
 import process from 'node:process';
 import assert from 'node:assert/strict';
 import {describe, it} from 'node:test';
-import SVGSpriter from '../../../lib/svgforge.js';
+import SVGSpriter from '../../../lib/index.js';
 
 const TEST_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-hidden="true" aria-label="Search" data-internal="yes"><path d="M0 0h24v24H0z"/></svg>';
 

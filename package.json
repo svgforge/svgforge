@@ -40,9 +40,9 @@
   "bin": {
     "svgforge": "./bin/svgforge.js"
   },
-  "main": "lib/svgforge.js",
+  "main": "lib/index.js",
   "exports": {
-    ".": "./lib/svgforge.js",
+    ".": "./lib/index.js",
     "./utils": "./lib/svgforge/utils/index.js",
     "./lib/svg-sprite/utils/index.js": "./lib/svgforge/utils/index.js"
   },

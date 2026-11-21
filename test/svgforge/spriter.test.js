@@ -14,7 +14,7 @@ import {
 } from 'node:test';
 import {isDeepStrictEqual} from 'node:util';
 import SpriteFile from '../../lib/svgforge/file.js';
-import SVGSpriter from '../../lib/svgforge.js';
+import SVGSpriter from '../../lib/index.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -24,7 +24,7 @@ const TEST_EMPTY_SVG = '<svg></svg>';
 describe('testing SVGSpriter', () => {
   let spriter;
 
-  beforeEach(() => {
+  beforeEach(t => {
     spriter = new SVGSpriter({
       shape: {
         dest: 'svg',
@@ -34,7 +34,7 @@ describe('testing SVGSpriter', () => {
 
   describe('testing add()', () => {
     describe('testing adding file object', () => {
-      it('should transform file.base of File object with path.resolve and add to _queue as file object', () => {
+      it('should transform file.base of File object with path.resolve and add to _queue as file object', t => {
         const TEST_FILE = new SpriteFile({
           base: path.dirname(TEST_SVG),
           path: TEST_SVG,
@@ -42,7 +42,7 @@ describe('testing SVGSpriter', () => {
         });
 
         spriter._queue = {
-          add: mock.fn(),
+          add: t.mock.fn(),
         };
 
         spriter.add(TEST_FILE);
@@ -51,7 +51,7 @@ describe('testing SVGSpriter', () => {
         assert.ok(spriter._queue.add.mock.calls.some(call => isDeepStrictEqual(call.arguments, [TEST_FILE])), 'expected a matching call');
       });
 
-      it('should reject a file object with non-Buffer contents', () => {
+      it('should reject a file object with non-Buffer contents', t => {
         assert.throws(() => {
           spriter.add({
             base: path.dirname(TEST_SVG),
@@ -63,13 +63,13 @@ describe('testing SVGSpriter', () => {
     });
 
     describe('testing adding non-file object', () => {
-      it('should raise an error when passing name with an absolute path', () => {
+      it('should raise an error when passing name with an absolute path', t => {
         assert.throws(() => {
           spriter.add(TEST_SVG, path.resolve(TEST_SVG), TEST_EMPTY_SVG);
         }, Error);
       });
 
-      it('should raise an error when passing less than 3 arguments', () => {
+      it('should raise an error when passing less than 3 arguments', t => {
         assert.throws(() => {
           spriter.add(TEST_SVG);
         }, Error);
@@ -78,19 +78,19 @@ describe('testing SVGSpriter', () => {
         }, Error);
       });
 
-      it('should throw an error if passed file arg is empty', () => {
+      it('should throw an error if passed file arg is empty', t => {
         assert.throws(() => {
           spriter.add('', null, TEST_EMPTY_SVG);
         }, Error);
       });
 
-      it('should throw an error if passed name arg is empty and file path is not valid', () => {
+      it('should throw an error if passed name arg is empty and file path is not valid', t => {
         assert.throws(() => {
           spriter.add(' ', '../', TEST_EMPTY_SVG);
         }, Error);
       });
 
-      it('should throw an error if passed svg arg is empty', () => {
+      it('should throw an error if passed svg arg is empty', t => {
         assert.throws(() => {
           spriter.add(TEST_SVG, null, '');
         }, Error);
@@ -99,59 +99,65 @@ describe('testing SVGSpriter', () => {
         }, Error);
       });
 
-      it('should throw an error if passed name differs from the ending of passed file path', () => {
+      it('should throw an error if passed name differs from the ending of passed file path', t => {
         assert.throws(() => {
           spriter.add(TEST_SVG, 'absolutely-random-string', TEST_EMPTY_SVG);
         }, Error);
       });
 
-      it('should create file object from passed relative file and add it to _queue', () => {
+      it('should create file object from passed relative file and add it to _queue', t => {
         spriter._queue = {
-          add: mock.fn(),
+          add: t.mock.fn(),
         };
         spriter.add(TEST_SVG, 'weather-clear.svg', TEST_EMPTY_SVG);
 
-        assert.ok(spriter._queue.add.mock.calls.some(call => isDeepStrictEqual(call.arguments, [new SpriteFile({
-          base: path.dirname(path.resolve(TEST_SVG)),
-          path: path.resolve(TEST_SVG),
+        const resolvedTestSvg = path.resolve(TEST_SVG);
+        const expectedFile = new SpriteFile({
+          base: path.dirname(resolvedTestSvg),
+          path: resolvedTestSvg,
           contents: Buffer.from(TEST_EMPTY_SVG),
-        })])), 'expected a matching call');
+        });
+        assert.ok(spriter._queue.add.mock.calls.some(call => isDeepStrictEqual(call.arguments, [expectedFile])), 'expected a matching call');
       });
 
       for (const name of [null, undefined, '']) {
         it(`should create file object with file name if name is ${String(name)}`, () => {
           spriter._queue = {
-            add: mock.fn(),
+            add: mock.fn(), // eslint-disable-line node-test/prefer-context-mock -- module-scope mock
           };
           spriter.add(TEST_SVG, name, TEST_EMPTY_SVG);
 
-          assert.ok(spriter._queue.add.mock.calls.some(call => isDeepStrictEqual(call.arguments, [new SpriteFile({
-            base: path.dirname(path.resolve(TEST_SVG)),
-            path: path.resolve(TEST_SVG),
+          const resolvedTestSvg = path.resolve(TEST_SVG);
+          const expectedFile = new SpriteFile({
+            base: path.dirname(resolvedTestSvg),
+            path: resolvedTestSvg,
             contents: Buffer.from(TEST_EMPTY_SVG),
-          })])), 'expected a matching call');
+          });
+          assert.ok(spriter._queue.add.mock.calls.some(call => isDeepStrictEqual(call.arguments, [expectedFile])), 'expected a matching call');
         });
       }
 
-      it('should create file object from passed absolute file and add it to _queue', () => {
+      it('should create file object from passed absolute file and add it to _queue', t => {
         spriter._queue = {
-          add: mock.fn(),
+          add: t.mock.fn(),
         };
         spriter.add(path.resolve(TEST_SVG), 'weather-clear.svg', TEST_EMPTY_SVG);
 
-        assert.ok(spriter._queue.add.mock.calls.some(call => isDeepStrictEqual(call.arguments, [new SpriteFile({
-          base: path.dirname(path.resolve(TEST_SVG)),
-          path: path.resolve(TEST_SVG),
+        const resolvedTestSvg = path.resolve(TEST_SVG);
+        const expectedFile = new SpriteFile({
+          base: path.dirname(resolvedTestSvg),
+          path: resolvedTestSvg,
           contents: Buffer.from(TEST_EMPTY_SVG),
-        })])), 'expected a matching call');
+        });
+        assert.ok(spriter._queue.add.mock.calls.some(call => isDeepStrictEqual(call.arguments, [expectedFile])), 'expected a matching call');
       });
     });
   });
 });
 
 describe('testing transform', () => {
-  it('should call all transformations', async () => {
-    const testTransformFunction = mock.fn();
+  it('should call all transformations', async t => {
+    const testTransformFunction = t.mock.fn();
     const spriter = new SVGSpriter({
       shape: {
         dest: 'svg',
@@ -167,10 +173,11 @@ describe('testing transform', () => {
       },
     });
 
+    const testSvgPath = path.join(__dirname, TEST_SVG);
     spriter.add(new SpriteFile({
       base: path.dirname(TEST_SVG),
       path: TEST_SVG,
-      contents: fs.readFileSync(path.join(__dirname, TEST_SVG)),
+      contents: fs.readFileSync(testSvgPath),
     }));
 
     await spriter.compileAsync({css: true});
