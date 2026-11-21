@@ -37,6 +37,10 @@ ignore:
   description: Comma-separated glob patterns to exclude from input files
   map: ignore
 
+filter:
+  description: Comma-separated glob patterns to include only matching input files
+  map: filter
+
 shape:
   id:
     separator:

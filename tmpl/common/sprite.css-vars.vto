@@ -1,0 +1,6 @@
+:root {
+{{ for shape of shapes }}
+  --{{ key }}-{{ shape.name }}-width: {{ shape.width.outer }}px;
+  --{{ key }}-{{ shape.name }}-height: {{ shape.height.outer }}px;
+{{ /for }}
+}

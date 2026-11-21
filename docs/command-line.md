@@ -22,6 +22,7 @@ Options:
       --dry-run                     Compile sprites but do not write files to disk  [boolean] [default: false]
       --watch                       Watch input files and rebuild on changes  [boolean] [default: false]
       --ignore                      Comma-separated glob patterns to exclude from input files
+      --filter                      Comma-separated glob patterns to include only matching input files
       --shape-id-separator          Separator for traversing a directory structure into a shape ID  [default: "--"]
       --shape-id-generator          ID generation callback [via CLI only template strings]  [default: "%s"]
       --shape-id-pseudo             Separator for CSS pseudo classes  [default: "~"]

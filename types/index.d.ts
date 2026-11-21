@@ -147,6 +147,12 @@ export type SVGSpriterConfig = {
   svg?: SvgConfig;
   variables?: Record<string, unknown>;
   mode?: ModeMap;
+  json?: boolean;
+  dryRun?: boolean;
+  watch?: boolean;
+  quiet?: boolean;
+  ignore?: string | string[];
+  filter?: string | string[];
   [key: string]: unknown;
 };
 

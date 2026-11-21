@@ -17,6 +17,13 @@ Newer release notes are published on the GitHub release page: <https://github.co
 - Expose `limit`, `dimensionSkipped`, and `errorSkipped` as read-only spriter getters.
 - Ship TypeScript declarations (`types` field and package export type conditions).
 - Remove the `./utils` package subpath export; export `writeFiles()` and `isResvgAvailable()` from the main entry. (breaking)
+- Add `mode.<mode>.manifest` to write a JSON manifest per sprite mode.
+- Add CLI options: `--json`, `--dry-run`, `--watch`, `--ignore`, `--filter`, `--<mode>-manifest`, and JS/ESM `--config` files.
+- Add SVGO `preset` support (`safe`, `default`, `aggressive`) in `shape.transform`.
+- Add `shape.accessibility.autoTitle` to generate missing `<title>` metadata.
+- Add `shape.dedupe` to skip shapes with identical SVG content.
+- Add built-in Vento template recipes: `tmpl/common/manifest.json.vto`, `tmpl/common/icons.ts.vto`, `tmpl/common/icons.js.vto`, and `tmpl/common/sprite.css-vars.vto`.
+- Warn on unknown top-level config keys and invalid mode configurations.
 
 ## 3.2.0 — Native test suite, stricter example option
 

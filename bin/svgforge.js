@@ -556,11 +556,16 @@ async function main() {
     const ignorePatterns = typeof config.ignore === 'string'
       ? config.ignore.split(',').map(p => p.trim()).filter(Boolean)
       : (Array.isArray(config.ignore) ? config.ignore : []);
-    const isIgnored = file => ignorePatterns.some(pattern =>
-      (typeof path.matchesGlob === 'function' ? path.matchesGlob(file, pattern) : file.includes(pattern)));
+    const filterPatterns = typeof config.filter === 'string'
+      ? config.filter.split(',').map(p => p.trim()).filter(Boolean)
+      : (Array.isArray(config.filter) ? config.filter : []);
+    const matchesPattern = (file, pattern) =>
+      (typeof path.matchesGlob === 'function' ? path.matchesGlob(file, pattern) : file.includes(pattern));
+    const isIgnored = file => ignorePatterns.some(pattern => matchesPattern(file, pattern));
+    const isFilteredOut = file => filterPatterns.length > 0 && filterPatterns.every(pattern => !matchesPattern(file, pattern) && !matchesPattern(path.basename(file), pattern));
     const isExcludedFile = file => {
       const resolved = path.resolve(file);
-      return excludedInputRoots.some(root => resolved === root || resolved.startsWith(root + path.sep)) || isIgnored(file);
+      return excludedInputRoots.some(root => resolved === root || resolved.startsWith(root + path.sep)) || isIgnored(file) || isFilteredOut(file);
     };
 
     const inputFiles = matchedFiles.filter(({file}) => !isExcludedFile(file));
@@ -570,7 +575,7 @@ async function main() {
   const runBuild = async () => {
     const buildStartedAt = Date.now();
     const spriter = createSpriter(config);
-    const progressBar = createProgressBar(spriter, config.quiet);
+    const progressBar = createProgressBar(spriter, config.quiet || Boolean(config.json));
 
     spriter.on('shape-skipped', ({file, error}) => {
       process.stderr.write(`Skipping "${file}" (${error.message})\n`);
