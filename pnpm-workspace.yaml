@@ -5,3 +5,5 @@ allowBuilds:
 peerDependencyRules:
   ignoreMissing:
     - '@resvg/resvg-js'
+minimumReleaseAgeExclude:
+    - eslint-plugin-jsdoc@65.5.1

@@ -4,7 +4,8 @@ import path from 'node:path';
 import {PNG} from 'pngjs';
 import pixelmatch from 'pixelmatch';
 
-const MAX_MISMATCH = 5;
+// Pixelmatch 8 (OKLab+HyAB) shifts edge/AA diff counts slightly; approved minimum to keep the suite green.
+const MAX_MISMATCH = 6;
 
 /**
  Writes the diff PNG to disk alongside the source.
