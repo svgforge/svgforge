@@ -28,17 +28,18 @@ describe('svg-sprite: errors', () => {
 
   it('should throw error if compilation has failed in async mode', async t => {
     await assert.rejects(async () => {
-      await spriter.compileAsync();
+      await spriter.compile();
     }, TestError);
   });
 
-  it('should throw error if compilation has failed in callback mode', async t => {
-    await new Promise(resolve => {
-      spriter.compile(error => {
-        assert.ok(error instanceof TestError);
-
-        resolve();
-      });
-    });
+  it('should throw a clear error when callback form is used', () => {
+    assert.throws(
+      () => spriter.compile(() => {}),
+      error => {
+        assert.strictEqual(error.name, 'ArgumentError');
+        assert.match(error.message, /callback arguments are no longer supported/u);
+        return true;
+      },
+    );
   });
 });

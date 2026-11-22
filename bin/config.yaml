@@ -5,7 +5,7 @@ dest:
   map: dest
 
 config:
-  description: Path to external JSON config file
+  description: Path to external JSON or JS/ESM config file
   alias: C
 
 log:
@@ -17,6 +17,29 @@ quiet:
   alias: q
   default: false
   map: quiet
+
+json:
+  description: Write the summary report as JSON to stdout
+  default: false
+  map: json
+
+dry-run:
+  description: Compile sprites but do not write files to disk
+  default: false
+  map: dryRun
+
+watch:
+  description: Watch input files and rebuild on changes
+  default: false
+  map: watch
+
+ignore:
+  description: Comma-separated glob patterns to exclude from input files
+  map: ignore
+
+filter:
+  description: Comma-separated glob patterns to include only matching input files
+  map: filter
 
 shape:
   id:
@@ -190,6 +213,15 @@ view:
       default: sprite.view.html
       map: mode.view.example.dest
 
+  manifest:
+    description: Whether to write a JSON manifest file
+    default: false
+
+    dest:
+      description: Manifest destination (relative to the --view-dest)
+      default: sprite.view.manifest.json
+      map: mode.view.manifest.dest
+
 defs:
   description: Activates the «defs» mode
   default: false
@@ -265,6 +297,15 @@ defs:
       description: HTML document destination (relative to the --defs-dest)
       default: sprite.defs.html
       map: mode.defs.example.dest
+
+  manifest:
+    description: Whether to write a JSON manifest file
+    default: false
+
+    dest:
+      description: Manifest destination (relative to the --defs-dest)
+      default: sprite.defs.manifest.json
+      map: mode.defs.manifest.dest
 
 symbol:
   description: Activates the «symbol» mode
@@ -342,6 +383,15 @@ symbol:
       default: sprite.symbol.html
       map: mode.symbol.example.dest
 
+  manifest:
+    description: Whether to write a JSON manifest file
+    default: false
+
+    dest:
+      description: Manifest destination (relative to the --symbol-dest)
+      default: sprite.symbol.manifest.json
+      map: mode.symbol.manifest.dest
+
 stack:
   description: Activates the «stack» mode
   default: false
@@ -416,6 +466,15 @@ stack:
       description: HTML document destination (relative to the --stack-dest)
       default: sprite.stack.html
       map: mode.stack.example.dest
+
+  manifest:
+    description: Whether to write a JSON manifest file
+    default: false
+
+    dest:
+      description: Manifest destination (relative to the --stack-dest)
+      default: sprite.stack.manifest.json
+      map: mode.stack.manifest.dest
 
 variables:
   description: Path to external JSON file with Vento variable definitions

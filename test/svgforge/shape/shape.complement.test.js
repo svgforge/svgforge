@@ -326,7 +326,7 @@ describe('testing _addMetadata()', () => {
     assert.ok(noop.mock.calls.some(call => isDeepStrictEqual(call.arguments, [null])), 'expected a matching call');
     assert.strictEqual(shape.description.textContent, TEST_DESCRIPTION);
     assert.ok(shape.description.setAttribute.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['id', `${shape.id}-desc`])), 'expected a matching call');
-    assert.ok(shape.dom.documentElement.setAttribute.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['aria-labelledby', `${shape.id}-desc`])), 'expected a matching call');
+    assert.ok(shape.dom.documentElement.setAttribute.mock.calls.some(call => isDeepStrictEqual(call.arguments, ['aria-labelledby', `${shape.id}-desc ${shape.id}-title`])), 'expected a matching call');
   });
 
   it('should set description if not exists', async t => {
@@ -376,7 +376,16 @@ describe('testing _addMetadata()', () => {
   });
 
   it('should remove aria-labelledby if neither title or descriptions contains in meta', async t => {
-    const shape = createShape(TEST_FILE, TEST_SPRITER);
+    const shape = createShape(TEST_FILE, {
+      ...TEST_SPRITER,
+      config: {
+        ...TEST_SPRITER.config,
+        shape: {
+          ...TEST_SPRITER.config.shape,
+          accessibility: {autoTitle: false},
+        },
+      },
+    });
     const noop = t.mock.fn();
 
     t.mock.method(shape.dom.documentElement, 'hasAttribute').mock.mockImplementationOnce(() => (true));

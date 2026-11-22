@@ -59,7 +59,7 @@ Property         | Type      | Default     | Description                |
 
 Property         | Type      | Default     | Description                |
 ------------------------ | --------------- | ------------- | ------------------------------------------ |
-`log`          | String\|Logger  |         | *svgforge* uses a built-in console logger, but output is turned off by default. To activate it, pass the desired log level (`'info'`, `'verbose'` or `'debug'`). Alternatively, you can pass your own custom logger instance (which needs to be logger-compatible, i.e. provide `level`, `transports` and a `log()` method — a `winston.Logger` qualifies). Falsy values like `""`, `false` or `null` will disable logging. |
+`log`          | String\|Logger  |         | Logging is off by default. Pass `'info'`, `'verbose'`, or `'debug'` to enable the built-in console logger; `true` is treated as `'info'`. Pass a logger-compatible object with `info/verbose/debug/warn/error` methods (a `winston.Logger` also qualifies) for custom logging. Falsy values like `''`, `false`, or `null` disable logging. |
 
 
 ### SVG shape configuration
@@ -197,6 +197,22 @@ To call a pre-defined transformation with custom configuration options, use its 
 }
 ```
 
+###### SVGO presets
+
+For convenience, the `svgo` transformation accepts a `preset`:
+
+```js
+{
+  shape: {
+    transform: [{
+      svgo: {preset: 'safe'} // also: 'default', 'aggressive'
+    }]
+  }
+}
+```
+
+`default` keeps svgforge's current SVGO behavior. `safe` disables `cleanupIds`. `aggressive` additionally enables `removeDimensions`.
+
 ###### Worker-thread optimization
 
 When the `svgo` transformation runs with the real SVGO optimizer and a configuration that can be transferred to a worker thread, *svgforge* hides the optimization in a small pool of worker threads (one fewer than the CPU cores available to the process, so the main thread keeps a core for parsing and serializing shapes). This lets sprite builds scale across cores instead of serializing all optimization on the main thread. Shapes are processed concurrently with the same core-aware limit. Configurations that contain custom plugin functions or other non-serializable values are optimized in-process as before. Set the `SVGFORGE_SVGO_WORKERS` environment variable to a positive integer to override the pool size (e.g. in containers that report the host's core count instead of their own).
@@ -240,7 +256,9 @@ Property         | Type      | Default     | Description                |
 -------------------------| --------------- | ------------- | ------------------------------------------ |
 `shape.sort`       | Function    |         | Callback for sorting the list of shapes. The callback's signature is `function(shape1, shape2) { /* ... */ return order; }`. It gets passed two shape objects and is expected to return an integer with `0` meaning both shapes are equal in their position, `1` meaning the first shape should follow the second one, and `-1` the other way round. The default callback simply compares the shapes' `id` values and returns them in alphabetical order, but you may as well implement your own ordering logic. |
 `shape.meta`       | String      |         | Path to a [YAML](https://yaml.org/) file with [meta data to be injected](meta-data.md) into the SVG shapes. |
-`shape.dest`       | String      |         | Implicit way of calling [`.getShapes()`](api.md#svgspritergetshapes-dest--callback-) during sprite compilation. If given, the `result` of subsequent [`.compile()`](api.md#svgspritercompile-config--callback-) calls will carry an additional `shapes` property, listing the intermediate SVG files as an Array of file objects. The value will be used as the destination directory for the files (relative to the main output directory if not absolute anyway). |
+`shape.accessibility.autoTitle` | Boolean | `true` | Auto-generate a `<title>` from the shape name when no meta title is present. |
+`shape.dedupe`     | Boolean     | `false`     | Skip shapes whose SVG content is identical to an already added shape. |
+`shape.dest`       | String      |         | Implicit way of calling [`.getShapes()`](api.md#svgspritergetshapes-dest-) during sprite compilation. If given, the `result` of subsequent [`.compile()`](api.md#svgspritercompile-config-) calls will carry an additional `shapes` property, listing the intermediate SVG files as an Array of file objects. The value will be used as the destination directory for the files (relative to the main output directory if not absolute anyway). |
 
 
 ### Sprite SVG options
@@ -383,6 +401,8 @@ Property     | Type      | Default     | Description                |
 `mode.<mode>.example`    | [Rendering config](#rendering-configurations) | `false`     | Enabling this will trigger the creation of an HTML document demoing the usage of the sprite. Please see below for details on [rendering configurations](#rendering-configurations). |
 `mode.<mode>.example.template` | String    | `"tmpl/<mode>/sprite.vto"`   | HTML document [Vento](https://vento.js.org) template |
 `mode.<mode>.example.dest`   | String      | `"sprite.<mode>.html"`    | HTML document destination |
+`mode.<mode>.manifest`    | Boolean\|Object | `false`     | Write a JSON manifest (`mode`, `key`, `sprite`, `shapes[]` with `name`, `base`, `width`, `height` outer pixel values). |
+`mode.<mode>.manifest.dest` | String      | `"sprite.<mode>.manifest.json"` | Manifest destination |
 
 
 #### Specific mode properties

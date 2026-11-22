@@ -41,7 +41,7 @@ describe('dimension fallback without @resvg/resvg-js', () => {
     const svgFilePath = path.join(__dirname, '../../fixture/svg/special/without-dims/46x46.svg');
     spriter.add(svgFilePath, '46x46.svg', Buffer.from(TEST_SVG));
 
-    const {result} = await spriter.compileAsync();
+    const {result} = await spriter.compile();
 
     t.assert.ok(spriter.warn.mock.callCount() > 0);
     t.assert.strictEqual(spriter.warn.mock.calls[0].arguments[0], 'Skipping "%s" (%s)');

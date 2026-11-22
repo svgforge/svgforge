@@ -22,7 +22,7 @@ describe('svg-sprite: «view» mode', () => {
 
     spriter = new SVGSpriter({dest: temporaryPath});
     addFixtureFiles(spriter, testConfig.files, testConfig.cwd);
-    ({result, data} = await spriter.compileAsync({
+    ({result, data} = await spriter.compile({
       view: {
         sprite: 'svg/sprite.view.svg',
         bust: false,
@@ -68,7 +68,7 @@ describe('svg-sprite: «view» mode', () => {
   it('supports a dimensions configuration containing "%s"', async () => {
     const variantSpriter = new SVGSpriter({dest: temporaryPath});
     addFixtureFiles(variantSpriter, testConfig.files, testConfig.cwd);
-    const {result: variant} = await variantSpriter.compileAsync({
+    const {result: variant} = await variantSpriter.compile({
       view: {
         sprite: 'svg/sprite.view.svg',
         bust: false,

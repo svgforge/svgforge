@@ -22,7 +22,7 @@ describe('svg-sprite: HTML example', () => {
     const spriter = new SVGSpriter({dest: temporaryPath});
     addFixtureFiles(spriter, ['weather-clear.svg'], path.dirname(fixtest));
 
-    const {data} = await spriter.compileAsync({
+    const {data} = await spriter.compile({
       stack: {
         sprite: 'svg/sprite.svg',
         render: {
@@ -40,7 +40,7 @@ describe('svg-sprite: HTML example', () => {
     const spriter = new SVGSpriter({dest: temporaryPath});
     addFixtureFiles(spriter, ['weather-clear.svg'], path.dirname(fixtest));
 
-    const {data} = await spriter.compileAsync({
+    const {data} = await spriter.compile({
       stack: {
         sprite: 'svg/sprite.svg',
         render: {
@@ -57,7 +57,7 @@ describe('svg-sprite: HTML example', () => {
     const spriter = new SVGSpriter({dest: temporaryPath});
     addFixtureFiles(spriter, ['weather-clear.svg'], path.dirname(fixtest));
 
-    const {result} = await spriter.compileAsync({
+    const {result} = await spriter.compile({
       defs: {
         sprite: 'svg/sprite.svg',
         example: true,

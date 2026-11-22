@@ -1,0 +1,15 @@
+{
+  "mode": {{ JSON.stringify(mode) |> safe }},
+  "key": {{ JSON.stringify(key) |> safe }},
+  "sprite": {{ JSON.stringify(sprite) |> safe }},
+  "shapes": [
+{{ for index, shape of shapes }}
+    {
+      "name": {{ JSON.stringify(shape.name) |> safe }},
+      "base": {{ JSON.stringify(shape.base) |> safe }},
+      "width": {{ shape.width.outer |> safe }},
+      "height": {{ shape.height.outer |> safe }}
+    }{{ if index < shapes.length - 1 }},{{ /if }}
+{{ /for }}
+  ]
+}

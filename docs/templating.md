@@ -7,7 +7,7 @@ This file is part of the documentation of *svgforge* — a free low-level Node.j
 
 ### Sprite & shape variables
 
-For each sprite generation process, a data object is constructed that is passed to the [Vento](https://vento.js.org) templating engine for rendering the different resources. You can access these templating values via the `data` argument passed to the [compile() callback](api.md#svgspritercompile-config--callback-). Example:
+For each sprite generation process, a data object is constructed that is passed to the [Vento](https://vento.js.org) templating engine for rendering the different resources. You can access these templating values via the `data` property returned by [`compile()`](api.md#svgspritercompile-config-). Example:
 
 ```js
 {
@@ -170,6 +170,36 @@ Finds all hash signs in a string and encodes each of them to `%23`.
 ```vento
 {{ encodeHashSign(url) }}
 ```
+
+### Built-in template recipes
+
+`svgforge` ships Vento recipes you can use as `mode.<mode>.render.*.template` targets:
+
+| Template | Output | Use case |
+| --- | --- | --- |
+| `tmpl/common/manifest.json.vto` | JSON manifest | Shape names, dimensions, sprite reference |
+| `tmpl/common/icons.ts.vto` | TypeScript module | Typed icon map and name union |
+| `tmpl/common/icons.js.vto` | JavaScript ESM module | Icon map for non-TypeScript builds |
+| `tmpl/common/icons.cjs.vto` | CommonJS module | Icon map for CJS consumers |
+| `tmpl/common/icons.d.ts.vto` | TypeScript declarations | Type declarations for icon maps |
+| `tmpl/common/sprite.css-vars.vto` | CSS custom properties | `--<mode>-<icon>-width/height` variables |
+
+Example:
+
+```js
+{
+  mode: {
+    symbol: {
+      render: {
+        manifest: {template: 'tmpl/common/manifest.json.vto', dest: 'sprite.symbol.manifest.json'},
+        icons: {template: 'tmpl/common/icons.ts.vto', dest: 'icons.ts'}
+      }
+    }
+  }
+}
+```
+
+The recipe templates receive the same Vento data as other custom templates, including `shapes`, `sprite`, `mode`, and `key`.
 
 ### Preview HTML layouts
 

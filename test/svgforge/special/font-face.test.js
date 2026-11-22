@@ -30,7 +30,7 @@ describe('testing font face preserving', () => {
                 </text>
             </svg>`,
     );
-    const {result} = await spriter.compileAsync({
+    const {result} = await spriter.compile({
       symbol: {
         sprite: 'svg/font-face.svg',
       },

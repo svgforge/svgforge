@@ -54,7 +54,7 @@ for (const {name, testConfigKey} of [
 
       spriter = new SVGSpriter({dest: temporaryPath});
       addFixtureFiles(spriter, testConfig.files, testConfig.cwd);
-      const {result, data: cssData} = await spriter.compileAsync({
+      const {result, data: cssData} = await spriter.compile({
         symbol: {
           sprite: `svg/symbol${testConfig.namespace}.svg`, render: {
             css: true,

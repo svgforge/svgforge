@@ -113,8 +113,8 @@ describe('svgforge-cli', () => {
         await execCli(['--symbol', `--dest=${dest}`, ...svgFiles]);
 
         const sprite = readFile(path.join(dest, 'symbol', 'svg', 'sprite.symbol.svg'));
-        assert.match(sprite, /<symbol viewBox="0 0 24 24" id="one"/u);
-        assert.match(sprite, /<symbol viewBox="0 0 24 24" id="two"/u);
+        assert.match(sprite, /<symbol[^>]*viewBox="0 0 24 24"[^>]*id="one"/u);
+        assert.match(sprite, /<symbol[^>]*viewBox="0 0 24 24"[^>]*id="two"/u);
       });
     });
 
@@ -605,7 +605,7 @@ describe('svgforge-cli', () => {
       // The warning path only exists while the optional package is not
       // installed; the test environment runs the development install without
       // it, so the test self-skips if resvg is installed manually.
-      const {isResvgAvailable} = await import('@svgforge/svgforge/utils');
+      const {isResvgAvailable} = await import('../../lib/svgforge/utils/index.js');
       if (await isResvgAvailable()) {
         return;
       }
@@ -646,6 +646,64 @@ describe('svgforge-cli', () => {
 
         const example = readFile(path.join(dest, 'defs', 'sprite.defs.html'));
         assert.match(example, /<html/iu);
+      });
+    });
+  });
+
+  describe('new cli options', () => {
+    it('writes JSON summary with --json', async () => {
+      await withTemporaryDir(async dir => {
+        const dest = path.join(dir, 'out');
+        const {stdout} = await execCli(['--symbol', '--json', `--dest=${dest}`, ...svgFiles]);
+        const summary = JSON.parse(stdout);
+        assert.equal(summary.processed, 2);
+        assert.equal(summary.files > 0, true);
+      });
+    });
+
+    it('does not write files with --dry-run', async () => {
+      await withTemporaryDir(async dir => {
+        const dest = path.join(dir, 'out');
+        await execCli(['--symbol', '--dry-run', `--dest=${dest}`, ...svgFiles]);
+        assert.equal(fs.existsSync(dest), false);
+      });
+    });
+
+    it('creates a manifest with --symbol-manifest', async () => {
+      await withTemporaryDir(async dir => {
+        const dest = path.join(dir, 'out');
+        await execCli(['--symbol', '--symbol-manifest', `--dest=${dest}`, ...svgFiles]);
+        const manifest = JSON.parse(readFile(path.join(dest, 'symbol', 'sprite.symbol.manifest.json')));
+        assert.equal(manifest.mode, 'symbol');
+        assert.equal(manifest.shapes.length, 2);
+      });
+    });
+
+    it('excludes files with --ignore', async () => {
+      await withTemporaryDir(async dir => {
+        const dest = path.join(dir, 'out');
+        const {stdout} = await execCli(['--symbol', '--json', '--ignore=**/one.svg', `--dest=${dest}`, ...svgFiles]);
+        const summary = JSON.parse(stdout);
+        assert.equal(summary.processed, 1);
+      });
+    });
+
+    it('includes only matching files with --filter', async () => {
+      await withTemporaryDir(async dir => {
+        const dest = path.join(dir, 'out');
+        const {stdout} = await execCli(['--symbol', '--json', '--filter=**/two.svg', `--dest=${dest}`, ...svgFiles]);
+        const summary = JSON.parse(stdout);
+        assert.equal(summary.processed, 1);
+      });
+    });
+
+    it('loads an ESM config file', async () => {
+      await withTemporaryDir(async dir => {
+        const dest = path.join(dir, 'out');
+        const configPath = path.join(dir, 'config.mjs');
+        fs.writeFileSync(configPath, 'export default { mode: { symbol: true } };\n');
+        await execCli(['--config', configPath, `--dest=${dest}`, ...svgFiles]);
+        assert.ok(readFile(path.join(dest, 'symbol', 'svg', 'sprite.symbol.svg')));
       });
     });
   });

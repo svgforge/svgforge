@@ -9,7 +9,7 @@ const TEST_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" ro
 const buildSymbol = async svgMarkup => {
   const spriter = new SVGSpriter({dest: path.join(process.cwd(), 'tmp')});
   spriter.add(path.join('/', 'base', 'icon.svg'), 'icon.svg', svgMarkup);
-  const {result} = await spriter.compileAsync({symbol: {sprite: 'svg/sprite.svg'}});
+  const {result} = await spriter.compile({symbol: {sprite: 'svg/sprite.svg'}});
   const sprite = result.symbol.sprite.contents.toString();
   return /<symbol[^>]*>/u.exec(sprite)[0];
 };

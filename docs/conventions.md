@@ -10,7 +10,7 @@ How `lib/` is organised. Read this before adding a file or a mode.
 - Only exported names count. An unexported `defaultConfig` does not name a file.
 - One primary class or function per file; supporting constants live beside it.
 - `index.js` only as a module face with a reason: `lib/index.js`,
-  `lib/svgforge/utils/index.js` (public subpath), `lib/svgforge/shape/index.js`
+  `lib/svgforge/utils/index.js` (shared helpers), `lib/svgforge/shape/index.js`
   (factory for the shape subsystem).
 
 ## Visibility
@@ -25,7 +25,7 @@ The entry point default-exports `createSpriter()`, callable with and without
 `new` — the same shape as upstream `svg-sprite`.
 
 The `exports` map has no wildcard: everything below `lib/` is internal except
-`.`, `./utils` and the legacy `./lib/svg-sprite/utils/index.js` alias.
+`.` and the legacy `./lib/svg-sprite/utils/index.js` alias.
 
 ## Layout
 
@@ -46,7 +46,7 @@ the row layout of `<view>` lives in `mode/view-layout.js`.
 - `#` for genuinely private members.
 - `_` for members a base class dispatches (`_init`, `_layout`, `_buildSVG`), for
   members another module calls, and for `_limit`, `_dimensionSkipped` and
-  `_errorSkipped`, which `svgforge-cli` reads.
+  `_errorSkipped`, which the CLI reads.
 
 ## Dependency injection
 

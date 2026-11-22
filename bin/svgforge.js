@@ -15,7 +15,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
-import {fileURLToPath} from 'node:url';
+import {fileURLToPath, pathToFileURL} from 'node:url';
 import {load} from 'js-yaml';
 import yargs from 'yargs';
 import createSpriter from '../lib/index.js';
@@ -24,6 +24,7 @@ import {
   isObject,
   zipObject,
   isResvgAvailable,
+  writeFiles,
 } from '../lib/svgforge/utils/index.js';
 import {createProgressBar} from '../lib/cli/progress.js';
 import {printSummary} from '../lib/cli/report.js';
@@ -197,30 +198,23 @@ function addConfigMap(store, keyPath, value) {
   }
 }
 
-/**
- Recursively write files to disk
-
- @param {FileMap} files Nested map of file objects
- @returns {number} Number of written files
- */
-function writeFiles(files) {
-  let written = 0;
-
-  for (const file of Object.values(files)) {
-    if (!isObject(file)) {
-      continue;
+function collectOutputPaths(result) {
+  const paths = [];
+  const walk = value => {
+    if (value && typeof value === 'object' && typeof value.path === 'string' && value.contents) {
+      paths.push(value.path);
+      return;
     }
 
-    if (typeof file.path === 'string') {
-      fs.mkdirSync(path.dirname(file.path), {recursive: true});
-      fs.writeFileSync(file.path, file.contents);
-      ++written;
-    } else {
-      written += writeFiles(file);
+    if (value && typeof value === 'object') {
+      for (const child of Object.values(value)) {
+        walk(child);
+      }
     }
-  }
+  };
 
-  return written;
+  walk(result);
+  return paths;
 }
 
 /**
@@ -228,19 +222,21 @@ function writeFiles(files) {
 
  @param {SVGSpriter} spriter Spriter instance to compile
  @param {() => void} finishProgress Finishes the progress bar
- @returns {Promise<number>} Promise resolving to the number of written files
+ @param {object} [options] Execution settings
+ @param {boolean} [options.dryRun] Skip writing files to disk
+ @returns {Promise<{written: number, outputs: string[]}>} Compile result
  */
-function compile(spriter, finishProgress) {
-  return new Promise((resolve, reject) => {
-    spriter.compile((error, result) => {
-      finishProgress();
-      if (error) {
-        reject(error);
-      } else {
-        resolve(writeFiles(result));
-      }
-    });
-  });
+async function compile(spriter, finishProgress, {dryRun = false} = {}) {
+  try {
+    const {result} = await spriter.compile();
+    finishProgress();
+    const outputs = collectOutputPaths(result);
+    const written = dryRun ? 0 : writeFiles(result);
+    return {written, outputs};
+  } catch (error) {
+    finishProgress();
+    throw error;
+  }
 }
 
 /**
@@ -291,30 +287,35 @@ function applyCliOptions(cfg, optMap, argv) {
 }
 
 /**
- Load an external JSON configuration file ("--config") and merge it in
+ Load an external configuration file ("--config") and merge it in
 
  @param {SpriterConfig} cfg Configuration object to merge into
  @param {object} argv Parsed command line arguments
- @returns {void}
+ @returns {Promise<void>}
  */
-function loadExternalConfig(cfg, argv) {
+async function loadExternalConfig(cfg, argv) {
   if (!argv.config) {
     return;
   }
 
   try {
-    const configFile = argv.config;
+    const configFile = String(argv.config);
     delete argv.config;
     delete argv.C;
 
-    const JSONConfigContent = fs.readFileSync(path.resolve(configFile));
-    /**
-    @type {SpriterConfig}
-    */
-    const externalConfig = JSON.parse(JSONConfigContent);
+    const resolved = path.resolve(configFile);
+    const ext = path.extname(resolved).toLowerCase();
+    let externalConfig;
+
+    if (['.js', '.mjs', '.cjs'].includes(ext)) {
+      const mod = await import(pathToFileURL(resolved).href);
+      externalConfig = mod.default ?? mod;
+    } else {
+      externalConfig = JSON.parse(fs.readFileSync(resolved, 'utf8'));
+    }
 
     // Keep an un-merged clone for the later option-removal checks
-    JSONConfig = JSON.parse(JSONConfigContent);
+    JSONConfig = structuredClone(externalConfig);
     if (!('mode' in JSONConfig)) {
       JSONConfig.mode = {};
     }
@@ -471,6 +472,15 @@ function removeExcessiveExamples(cfg, argv) {
   }
 }
 
+function removeExcessiveManifests(cfg, argv) {
+  for (const [mode, modeConfig] of Object.entries(cfg.mode)) {
+    const manifest = `${mode}-manifest`;
+    if (argv[manifest] !== true && (!Object.hasOwn(JSONConfig.mode, mode) || !Object.hasOwn(JSONConfig.mode[mode], 'manifest')) && Object.hasOwn(modeConfig, 'manifest')) {
+      delete modeConfig.manifest;
+    }
+  }
+}
+
 /**
  Read and parse the Vento variables JSON file
 
@@ -539,110 +549,139 @@ function getExcludedInputRoots(cfg) {
  @returns {Promise<void>} Promise resolving after all sprites were written
  */
 async function main() {
-  const startedAt = Date.now();
   const parser = registerOptions();
   const argv = parser.parse();
 
   // Map all arguments to a global configuration object
   applyCliOptions(config, optionsMap, argv);
 
-  // Load external JSON config file
-  loadExternalConfig(config, argv);
+  // Load external config file
+  await loadExternalConfig(config, argv);
 
   // Refine particular config options
   refineShapeConfig(config, argv);
   refineSpriteModes(config, argv);
   removeExcessiveExamples(config, argv);
+  removeExcessiveManifests(config, argv);
   loadVariables(config);
 
-  const spriter = createSpriter(config);
+  const collectInputFiles = () => {
+    const matchedFiles = argv._.flatMap(pattern => {
+      const marker = pattern.lastIndexOf('./');
+      const baseDepth = marker === -1 ? 0 : pattern.slice(0, marker).split('/').filter(Boolean).length;
+      return fs.globSync(pattern)
+        .toSorted((a, b) => b.localeCompare(a))
+        .map(file => ({baseDepth, file}));
+    });
+    const excludedInputRoots = getExcludedInputRoots(config);
+    const ignorePatterns = typeof config.ignore === 'string'
+      ? config.ignore.split(',').map(p => p.trim()).filter(Boolean)
+      : (Array.isArray(config.ignore) ? config.ignore : []);
+    const filterPatterns = typeof config.filter === 'string'
+      ? config.filter.split(',').map(p => p.trim()).filter(Boolean)
+      : (Array.isArray(config.filter) ? config.filter : []);
+    const matchesPattern = (file, pattern) =>
+      (typeof path.matchesGlob === 'function' ? path.matchesGlob(file, pattern) : file.includes(pattern));
+    const isIgnored = file => ignorePatterns.some(pattern => matchesPattern(file, pattern));
+    const isFilteredOut = file => filterPatterns.length > 0 && filterPatterns.every(pattern => !matchesPattern(file, pattern) && !matchesPattern(path.basename(file), pattern));
+    const isExcludedFile = file => {
+      const resolved = path.resolve(file);
+      return excludedInputRoots.some(root => resolved === root || resolved.startsWith(root + path.sep)) || isIgnored(file) || isFilteredOut(file);
+    };
 
-  // Register the progress bar before adding shapes: the spriter starts
-  // processing the queue immediately on add(), so the bar has to listen
-  // before any progress events fire. The total is resolved from the glob
-  // below before the add loop starts, because the queue processes shapes
-  // while they are still being added.
-  const progressBar = createProgressBar(spriter, config.quiet);
+    const inputFiles = matchedFiles.filter(({file}) => !isExcludedFile(file));
+    return {matchedFiles, inputFiles, isExcludedFile};
+  };
 
-  // Report skipped shapes as they happen — e.g. SVGs without dimensions when
-  // the optional `@resvg/resvg-js` fallback is not installed, or files that are
-  // not valid SVG/XML. The summary counts them and, for missing dimensions,
-  // ends with the install recommendation.
-  spriter.on('shape-skipped', ({file, error}) => {
-    process.stderr.write(`Skipping "${file}" (${error.message})\n`);
-  });
+  const runBuild = async () => {
+    const buildStartedAt = Date.now();
+    const spriter = createSpriter(config);
+    const progressBar = createProgressBar(spriter, config.quiet || Boolean(config.json));
 
-  // Glob (>= 9, incl. fs.globSync) returns paths without the "./" segment, so
-  // the base directory marker has to be detected on the original pattern. A
-  // literal "/./" segment marks the directory from which shape ID traversal
-  // should start (e.g. "assets/./**/*.svg" yields "path--to--source" instead
-  // of "assets--path--to--source").
-  const matchedFiles = argv._.flatMap(pattern => {
-    const marker = pattern.lastIndexOf('./');
-    const baseDepth = marker === -1 ? 0 : pattern.slice(0, marker).split('/').filter(Boolean).length;
-    return fs.globSync(pattern)
-      .toSorted((a, b) => b.localeCompare(a))
-      .map(file => ({baseDepth, file}));
-  });
-  const excludedInputRoots = getExcludedInputRoots(config);
+    spriter.on('shape-skipped', ({file, error}) => {
+      process.stderr.write(`Skipping "${file}" (${error.message})\n`);
+    });
 
-  const isExcludedFile = file => excludedInputRoots.some(root => file === root || file.startsWith(root + path.sep));
-  const inputFiles = matchedFiles.filter(({file}) => !isExcludedFile(path.resolve(file)));
+    const {matchedFiles, inputFiles, isExcludedFile} = collectInputFiles();
+    progressBar.refreshTotal(inputFiles.length);
 
-  // Resolve the final shape count before adding: progress events fire while
-  // the queue processes shapes during add(), so the bar needs the total up
-  // front to report anything but a trailing 100%.
-  progressBar.refreshTotal(inputFiles.length);
+    for (const {baseDepth, file: filePattern} of matchedFiles) {
+      const file = path.resolve(filePattern);
+      if (isExcludedFile(file)) {
+        continue;
+      }
 
-  for (const {baseDepth, file: filePattern} of matchedFiles) {
-    const file = path.resolve(filePattern);
+      const isRelative = !path.isAbsolute(filePattern) && !filePattern.startsWith('../');
+      let basename;
+      let linkTarget;
 
-    // Skip files inside the output tree so previously generated artifacts are
-    // not processed as source shapes again
-    if (isExcludedFile(file)) {
-      continue;
+      try {
+        linkTarget = fs.readlinkSync(file);
+      } catch {
+        linkTarget = undefined;
+      }
+
+      if (linkTarget !== undefined) {
+        basename = path.basename(linkTarget);
+      } else if (baseDepth > 0) {
+        basename = filePattern.split('/').filter(Boolean).slice(baseDepth).join('/');
+      } else {
+        basename = isRelative ? filePattern : path.basename(file);
+      }
+
+      spriter.add(file, basename, fs.readFileSync(file));
     }
 
-    // Detect relative patterns to preserve directory structure in the shape
-    // identifiers (e.g. "nested/leaf.svg" -> "nested--leaf")
-    const isRelative = !path.isAbsolute(filePattern) && !filePattern.startsWith('../');
-    let basename;
-    let linkTarget;
-
-    try {
-      linkTarget = fs.readlinkSync(file);
-    } catch {
-      linkTarget = undefined;
-    }
-
-    if (linkTarget !== undefined) {
-      basename = path.basename(linkTarget);
-    } else if (baseDepth > 0) {
-      // Strip the base directory marked by "/./" from the shape identifier
-      basename = filePattern.split('/').filter(Boolean).slice(baseDepth).join('/');
-    } else {
-      basename = isRelative ? filePattern : path.basename(file);
-    }
-
-    spriter.add(file, basename, fs.readFileSync(file));
-  }
-
-  try {
-    const written = await compile(spriter, progressBar.finish);
-
-    printSummary({
+    const {written, outputs} = await compile(spriter, progressBar.finish, {dryRun: Boolean(config.dryRun)});
+    const summary = {
       processed: inputFiles.length,
       skipped: matchedFiles.length - inputFiles.length,
       modes: config.mode,
       files: written,
+      outputs,
       dest: config.dest ?? '.',
-      elapsedMs: Date.now() - startedAt,
-      concurrency: spriter._limit,
+      elapsedMs: Date.now() - buildStartedAt,
+      concurrency: spriter.limit,
       resvg: await isResvgAvailable(),
-      dimensionSkipped: spriter._dimensionSkipped ?? 0,
-      errorSkipped: spriter._errorSkipped ?? 0,
+      dimensionSkipped: spriter.dimensionSkipped,
+      errorSkipped: spriter.errorSkipped,
       cliVersion: version,
-    });
+      dryRun: Boolean(config.dryRun),
+    };
+
+    if (config.json) {
+      process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
+    } else {
+      printSummary(summary);
+    }
+
+    return {inputFiles};
+  };
+
+  try {
+    const {inputFiles} = await runBuild();
+
+    if (config.watch) {
+      const watchDirs = [...new Set(inputFiles.map(({file}) => path.dirname(path.resolve(file))))];
+      let timer;
+      const schedule = () => {
+        clearTimeout(timer);
+        timer = setTimeout(async () => {
+          try {
+            await runBuild();
+          } catch (error) {
+            console.error(error);
+          }
+        }, 150);
+      };
+
+      for (const dir of watchDirs) {
+        // eslint-disable-next-line n/prefer-promises/fs -- Callback watch keeps the simple debounce loop lightweight.
+        fs.watch(dir, {persistent: true}, schedule);
+      }
+
+      process.stderr.write('Watching for changes...\n');
+    }
   } catch (error) {
     console.error(error);
   }

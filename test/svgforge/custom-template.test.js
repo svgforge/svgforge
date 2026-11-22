@@ -22,7 +22,7 @@ describe('custom templates', () => {
     const spriter = new SVGSpriter({dest: temporaryPath});
     addFixtureFiles(spriter, TEST_CONFIG.files, TEST_CONFIG.cwd);
 
-    const {result} = await spriter.compileAsync({
+    const {result} = await spriter.compile({
       defs: {
         sprite: 'svg/sprite.defs.svg',
         example: {
@@ -49,7 +49,7 @@ describe('custom templates', () => {
     const spriter = new SVGSpriter({dest: temporaryPath});
     addFixtureFiles(spriter, TEST_CONFIG.files, TEST_CONFIG.cwd);
 
-    const {result} = await spriter.compileAsync({
+    const {result} = await spriter.compile({
       defs: {
         sprite: 'svg/sprite.defs.svg',
         example: true,
