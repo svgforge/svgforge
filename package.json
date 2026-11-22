@@ -64,7 +64,8 @@
     "example": "node example.js",
     "test": "node --test",
     "test:coverage": "mkdir -p coverage && node --test --experimental-test-coverage --test-coverage-include='lib/**' --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/lcov.info",
-    "test:watch": "node --test --watch"
+    "test:watch": "node --test --watch",
+    "prepare": "husky"
   },
   "dependencies": {
     "@xmldom/xmldom": "^0.9.12",
@@ -86,6 +87,7 @@
   },
   "devDependencies": {
     "eslint-plugin-jsdoc": "^65.5.1",
+    "husky": "^9.1.7",
     "pixelmatch": "^8.0.0",
     "playwright-chromium": "^1.65.1",
     "pngjs": "^7.0.0",
