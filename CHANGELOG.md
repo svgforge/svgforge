@@ -20,7 +20,7 @@ Newer release notes are published on the GitHub release page: <https://github.co
 - Add `mode.<mode>.manifest` to write a JSON manifest per sprite mode.
 - Add CLI options: `--json`, `--dry-run`, `--watch`, `--ignore`, `--filter`, `--<mode>-manifest`, and JS/ESM `--config` files.
 - Add SVGO `preset` support (`safe`, `default`, `aggressive`) in `shape.transform`.
-- Add `shape.accessibility.autoTitle` to generate missing `<title>` metadata.
+- Enable `shape.accessibility.autoTitle` by default; add `role="img"` for shapes with accessible names and `aria-hidden="true"`/`focusable="false"` on inline symbol/defs roots.
 - Add `shape.dedupe` to skip shapes with identical SVG content.
 - Add built-in Vento template recipes: `tmpl/common/manifest.json.vto`, `tmpl/common/icons.ts.vto`, `tmpl/common/icons.js.vto`, `tmpl/common/icons.cjs.vto`, `tmpl/common/icons.d.ts.vto`, and `tmpl/common/sprite.css-vars.vto`.
 - Warn on unknown top-level config keys and invalid mode configurations.

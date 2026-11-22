@@ -113,8 +113,8 @@ describe('svgforge-cli', () => {
         await execCli(['--symbol', `--dest=${dest}`, ...svgFiles]);
 
         const sprite = readFile(path.join(dest, 'symbol', 'svg', 'sprite.symbol.svg'));
-        assert.match(sprite, /<symbol viewBox="0 0 24 24" id="one"/u);
-        assert.match(sprite, /<symbol viewBox="0 0 24 24" id="two"/u);
+        assert.match(sprite, /<symbol[^>]*viewBox="0 0 24 24"[^>]*id="one"/u);
+        assert.match(sprite, /<symbol[^>]*viewBox="0 0 24 24"[^>]*id="two"/u);
       });
     });
 

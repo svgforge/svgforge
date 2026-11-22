@@ -364,7 +364,7 @@ Useful flags: `--json`, `--dry-run`, `--watch`, `--ignore`, `--filter`, and `--c
 - **Optional resvg**: install `@resvg/resvg-js` explicitly if you rely on the dimension fallback for SVGs without `width`/`height`/`viewBox`. Missing dimensions are skipped with a warning; check `spriter.dimensionSkipped` or the `shape-skipped` event.
 - **CLI**: the `svgforge` binary ships with `@svgforge/svgforge`; no separate CLI package is required for normal use.
 - **Exports**: default export remains the `createSpriter` factory (also `new`-compatible). Named exports are available: `createSpriter`, `SVGSpriter`, error classes, `writeFiles()`, and `isResvgAvailable()`. TypeScript declarations ship with the package.
-- **New features**: per-mode `manifest` output, `shape.dedupe`, `shape.accessibility.autoTitle`, SVGO `preset`s, built-in Vento template recipes, and CLI `--json/--dry-run/--watch/--ignore/--filter/--config` (JSON or JS/ESM).
+- **New features**: per-mode `manifest` output, `shape.dedupe`, `shape.accessibility.autoTitle` (default on), SVGO `preset`s, built-in Vento template recipes, and CLI `--json/--dry-run/--watch/--ignore/--filter/--config` (JSON or JS/ESM).
 - **Legacy alias**: `./lib/svg-sprite/utils/index.js` remains available in 4.0 for migration compatibility.
 
 ## Known problems / To-do

@@ -256,7 +256,7 @@ Property         | Type      | Default     | Description                |
 -------------------------| --------------- | ------------- | ------------------------------------------ |
 `shape.sort`       | Function    |         | Callback for sorting the list of shapes. The callback's signature is `function(shape1, shape2) { /* ... */ return order; }`. It gets passed two shape objects and is expected to return an integer with `0` meaning both shapes are equal in their position, `1` meaning the first shape should follow the second one, and `-1` the other way round. The default callback simply compares the shapes' `id` values and returns them in alphabetical order, but you may as well implement your own ordering logic. |
 `shape.meta`       | String      |         | Path to a [YAML](https://yaml.org/) file with [meta data to be injected](meta-data.md) into the SVG shapes. |
-`shape.accessibility.autoTitle` | Boolean | `false` | Auto-generate a `<title>` from the shape name when no meta title is present. |
+`shape.accessibility.autoTitle` | Boolean | `true` | Auto-generate a `<title>` from the shape name when no meta title is present. |
 `shape.dedupe`     | Boolean     | `false`     | Skip shapes whose SVG content is identical to an already added shape. |
 `shape.dest`       | String      |         | Implicit way of calling [`.getShapes()`](api.md#svgspritergetshapes-dest-) during sprite compilation. If given, the `result` of subsequent [`.compile()`](api.md#svgspritercompile-config-) calls will carry an additional `shapes` property, listing the intermediate SVG files as an Array of file objects. The value will be used as the destination directory for the files (relative to the main output directory if not absolute anyway). |
 

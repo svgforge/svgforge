@@ -109,7 +109,7 @@ describe('testing getSVG()', () => {
     await shape.complement();
     shape.setNamespace('ns-');
 
-    assert.strictEqual(shape.getSVG(), '<svg xmlns="http://www.w3.org/2000/svg" id="someprefix-ns-abc" height="100" width="100" viewBox="0 0 100 100"><use href="#someprefix-ns-abc"/></svg>');
+    assert.strictEqual(shape.getSVG(), '<svg xmlns="http://www.w3.org/2000/svg" id="someprefix-ns-abc" height="100" width="100" viewBox="0 0 100 100" aria-labelledby="someprefix-ns-test_path-title" role="img"><title id="someprefix-ns-test_path-title">Test Path</title><use href="#someprefix-ns-abc"/></svg>');
   });
 
   it('should substitute ID references in xlink:href attributes', async t => {
@@ -138,7 +138,7 @@ describe('testing getSVG()', () => {
     await shape.complement();
     shape.setNamespace('ns-');
 
-    assert.strictEqual(shape.getSVG(), '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="someprefix-ns-abc" height="100" width="100" viewBox="0 0 100 100"><use href="#someprefix-ns-abc"/></svg>');
+    assert.strictEqual(shape.getSVG(), '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="someprefix-ns-abc" height="100" width="100" viewBox="0 0 100 100" aria-labelledby="someprefix-ns-test_path-title" role="img"><title id="someprefix-ns-test_path-title">Test Path</title><use href="#someprefix-ns-abc"/></svg>');
   });
 });
 
