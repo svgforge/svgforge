@@ -1,0 +1,11 @@
+module.exports.{{ key }}Sprite = {{ JSON.stringify(sprite) |> safe }};
+
+module.exports.{{ key }}Icons = {
+{{ for index, shape of shapes }}
+  {{ JSON.stringify(shape.name) |> safe }}: {
+    name: {{ JSON.stringify(shape.name) |> safe }},
+    width: {{ shape.width.outer |> safe }},
+    height: {{ shape.height.outer |> safe }},
+  }{{ if index < shapes.length - 1 }},{{ /if }}
+{{ /for }}
+};

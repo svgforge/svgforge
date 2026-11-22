@@ -22,7 +22,7 @@ Newer release notes are published on the GitHub release page: <https://github.co
 - Add SVGO `preset` support (`safe`, `default`, `aggressive`) in `shape.transform`.
 - Add `shape.accessibility.autoTitle` to generate missing `<title>` metadata.
 - Add `shape.dedupe` to skip shapes with identical SVG content.
-- Add built-in Vento template recipes: `tmpl/common/manifest.json.vto`, `tmpl/common/icons.ts.vto`, `tmpl/common/icons.js.vto`, and `tmpl/common/sprite.css-vars.vto`.
+- Add built-in Vento template recipes: `tmpl/common/manifest.json.vto`, `tmpl/common/icons.ts.vto`, `tmpl/common/icons.js.vto`, `tmpl/common/icons.cjs.vto`, `tmpl/common/icons.d.ts.vto`, and `tmpl/common/sprite.css-vars.vto`.
 - Warn on unknown top-level config keys and invalid mode configurations.
 
 ## 3.2.0 — Native test suite, stricter example option

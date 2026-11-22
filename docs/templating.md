@@ -180,6 +180,8 @@ Finds all hash signs in a string and encodes each of them to `%23`.
 | `tmpl/common/manifest.json.vto` | JSON manifest | Shape names, dimensions, sprite reference |
 | `tmpl/common/icons.ts.vto` | TypeScript module | Typed icon map and name union |
 | `tmpl/common/icons.js.vto` | JavaScript ESM module | Icon map for non-TypeScript builds |
+| `tmpl/common/icons.cjs.vto` | CommonJS module | Icon map for CJS consumers |
+| `tmpl/common/icons.d.ts.vto` | TypeScript declarations | Type declarations for icon maps |
 | `tmpl/common/sprite.css-vars.vto` | CSS custom properties | `--<mode>-<icon>-width/height` variables |
 
 Example:

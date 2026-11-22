@@ -22,6 +22,18 @@ describe('config validation', () => {
     assert.throws(() => new SVGSpriterConfig({shape: {spacing: []}}), /"shape\.spacing" option must be an object/u);
   });
 
+  it('should throw for invalid shape.dimension value type', () => {
+    assert.throws(
+      () => new SVGSpriterConfig({shape: {dimension: {maxWidth: '2000'}}}),
+      /"shape\.dimension\.maxWidth" option must be a number/u,
+    );
+  });
+
+  it('should accept shape.transform as string', () => {
+    const config = new SVGSpriterConfig({shape: {transform: 'svgo'}});
+    assert.ok(Array.isArray(config.shape.transform));
+  });
+
   it('should warn on unknown top-level keys', () => {
     const warnings = [];
     const logger = {

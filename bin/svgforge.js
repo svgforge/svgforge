@@ -198,6 +198,25 @@ function addConfigMap(store, keyPath, value) {
   }
 }
 
+function collectOutputPaths(result) {
+  const paths = [];
+  const walk = value => {
+    if (value && typeof value === 'object' && typeof value.path === 'string' && value.contents) {
+      paths.push(value.path);
+      return;
+    }
+
+    if (value && typeof value === 'object') {
+      for (const child of Object.values(value)) {
+        walk(child);
+      }
+    }
+  };
+
+  walk(result);
+  return paths;
+}
+
 /**
  Compile the spriter and write all generated files to disk
 
@@ -205,13 +224,15 @@ function addConfigMap(store, keyPath, value) {
  @param {() => void} finishProgress Finishes the progress bar
  @param {object} [options] Execution settings
  @param {boolean} [options.dryRun] Skip writing files to disk
- @returns {Promise<number>} Promise resolving to the number of written files
+ @returns {Promise<{written: number, outputs: string[]}>} Compile result
  */
 async function compile(spriter, finishProgress, {dryRun = false} = {}) {
   try {
     const {result} = await spriter.compile();
     finishProgress();
-    return dryRun ? 0 : writeFiles(result);
+    const outputs = collectOutputPaths(result);
+    const written = dryRun ? 0 : writeFiles(result);
+    return {written, outputs};
   } catch (error) {
     finishProgress();
     throw error;
@@ -611,12 +632,13 @@ async function main() {
       spriter.add(file, basename, fs.readFileSync(file));
     }
 
-    const written = await compile(spriter, progressBar.finish, {dryRun: Boolean(config.dryRun)});
+    const {written, outputs} = await compile(spriter, progressBar.finish, {dryRun: Boolean(config.dryRun)});
     const summary = {
       processed: inputFiles.length,
       skipped: matchedFiles.length - inputFiles.length,
       modes: config.mode,
       files: written,
+      outputs,
       dest: config.dest ?? '.',
       elapsedMs: Date.now() - buildStartedAt,
       concurrency: spriter.limit,
