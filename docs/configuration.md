@@ -401,7 +401,7 @@ Property     | Type      | Default     | Description                |
 `mode.<mode>.example`    | [Rendering config](#rendering-configurations) | `false`     | Enabling this will trigger the creation of an HTML document demoing the usage of the sprite. Please see below for details on [rendering configurations](#rendering-configurations). |
 `mode.<mode>.example.template` | String    | `"tmpl/<mode>/sprite.vto"`   | HTML document [Vento](https://vento.js.org) template |
 `mode.<mode>.example.dest`   | String      | `"sprite.<mode>.html"`    | HTML document destination |
-`mode.<mode>.manifest`    | Boolean\|Object | `false`     | Write a JSON manifest with shape names, dimensions and sprite reference. |
+`mode.<mode>.manifest`    | Boolean\|Object | `false`     | Write a JSON manifest (`mode`, `key`, `sprite`, `shapes[]` with `name`, `base`, `width`, `height` outer pixel values). |
 `mode.<mode>.manifest.dest` | String      | `"sprite.<mode>.manifest.json"` | Manifest destination |
 
 

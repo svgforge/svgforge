@@ -1,8 +1,8 @@
 # Roadmap
 
-## 4.0 release candidates
+## 4.0
 
-Breaking/unreleased work is tracked in `CHANGELOG.md`. No open 4.0 roadmap items remain before release.
+Breaking and additive 4.0 work is tracked in `CHANGELOG.md`. Remaining polish before release: test coverage for new features, docs alignment, and final review of new public behavior (manifest format, config validation strictness, CLI flags).
 
 ## Decisions
 

@@ -73,41 +73,14 @@ Hint: The library is ESM-only. Since Node.js 24 you can also [use CJS (`require`
 
 ```js
 import fs from 'node:fs';
-import path from 'node:path';
-import SVGSpriter from '@svgforge/svgforge';
+import SVGSpriter, {writeFiles} from '@svgforge/svgforge';
 
-// Define your configuration
-const config = {
-  // ...
-};
+const spriter = new SVGSpriter({mode: {symbol: true}});
 
-// 1. Create spriter instance
-const spriter = new SVGSpriter(config);
+spriter.add('assets/icon.svg', null, fs.readFileSync('assets/icon.svg', 'utf8'));
 
-// 2. Add SVG source files
-spriter.add(
-  'assets/svg-1.svg',
-  null,
-  fs.readFileSync('assets/svg-1.svg', 'utf8')
-);
-
-spriter.add(
-  'assets/svg-2.svg',
-  null,
-  fs.readFileSync('assets/svg-2.svg', 'utf8')
-);
-
-// 3. Compile the sprite asynchronously
 const {result} = await spriter.compile();
-
-// Write generated files to disk
-for (const mode of Object.values(result)) {
-  for (const resource of Object.values(mode)) {
-    fs.mkdirSync(path.dirname(resource.path), { recursive: true });
-    fs.writeFileSync(resource.path, resource.contents);
-  }
-}
-
+writeFiles(result);
 ```
 
 As you can see, big parts of the above are dealing with disk I/O by writing the resulting file objects to disk yourself.
@@ -365,10 +338,10 @@ svgforge --help
 A typical example:
 
 ```bash
-svgforge --symbol --symbol-render-css --symbol-example --dest=out assets/*.svg
+svgforge --symbol --symbol-render-css --symbol-example --symbol-manifest --dest=out assets/*.svg
 ```
 
-See the [command line reference](docs/command-line.md) for all options.
+Useful flags: `--json`, `--dry-run`, `--watch`, `--ignore`, `--filter`, and `--config` (JSON or JS/ESM). See the [command line reference](docs/command-line.md) for all options.
 
 
 ## Migrating to 4.0
@@ -390,7 +363,8 @@ See the [command line reference](docs/command-line.md) for all options.
 - **File objects**: plain `{base, path, contents}` objects replace vinyl. `contents` is a `Buffer`.
 - **Optional resvg**: install `@resvg/resvg-js` explicitly if you rely on the dimension fallback for SVGs without `width`/`height`/`viewBox`. Missing dimensions are skipped with a warning; check `spriter.dimensionSkipped` or the `shape-skipped` event.
 - **CLI**: the `svgforge` binary ships with `@svgforge/svgforge`; no separate CLI package is required for normal use.
-- **Exports**: default export remains the `createSpriter` factory (also `new`-compatible). Named exports are available: `createSpriter`, `SVGSpriter`, and error classes. TypeScript declarations ship with the package.
+- **Exports**: default export remains the `createSpriter` factory (also `new`-compatible). Named exports are available: `createSpriter`, `SVGSpriter`, error classes, `writeFiles()`, and `isResvgAvailable()`. TypeScript declarations ship with the package.
+- **New features**: per-mode `manifest` output, `shape.dedupe`, `shape.accessibility.autoTitle`, SVGO `preset`s, built-in Vento template recipes, and CLI `--json/--dry-run/--watch/--ignore/--filter/--config` (JSON or JS/ESM).
 - **Legacy alias**: `./lib/svg-sprite/utils/index.js` remains available in 4.0 for migration compatibility.
 
 ## Known problems / To-do
